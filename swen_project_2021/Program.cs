@@ -1,12 +1,13 @@
-﻿using System;
-
-namespace swen_project_2021
+﻿namespace MTCG
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            ServerLog.Initialize();
+            Server server = new("127.0.0.1", 10001);
+            server.Start();
+
         }
     }
 }
