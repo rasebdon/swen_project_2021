@@ -33,6 +33,23 @@ namespace MTCG.Database
         public void OpenConnection()
         {
             Connection.Open();
+
+            // Test connection via version select
+            var sql = "SELECT * FROM info;";
+            NpgsqlCommand cmd = new(sql);
+
+            OrderedDictionary result;
+            try
+            {
+                result = SelectSingle(cmd);
+            }
+            catch (Exception)
+            {
+                throw new DatabaseConnectionException();
+            }
+
+            ServerLog.Print($"Connection to database successful!", ServerLog.OutputFormat.Success);
+            ServerLog.Print($"Current database version: {result["version"]}");
         }
 
         /// <summary>

@@ -23,11 +23,10 @@ namespace MTCG.Database
         }
     }
 
-    class IncorrectDatabaseVersionException : DatabaseException
+    class DatabaseConnectionException : DatabaseException
     {
-        public IncorrectDatabaseVersionException(string expectedVersion, string currentVersion) : base(
-            $"The expected database version ({ expectedVersion }) does" +
-            $" not match the servers current database version ({ currentVersion })!", 0)
+        public DatabaseConnectionException() : base(
+            $"There has been an error connecting to the database", 0)
         { }
     }
 
