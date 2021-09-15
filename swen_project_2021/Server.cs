@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,7 +21,9 @@ namespace MTCG
         }
 
         public Database.Database Database { get; }
+
         public HttpListener HttpSocket { get; }
+        Socket
 
         private List<Task> ListeningTasks { get; set; }
         private readonly int _port;

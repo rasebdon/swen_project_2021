@@ -98,10 +98,7 @@ namespace MTCG.Controller
             // Check if user exists
             if (row == null)
                 return null;
-            var user = User.Parse(row);
-
-            // Get user coins
-            user.Coins = (int)row["coins"];
+            var user = new User(row);
 
             return user;
         }
@@ -125,10 +122,7 @@ namespace MTCG.Controller
             // Check if user exists
             if (row == null)
                 return null;
-            var user = User.Parse(row);
-
-            // Get user coins
-            user.Coins = (int)row["coins"];
+            var user = new User(row);
 
             return user;
         }

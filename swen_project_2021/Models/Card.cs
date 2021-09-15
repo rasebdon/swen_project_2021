@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,12 +12,8 @@ namespace MTCG.Models
     /// and fight with. It splits into multiple subcategories like the MonsterCard
     /// or the SpellCard
     /// </summary>
-    abstract class Card : IValueObject
+    abstract class Card : DataObject
     {
-        /// <summary>
-        /// The unique card id
-        /// </summary>
-        public uint ID { get; }
         /// <summary>
         /// The unique name of the card
         /// </summary>
@@ -26,9 +23,13 @@ namespace MTCG.Models
         /// </summary>
         public int Damage { get; }
 
-        protected Card(uint id, string name, int damage)
+        protected Card(OrderedDictionary row) : base(row)
         {
-            ID = id;
+            Name = row["name"].ToString();
+            Damage = (int)row["damage"];
+        }
+        protected Card(uint id, string name, int damage) : base(id)
+        {
             Name = name;
             Damage = damage;
         }

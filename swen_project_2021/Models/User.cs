@@ -3,12 +3,8 @@ using System.Collections.Specialized;
 
 namespace MTCG.Models
 {
-    class User : IValueObject
+    class User : DataObject
     {
-        /// <summary>
-        /// The unique id of the user
-        /// </summary>
-        public uint ID { get; }
         /// <summary>
         /// The unique username of the user
         /// </summary>
@@ -18,17 +14,15 @@ namespace MTCG.Models
         /// </summary>
         public int Coins { get; set; }
 
-        public User(uint id, string username)
+        public User(OrderedDictionary row) : base(row)
         {
-            ID = id;
-            Username = username;
+            Username = row["username"].ToString();
+            Coins = (int)row["coins"];
         }
-
-        public static User Parse(OrderedDictionary row)
+        public User(uint id, string username, int coins) : base(id)
         {
-            return new User(
-                (uint)(int)row["ID"],
-                row["username"].ToString());
+            Username = username;
+            Coins = coins;
         }
     }
 }
