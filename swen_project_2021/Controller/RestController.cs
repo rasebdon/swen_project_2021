@@ -1,15 +1,17 @@
 ﻿using System;
 using MTCG.Controller;
 using System.Text.Json;
-using MTCG.Requests;
+using MTCG.Http;
+using MTCG.Http.Requests;
 
 namespace MTCG
 {
     static class RestController
     {
-        public static string GetResponse(string httpMethod, string urlPath, string requestBody)
+        public static HttpResponse GetResponse(HttpRequest request)
         {
-            Console.WriteLine($"Request:\nResource: {urlPath}\nMethod: {httpMethod}\nBody: {requestBody}");
+            string resource = request.Url.LocalPath;
+            Console.WriteLine($"Request:\nResource: {resource}\nMethod: {request.HttpMethod}\nBody: {request.RequestBody}");
 
             var jsonOptions = new JsonSerializerOptions
             {
@@ -17,35 +19,42 @@ namespace MTCG
             };
 
             // Prepare paths
-            string[] path = urlPath.Trim('/').Split("/");
+            string[] path = resource.Trim('/').Split("/");
+
+            string returnData;
 
             // Process GET requests
-            if (httpMethod == "GET")
+            if (request.HttpMethod == HttpMethod.GET)
             {
                 switch (path[0])
                 {
                     case "users":
-                        return JsonSerializer.Serialize(UserController.GetUser(path[1]), typeof(Models.User), jsonOptions);
+                        returnData = JsonSerializer.Serialize(UserController.GetUser(path[1]), typeof(Models.User), jsonOptions);
+                        return new HttpResponse(returnData, HttpStatusCode.OK, "application/json");
                 }
             }
             // Process POST requests
-            else if (httpMethod == "POST")
+            else if (request.HttpMethod == HttpMethod.POST)
             {
                 switch (path[0])
                 {
                     case "users":
-                        var request = JsonSerializer.Deserialize<RegisterRequest>(requestBody);
-                        UserController.Register(request.Username, request.Password);
-
-                        return JsonSerializer.Serialize(UserController.GetUser(request.Username));
+                        RegisterRequestBody registerRequest = JsonSerializer.Deserialize<RegisterRequestBody>(request.RequestBody);
+                        
+                        try
+                        {
+                            UserController.Register(registerRequest.Username, registerRequest.Password);
+                            returnData = JsonSerializer.Serialize(UserController.GetUser(registerRequest.Username));
+                            return new HttpResponse(returnData, HttpStatusCode.Created, "application/json");
+                        }
+                        catch(Database.DuplicateEntryException)
+                        {
+                            return new HttpResponse("", HttpStatusCode.Conflict, "");
+                        }
                 }
             }
-            else
-            {
-                throw new Exception("Invalid http method type in request!");
-            }
 
-            return "";
+            return new HttpResponse("", HttpStatusCode.NotFound, ""); ;
         }
     }
 }

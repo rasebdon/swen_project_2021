@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Sockets;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using MTCG.Http;
 
 namespace MTCG
 {
@@ -22,12 +23,11 @@ namespace MTCG
 
         public Database.Database Database { get; }
 
-        public HttpListener HttpSocket { get; }
-        Socket
+        public HttpSocket HttpSocket { get; }
 
         private List<Task> ListeningTasks { get; set; }
         private readonly int _port;
-        private const ushort _listeningTasksAmount = 10;
+        private const ushort _listeningTasksAmount = 20;
 
         public Server(string ip, int port)
         {
@@ -37,8 +37,7 @@ namespace MTCG
             _instance = this;
 
             // Setup http server
-            HttpSocket = new();
-            HttpSocket.Prefixes.Add($"http://{ip}:{port}/");
+            HttpSocket = new(port);
 
             // Initialize database connection
             this.Database = new("localhost", "mtcg", "mtcgadmin", "p1s2w3r4");
@@ -64,6 +63,15 @@ namespace MTCG
             try
             {
                 HttpSocket.Start();
+                
+                // Start listening tasks
+                ListeningTasks = new();
+                for (int i = 0; i < _listeningTasksAmount - 1; i++)
+                {
+                    int taskId = i;
+                    var t = Task.Run(() => Listen(taskId));
+                    ListeningTasks.Add(t);
+                }
             }
             catch (Exception ex)
             {
@@ -72,66 +80,58 @@ namespace MTCG
                 ServerLog.Print(ex.ToString(), ServerLog.OutputFormat.Error);
                 return;
             }
-            ServerLog.Print("HTTP server started successfully!", ServerLog.OutputFormat.Success);
-            // Start listening to incoming data
-            ListeningTasks = new();
-            for (int i = 0; i < _listeningTasksAmount - 1; i++)
-            {
-                Task t = new(Listen);
-                t.Start();
-                ListeningTasks.Add(t);
-            }
-            ServerLog.Print($"HTTP server now listening on port {_port} with {_listeningTasksAmount} listeners!");
-            Listen();
+
+            ListenLast();
         }
 
-        private void Listen()
+        private void ListenLast()
+        {
+            ServerLog.Print("HTTP server started successfully!", ServerLog.OutputFormat.Success);
+            ServerLog.Print($"HTTP server now listening on port {_port} with {_listeningTasksAmount} listeners!");
+
+            Listen(_listeningTasksAmount - 1);
+        }
+
+        private void Listen(int taskId)
         {
             while (HttpSocket.IsListening)
             {
                 // Recieve data
-                HttpListenerContext context = HttpSocket.GetContext();
-                HttpListenerRequest request = context.Request;
-                /// Process data
-                // No need to process empty requests
-                if (!request.HasEntityBody)
+                HttpRequest request = HttpSocket.GetRequest();
+
+                ServerLog.Print($"Listener {taskId} recieved an http request!");
+
+                // Recieved invalid request
+                if (request == null)
                 {
-                    ServerLog.Print("Empty request recieved! Continuing to the next request",
+                    ServerLog.Print("Invalid request recieved! Continuing to the next request",
                         ServerLog.OutputFormat.Warning);
                     continue;
                 }
-                // Read the body data
-                string requestBody = "";
-                using (Stream body = request.InputStream)
+                /// Process data
+                // No need to process empty get requests
+                if (!request.HasEntityBody && request.HttpMethod != HttpMethod.GET)
                 {
-                    var reader = new StreamReader(body, request.ContentEncoding);
-                    requestBody = reader.ReadToEnd();
+                    ServerLog.Print("Empty request recieved! Continuing to the next request",
+                        ServerLog.OutputFormat.Warning);
+                    HttpSocket.Send(new HttpResponse("", HttpStatusCode.NotFound, ""), request);
+                    continue;
                 }
                 // Get the response
-                string responseString = "";
+                HttpResponse response;
                 try
                 {
-                    responseString = RestController.GetResponse(
-                        request.HttpMethod,
-                        request.Url.LocalPath,
-                        requestBody);
+                     response = RestController.GetResponse(request);
                 }
                 catch (Exception ex)
                 {
                     ServerLog.Print("There was an error processing the http request:",
                         ServerLog.OutputFormat.Error);
                     ServerLog.Print(ex.ToString(), ServerLog.OutputFormat.Error);
+                    continue;
                 }
 
-                // Write back
-                HttpListenerResponse response = context.Response;
-                byte[] buffer = Encoding.UTF8.GetBytes(responseString);
-
-                response.ContentLength64 = buffer.Length;
-                Stream st = response.OutputStream;
-                st.Write(buffer, 0, buffer.Length);
-
-                context.Response.Close();
+                HttpSocket.Send(response, request);
             }
         }
     }
