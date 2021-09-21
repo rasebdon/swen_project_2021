@@ -25,8 +25,9 @@ namespace MTCG.Http
         public string ContentType { get; }
         public Socket Requester { get; }
         public string HttpVersion { get; }
+        public HttpAuthorization Authorization { get; }
 
-        public HttpRequest(Uri url, HttpMethod method, string contentType, string requestBody, Socket requester, string httpVersion)
+        public HttpRequest(Uri url, HttpMethod method, string contentType, string requestBody, Socket requester, string httpVersion, HttpAuthorization authorization)
         {
             HttpVersion = httpVersion;
             HasEntityBody = requestBody.Length > 0;

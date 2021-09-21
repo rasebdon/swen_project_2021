@@ -3,13 +3,15 @@ using MTCG.Controller;
 using System.Text.Json;
 using MTCG.Http;
 using MTCG.Http.Requests;
+using MTCG.Models;
 
 namespace MTCG
 {
-    static class RestController
+    class RestController : Singleton<RestController>
     {
-        public static HttpResponse GetResponse(HttpRequest request)
+        public HttpResponse GetResponse(HttpRequest request)
         {
+            // Get the resource (path)
             string resource = request.Url.LocalPath;
             Console.WriteLine($"Request:\nResource: {resource}\nMethod: {request.HttpMethod}\nBody: {request.RequestBody}");
 
@@ -18,7 +20,7 @@ namespace MTCG
                 WriteIndented = true
             };
 
-            // Prepare paths
+            // Prepare paths / resources
             string[] path = resource.Trim('/').Split("/");
 
             string returnData;
@@ -38,23 +40,65 @@ namespace MTCG
             {
                 switch (path[0])
                 {
+                    // Register call
                     case "users":
-                        RegisterRequestBody registerRequest = JsonSerializer.Deserialize<RegisterRequestBody>(request.RequestBody);
-                        
                         try
                         {
-                            UserController.Register(registerRequest.Username, registerRequest.Password);
+                            // Deserialize body
+                            CredentialsRequestBody registerRequest = JsonSerializer.Deserialize<CredentialsRequestBody>(request.RequestBody);
+                            // Try to register
+                            UserController.Instance.Register(registerRequest.Username, registerRequest.Password);
+                            // Answer
                             returnData = JsonSerializer.Serialize(UserController.GetUser(registerRequest.Username));
                             return new HttpResponse(returnData, HttpStatusCode.Created, "application/json");
                         }
                         catch(Database.DuplicateEntryException)
                         {
-                            return new HttpResponse("", HttpStatusCode.Conflict, "");
+                            return new HttpResponse(HttpStatusCode.Conflict);
+                        }
+                        catch(Exception)
+                        {
+                            return new HttpResponse(HttpStatusCode.BadRequest);
+                        }
+                    // Login
+                    case "sessions":
+                        try
+                        {
+                            // Dezerialize body
+                            CredentialsRequestBody loginRequestBody = JsonSerializer.Deserialize<CredentialsRequestBody>(request.RequestBody);
+                            // Try to login
+                            User user = UserController.Instance.Login(loginRequestBody.Username, loginRequestBody.Password);
+                            // Return the session key
+                            return new HttpResponse($"{{\"SessionToken\": \"{user.SessionToken}\"}}", HttpStatusCode.OK, "application/json");
+                        }
+                        catch(Database.InvalidCredentialsException)
+                        {
+                            return new HttpResponse(HttpStatusCode.Forbidden);
+                        }
+                        catch(Exception)
+                        {
+                            return new HttpResponse(HttpStatusCode.BadRequest);
+                        }
+                    // Create packages
+                    case "packages":
+                        try
+                        {
+                            // Check if authorization is admin-token
+                            if (request.Authorization.Credentials != "admin-mtcgToken")
+                                return new HttpResponse(HttpStatusCode.Forbidden);
+
+
+
+                            throw new NotImplementedException();
+                        }
+                        catch(Exception)
+                        {
+                            return new HttpResponse(HttpStatusCode.NotFound);
                         }
                 }
             }
 
-            return new HttpResponse("", HttpStatusCode.NotFound, ""); ;
+            return new HttpResponse(HttpStatusCode.NotFound);
         }
     }
 }

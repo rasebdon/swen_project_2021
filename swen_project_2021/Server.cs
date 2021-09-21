@@ -8,19 +8,8 @@ using MTCG.Http;
 
 namespace MTCG
 {
-    class Server
+    class Server : Singleton<Server>
     {
-        private static Server _instance;
-        public static Server Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    throw new Exception("Server not constructed!");
-                return _instance;
-            }
-        }
-
         public Database.Database Database { get; }
 
         public HttpSocket HttpSocket { get; }
@@ -34,7 +23,7 @@ namespace MTCG
             _port = port;
 
             // Set singleton
-            _instance = this;
+            Instance = this;
 
             // Setup http server
             HttpSocket = new(port);
@@ -121,7 +110,7 @@ namespace MTCG
                 HttpResponse response;
                 try
                 {
-                     response = RestController.GetResponse(request);
+                     response = RestController.Instance.GetResponse(request);
                 }
                 catch (Exception ex)
                 {

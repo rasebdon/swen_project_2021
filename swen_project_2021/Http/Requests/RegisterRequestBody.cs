@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace MTCG.Http.Requests
 {
     [System.Serializable]
-    class RegisterRequestBody
+    class CredentialsRequestBody
     {
         public string Username { get; }
         public string Password { get; }
 
-        public RegisterRequestBody(string username, string password)
+        public CredentialsRequestBody(string username, string password)
         {
             Username = username;
             Password = password;

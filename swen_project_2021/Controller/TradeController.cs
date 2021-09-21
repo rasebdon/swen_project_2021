@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Controller
 {
-    class TradeController
+    class TradeController : Singleton<TradeController>
     {
 
     }

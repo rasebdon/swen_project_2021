@@ -14,6 +14,8 @@ namespace MTCG.Models
         /// </summary>
         public int Coins { get; set; }
 
+        public string SessionToken { get; set; }
+
         public User(OrderedDictionary row) : base(row)
         {
             Username = row["username"].ToString();

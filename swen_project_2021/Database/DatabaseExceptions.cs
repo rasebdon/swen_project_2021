@@ -49,4 +49,10 @@ namespace MTCG.Database
             base($"There was an error inserting the entry with the SQL: {sql}!", 3)
         { }
     }
+    class NoEntryFoundException : DatabaseException
+    {
+        public NoEntryFoundException(string sql) :
+            base($"No entries were found by the given query: {sql}!", 4)
+        { }
+    }
 }

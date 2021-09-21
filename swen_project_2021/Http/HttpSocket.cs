@@ -25,9 +25,7 @@ namespace MTCG.Http
             _buffer = new byte[ReceiveBufferSize];
         }
 
-        private byte[] _buffer;
-
-        HttpRequest _currentRequest = null;
+        private readonly byte[] _buffer;
 
         public void Start()
         {
@@ -65,15 +63,21 @@ namespace MTCG.Http
             int contentLength = 0;
             string contentType = "";
             string requestBody = "";
+            HttpAuthorization authorization = null;
 
             string readString;
-            while(reading)
+            while (reading)
             {
                 readString = reader.ReadLine();
 
                 if (readString == null)
                 {
                     reading = false;
+                }
+                if (readString.Contains("Authorization"))
+                {
+                    string[] authString = readString.Split(' ');
+                    authorization = new(authString[1], authString[2]);
                 }
                 else if (readString.Contains("Content-Type"))
                 {
@@ -94,7 +98,7 @@ namespace MTCG.Http
 
             Console.WriteLine(conn.LocalEndPoint);
 
-            return new HttpRequest(requestUrl, httpMethod, contentType, requestBody, conn, httpVersion);
+            return new HttpRequest(requestUrl, httpMethod, contentType, requestBody, conn, httpVersion, authorization);
         }
 
         /// <summary>
@@ -104,15 +108,22 @@ namespace MTCG.Http
         /// <param name="request"></param>
         public void Send(HttpResponse response, HttpRequest request)
         {
+            // Write response http header
             var responseMessage = $"{request.HttpVersion} {(int)response.HttpStatusCode}\r\n";
             responseMessage += $"Date: {DateTime.Now:R}\r\n";
             responseMessage += $"Server: MTCG-Webserver/0.9.15\r\n";
-            responseMessage += $"Content-Type: {response.ContentType}\r\n";
-            responseMessage += $"Content-Length: {response.ResponseBody.Length}\r\n";
-            responseMessage += $"\r\n";
-            responseMessage += response.ResponseBody + "\r\n";
+            // Write content
+            if (response.ContentType != "" && response.ResponseBody != "")
+            {
+                responseMessage += $"Content-Type: {response.ContentType}\r\n";
+                responseMessage += $"Content-Length: {response.ResponseBody.Length}\r\n";
+                responseMessage += $"\r\n";
+                responseMessage += response.ResponseBody + "\r\n";
+            }
+            // Encode and send
             request.Requester.Send(Encoding.UTF8.GetBytes(responseMessage));
             request.Requester.Close();
+            Console.WriteLine($"Response: {responseMessage}");
         }
     }
 }

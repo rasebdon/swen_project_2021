@@ -6,14 +6,6 @@ using System.Collections.Specialized;
 namespace MTCG.Database
 {
     /// <summary>
-    /// Is thrown whenever the database instance is accessed before it was constructed/initialized
-    /// </summary>
-    class DatabaseNotInitializedException : Exception
-    {
-        public DatabaseNotInitializedException() : base("The database instance was accessed before it was constructed/initialized!") { }
-    }
-
-    /// <summary>
     /// Singleton class for managing the general database communication
     /// </summary>
     class Database

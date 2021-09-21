@@ -1,4 +1,5 @@
 ﻿using CryptSharp;
+using MTCG.Controller.Exceptions;
 using MTCG.Database;
 using MTCG.Models;
 using Npgsql;
@@ -10,8 +11,15 @@ using System.Text.RegularExpressions;
 
 namespace MTCG.Controller
 {
-    static class UserController
+    class UserController : Singleton<UserController>
     {
+        public List<User> LoggedInUsers { get; }
+
+        public UserController()
+        {
+            LoggedInUsers = new();
+        }
+
         /// <summary>
         /// Registers a new user in the database
         /// </summary>
@@ -19,7 +27,7 @@ namespace MTCG.Controller
         /// <param name="email">The desired email</param>
         /// <param name="password">The desired password</param>
         /// <returns>The registered user object</returns>
-        public static User Register(string username, string password)
+        public User Register(string username, string password)
         {
             /// Plain argument checks
             // Check username
@@ -60,8 +68,8 @@ namespace MTCG.Controller
         /// </summary>
         /// <param name="username">The username of the user</param>
         /// <param name="password">The plaintext password of the user</param>
-        /// <returns>A user if the login was successful and null on failure</returns>
-        public static User Login(string username, string password)
+        /// <returns>A user if the login was successful and throws exceptions on failure</returns>
+        public User Login(string username, string password)
         {
             // Check for valid arguments
             if (username.Length <= 0 || password.Length <= 0)
@@ -70,11 +78,21 @@ namespace MTCG.Controller
             var user = GetUser(username);
 
             if (user == null)
-                return null;
+                throw new InvalidCredentialsException(username);
+
+            // Check if user is already logged in
+            if (LoggedInUsers.Contains(user))
+                throw new AlreadyLoggedInException(user);
 
             bool authenticated = Crypter.CheckPassword(password, GetUserHash(username));
             if (!authenticated)
                 throw new InvalidCredentialsException(username);
+
+            // Add user to logged in users
+            LoggedInUsers.Add(user);
+
+            // Generate auth token
+            user.SessionToken = $"{user.Username}-mtcgToken";
 
             return user;
         }
@@ -133,7 +151,7 @@ namespace MTCG.Controller
         /// <param name="username">The unique username of the user</param>
         /// <returns>The hash of the user or an empty string if there was
         /// no user with this username found</returns>
-        public static string GetUserHash(string username)
+        public string GetUserHash(string username)
         {
             // Prepare sql
             var sql = "SELECT hash FROM users WHERE username=@username";
@@ -144,7 +162,7 @@ namespace MTCG.Controller
             return ParseHash(Server.Instance.Database.SelectSingle(cmd));
         }
 
-        public static string GetUserHash(int id)
+        public string GetUserHash(int id)
         {
             // Prepare sql
             var sql = "SELECT hash FROM users WHERE id=@id";
@@ -161,7 +179,7 @@ namespace MTCG.Controller
         /// <param name="row">The row with the hash</param>
         /// <returns>The hash string if it was found in the row
         /// and an empty string if it was not</returns>
-        private static string ParseHash(OrderedDictionary row)
+        private string ParseHash(OrderedDictionary row)
         {
             if (row == null) return "";
             return row["hash"].ToString();
@@ -173,13 +191,13 @@ namespace MTCG.Controller
         /// </summary>
         /// <param name="user">The user of which the card stack should be retrieved</param>
         /// <returns>The card stack of the given user</returns>
-        public static Dictionary<Card, int> GetUserCardStack(User user)
+        public Dictionary<Card, int> GetUserCardStack(User user)
         {
             throw new NotImplementedException();
 
             var stack = new Dictionary<Card, int>
             {
-                { new SpellCard(1, "Firestorm", 23), 5 }
+                { new SpellCard(1, "WaterGoblin", 23), 5 }
             };
             return stack;
         }
