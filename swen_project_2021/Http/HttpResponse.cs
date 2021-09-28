@@ -2,7 +2,7 @@
 
 namespace MTCG
 {
-    enum HttpStatusCode
+    public enum HttpStatusCode
     {
         OK = 200,
         Created = 201,
@@ -12,7 +12,7 @@ namespace MTCG
         Conflict = 409
     }
 
-    class HttpResponse
+    public class HttpResponse
     {
         public string ResponseBody { get; }
         public HttpStatusCode HttpStatusCode { get; }

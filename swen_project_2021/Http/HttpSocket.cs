@@ -9,7 +9,7 @@ using System.IO;
 
 namespace MTCG.Http
 {
-    class HttpSocket : Socket
+    public class HttpSocket : Socket
     {
         public bool IsListening { get; internal set; }
 
@@ -74,7 +74,7 @@ namespace MTCG.Http
                 {
                     reading = false;
                 }
-                if (readString.Contains("Authorization"))
+                else if (readString.Contains("Authorization"))
                 {
                     string[] authString = readString.Split(' ');
                     authorization = new(authString[1], authString[2]);
@@ -95,8 +95,6 @@ namespace MTCG.Http
                     reading = false;
                 }
             }
-
-            Console.WriteLine(conn.LocalEndPoint);
 
             return new HttpRequest(requestUrl, httpMethod, contentType, requestBody, conn, httpVersion, authorization);
         }
