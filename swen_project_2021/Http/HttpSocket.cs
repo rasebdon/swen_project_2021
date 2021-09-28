@@ -96,8 +96,6 @@ namespace MTCG.Http
                 }
             }
 
-            Console.WriteLine(conn.LocalEndPoint);
-
             return new HttpRequest(requestUrl, httpMethod, contentType, requestBody, conn, httpVersion, authorization);
         }
 
@@ -123,7 +121,7 @@ namespace MTCG.Http
             // Encode and send
             request.Requester.Send(Encoding.UTF8.GetBytes(responseMessage));
             request.Requester.Close();
-            Console.WriteLine($"Response: {responseMessage}");
+            Console.WriteLine($"Response:\n{responseMessage}");
         }
     }
 }

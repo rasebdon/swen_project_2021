@@ -8,8 +8,9 @@ namespace MTCG.Models
 {
     class MonsterCard : Card
     {
-        public MonsterCard(uint id, string name, int damage) : base(id, name, damage)
+        public MonsterCard(uint id, string name, int damage) : base(id, name, damage, CardType.Monster)
         {
+
         }
     }
 }

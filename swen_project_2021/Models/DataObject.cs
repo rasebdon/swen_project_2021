@@ -4,8 +4,6 @@ namespace MTCG.Models
 {
     abstract class DataObject
     {
-        // Visitor pattern
-
         /// <summary>
         /// The unique object id
         /// </summary>
@@ -26,7 +24,5 @@ namespace MTCG.Models
         {
             ID = (uint)(int)row["ID"];
         }
-
-        
     }
 }
