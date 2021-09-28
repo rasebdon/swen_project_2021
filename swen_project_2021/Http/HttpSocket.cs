@@ -9,7 +9,7 @@ using System.IO;
 
 namespace MTCG.Http
 {
-    public class HttpSocket : Socket
+    class HttpSocket : Socket
     {
         public bool IsListening { get; internal set; }
 

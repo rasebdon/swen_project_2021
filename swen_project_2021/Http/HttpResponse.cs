@@ -1,6 +1,4 @@
-﻿using MTCG.Http;
-
-namespace MTCG
+﻿namespace MTCG.Http
 {
     public enum HttpStatusCode
     {
