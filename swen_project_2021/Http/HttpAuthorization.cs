@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Http
 {
-    class HttpAuthorization
+    public class HttpAuthorization
     {
         public string Type { get; }
         public string Credentials { get; }

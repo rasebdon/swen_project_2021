@@ -74,7 +74,7 @@ namespace MTCG.Http
                 {
                     reading = false;
                 }
-                if (readString.Contains("Authorization"))
+                else if (readString.Contains("Authorization"))
                 {
                     string[] authString = readString.Split(' ');
                     authorization = new(authString[1], authString[2]);

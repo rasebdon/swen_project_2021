@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Http
 {
-    enum HttpMethod
+    public enum HttpMethod
     {
         GET,
         POST,
@@ -16,7 +16,7 @@ namespace MTCG.Http
         PUT
     }
 
-    class HttpRequest
+    public class HttpRequest
     {
         public HttpMethod HttpMethod { get; }
         public string RequestBody { get; }
