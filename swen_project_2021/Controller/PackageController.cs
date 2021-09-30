@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MTCG.Models;
-using MTCG.Http;
+﻿using MTCG.Models;
 using Npgsql;
+using System;
+using System.Collections.Generic;
 
 namespace MTCG.Controller
 {
@@ -16,13 +12,13 @@ namespace MTCG.Controller
     {
         public PackageController() { }
 
-        public bool AddPackage(Package package, HttpAuthorization auth)
+        public bool AddPackage(Package package)
         {
             // Check if auth is related to an admin
-            User user = UserController.Instance.Authenticate(auth);
+            //User user = UserController.Instance.Authenticate(auth);
 
-            if (!user.IsAdmin)
-                return false;
+            //if (!user.IsAdmin)
+            //    return false;
 
             // Insert package data
             string sql = "INSERT INTO packages (id, name, description, cost) VALUES (@id, @name, @description, @cost);";
@@ -43,7 +39,7 @@ namespace MTCG.Controller
                 errn += LinkPackageCard(package.ID, package.Cards[i].ID) ? 0 : 1;
             }
 
-            if(errn != 0)
+            if (errn != 0)
                 throw new Exception("Fatal error linking package with cards!");
 
             return true;
@@ -51,7 +47,7 @@ namespace MTCG.Controller
 
         public bool LinkPackageCard(Guid packageID, Guid cardID)
         {
-            string sql = "INSERT INTO package_cards (packageID, cardID) VALUES (@packageID, @cardID);";
+            string sql = "INSERT INTO package_cards (package_id, card_id) VALUES (@packageID, @cardID);";
             NpgsqlCommand cmd = new(sql);
 
             cmd.Parameters.AddWithValue("packageID", packageID);
@@ -60,7 +56,7 @@ namespace MTCG.Controller
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
-        public Package GetPackage(uint packageId)
+        public Package GetPackage(Guid packageId)
         {
             // Get the package from the table
             string sql = "SELECT * FROM packages WHERE id=@id";
@@ -69,12 +65,22 @@ namespace MTCG.Controller
             var packageRow = Database.Instance.SelectSingle(cmd);
 
             // Get the package cards the table
-            sql = "SELECT * FROM package_cards WHERE packageID=@id";
+            sql = "SELECT * FROM package_cards, cards WHERE package_id=@id AND cards.id=package_cards.card_id";
             cmd = new(sql);
             cmd.Parameters.AddWithValue("id", packageId);
             var packageCardsRows = Database.Instance.Select(cmd);
 
+            if (packageCardsRows == null)
+                throw new NullReferenceException($"There are no cards in the package {packageId}!");
+
             return new Package(packageRow, packageCardsRows);
+        }
+
+        public bool DeletePackage(Package package)
+        {
+            NpgsqlCommand cmd = new("DELETE FROM packages WHERE id=@id;");
+            cmd.Parameters.AddWithValue("id", package.ID);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
         public List<Card> GetCardsWithRarity(List<Card> _cards, Rarity rarity)
@@ -85,7 +91,6 @@ namespace MTCG.Controller
                 return null;
             return correctRarity;
         }
-
         public Card GetRandomCardWithRarity(List<Card> cards, Rarity rarity)
         {
             var c = GetCardsWithRarity(cards, rarity);
@@ -114,30 +119,30 @@ namespace MTCG.Controller
                 {
                     // Roll
                     int roll = new Random().Next(0, 100);
-                    if (roll < 50)
-                    {
-                        card = GetRandomCardInstanceWithRarity(package.Cards, Rarity.Common);
-                    }
-                    else if (roll < 75)
+                    if (roll > 99)
                     {
                         card = GetRandomCardInstanceWithRarity(package.Cards, Rarity.Legendary);
                     }
-                    else if (roll < 90)
+                    else if (roll > 90)
                     {
                         card = GetRandomCardInstanceWithRarity(package.Cards, Rarity.Epic);
                     }
+                    else if (roll > 75)
+                    {
+                        card = GetRandomCardInstanceWithRarity(package.Cards, Rarity.Rare);
+                    }
                     else
                     {
-                        card = GetRandomCardInstanceWithRarity(package.Cards, Rarity.Legendary);
+                        card = GetRandomCardInstanceWithRarity(package.Cards, Rarity.Common);
                     }
                 }
                 drawnCards.Add(card);
             }
 
             // Add drawn cards to database
-            if(!CardController.Instance.InsertCardInstances(drawnCards))
+            if (!CardController.Instance.InsertCardInstances(drawnCards))
             {
-                ServerLog.Print("An error occured while drawing cards! Redrawing...", ServerLog.OutputFormat.Error);
+                ServerLog.WriteLine("An error occured while drawing cards! Redrawing...", ServerLog.OutputFormat.Error);
 
                 // Error occured, delete drawn cards
                 CardController.Instance.DeleteCardInstances(drawnCards);

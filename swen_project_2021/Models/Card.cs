@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
@@ -46,14 +42,14 @@ namespace MTCG.Models
 
         public static Card ParseFromDatabase(OrderedDictionary row)
         {
-            CardType t = Enum.Parse<CardType>(row["type"].ToString());
+            CardType t = (CardType)(int)row["type"];
 
             switch (t)
             {
                 case CardType.Monster:
                     return new MonsterCard(row);
                 case CardType.Spell:
-                    return new MonsterCard(row);
+                    return new SpellCard(row);
                 default:
                     throw new ArgumentException();
             }
@@ -90,6 +86,24 @@ namespace MTCG.Models
             Damage = damage;
             Element = element;
             Rarity = rarity;
+        }
+
+
+        public override bool Equals(object obj)
+        {
+            return obj is Card c &&
+                c.ID == this.ID &&
+                c.Name == this.Name &&
+                c.Description == this.Description &&
+                c.Rarity == this.Rarity &&
+                c.CardType == this.CardType &&
+                c.Damage == this.Damage &&
+                c.Element == this.Element;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ID, Name, Damage, CardType, Element, Rarity, Description);
         }
     }
 }

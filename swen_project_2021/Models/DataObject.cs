@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MTCG.Interfaces;
+using System;
 using System.Collections.Specialized;
+using System.Text.Json;
 
 namespace MTCG.Models
 {
@@ -24,6 +26,16 @@ namespace MTCG.Models
         protected DataObject(OrderedDictionary row)
         {
             ID = Guid.Parse(row["id"].ToString());
+        }
+
+        public string ToJson()
+        {
+            var jsonOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+
+            return JsonSerializer.Serialize(this, this.GetType(), jsonOptions);
         }
     }
 }

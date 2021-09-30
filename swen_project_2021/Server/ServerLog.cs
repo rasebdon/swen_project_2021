@@ -12,37 +12,37 @@ namespace MTCG
             Success
         }
 
-        public static void Print(string msg, OutputFormat format = OutputFormat.Standard)
+        public static void WriteLine(string msg, OutputFormat format = OutputFormat.Standard)
         {
             string tag;
             switch (format)
             {
                 case OutputFormat.Warning:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    System.Console.ForegroundColor = ConsoleColor.Yellow;
                     tag = "[Warning]";
                     break;
                 case OutputFormat.Error:
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    System.Console.ForegroundColor = ConsoleColor.Red;
                     tag = "[Error]";
                     break;
                 case OutputFormat.Success:
-                    Console.ForegroundColor = ConsoleColor.Green;
+                    System.Console.ForegroundColor = ConsoleColor.Green;
                     tag = "[Success]";
                     break;
                 case OutputFormat.Standard:
                 default:
-                    Console.ForegroundColor = ConsoleColor.White;
+                    System.Console.ForegroundColor = ConsoleColor.White;
                     tag = "[Server]";
                     break;
             }
-            Console.WriteLine("[" + GetCurTime() + "]" + tag + " " + msg);
+            System.Console.WriteLine("[" + GetCurTime() + "]" + tag + " " + msg);
             // Reset color
-            Console.ForegroundColor = ConsoleColor.White;
+            System.Console.ForegroundColor = ConsoleColor.White;
         }
 
         public static void Initialize()
         {
-            Console.ForegroundColor = ConsoleColor.White;
+            System.Console.ForegroundColor = ConsoleColor.White;
         }
 
         static string GetCurTime()
@@ -52,10 +52,10 @@ namespace MTCG
 
         static void PrintColor(string v, ConsoleColor c = ConsoleColor.White)
         {
-            ConsoleColor old = Console.ForegroundColor;
-            Console.ForegroundColor = c;
-            Console.Write(v);
-            Console.ForegroundColor = old;
+            ConsoleColor old = System.Console.ForegroundColor;
+            System.Console.ForegroundColor = c;
+            System.Console.Write(v);
+            System.Console.ForegroundColor = old;
         }
     }
 }

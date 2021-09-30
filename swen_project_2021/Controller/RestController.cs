@@ -1,10 +1,10 @@
-﻿using System;
-using MTCG.Controller;
-using System.Text.Json;
+﻿using MTCG.Controller.Exceptions;
 using MTCG.Http;
 using MTCG.Http.Requests;
 using MTCG.Models;
-using MTCG.Controller.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace MTCG.Controller
 {
@@ -15,11 +15,6 @@ namespace MTCG.Controller
             // Get the resource (path)
             string resource = request.Url.LocalPath;
             Console.WriteLine($"Request:\nResource: {resource}\nMethod: {request.HttpMethod}\nBody: {request.RequestBody}");
-
-            var jsonOptions = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
 
             // Prepare paths / resources
             string[] path = resource.Trim('/').Split("/");
@@ -32,7 +27,10 @@ namespace MTCG.Controller
                 switch (path[0])
                 {
                     case "users":
-                        returnData = JsonSerializer.Serialize(UserController.Instance.GetUser(path[1]), typeof(Models.User), jsonOptions);
+                        returnData = UserController.Instance.GetUser(path[1]).ToJson();
+                        return new HttpResponse(returnData, HttpStatusCode.OK, "application/json");
+                    case "packages":
+                        returnData = CreateDummyPackage().ToJson();
                         return new HttpResponse(returnData, HttpStatusCode.OK, "application/json");
                 }
             }
@@ -46,21 +44,21 @@ namespace MTCG.Controller
                         try
                         {
                             // Deserialize body
-                            CredentialsRequestBody registerRequest = JsonSerializer.Deserialize<CredentialsRequestBody>(request.RequestBody);
+                            CredentialsRequestBody registerRequest = CredentialsRequestBody.FromJson(request.RequestBody);
                             // Try to register
                             UserController.Instance.Register(registerRequest.Username, registerRequest.Password);
                             // Answer
-                            returnData = JsonSerializer.Serialize(UserController.Instance.GetUser(registerRequest.Username));
+                            returnData = UserController.Instance.GetUser(registerRequest.Username).ToJson();
                             return new HttpResponse(returnData, HttpStatusCode.Created, "application/json");
                         }
-                        catch(DuplicateEntryException e)
+                        catch (DuplicateEntryException e)
                         {
-                            ServerLog.Print(e.ToString(), ServerLog.OutputFormat.Error);
+                            ServerLog.WriteLine(e.ToString(), ServerLog.OutputFormat.Error);
                             return new HttpResponse(HttpStatusCode.Conflict);
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
-                            ServerLog.Print(e.ToString(), ServerLog.OutputFormat.Error);
+                            ServerLog.WriteLine(e.ToString(), ServerLog.OutputFormat.Error);
                             return new HttpResponse(HttpStatusCode.BadRequest);
                         }
                     // Login
@@ -68,17 +66,17 @@ namespace MTCG.Controller
                         try
                         {
                             // Dezerialize body
-                            CredentialsRequestBody loginRequestBody = JsonSerializer.Deserialize<CredentialsRequestBody>(request.RequestBody);
+                            CredentialsRequestBody loginRequestBody = CredentialsRequestBody.FromJson(request.RequestBody);
                             // Try to login
                             User user = UserController.Instance.Login(loginRequestBody.Username, loginRequestBody.Password);
                             // Return the session key
                             return new HttpResponse($"{{\"SessionToken\": \"{user.SessionToken}\"}}", HttpStatusCode.OK, "application/json");
                         }
-                        catch(InvalidCredentialsException)
+                        catch (InvalidCredentialsException)
                         {
                             return new HttpResponse(HttpStatusCode.Forbidden);
                         }
-                        catch(Exception)
+                        catch (Exception)
                         {
                             return new HttpResponse(HttpStatusCode.BadRequest);
                         }
@@ -87,14 +85,14 @@ namespace MTCG.Controller
                         try
                         {
                             // Check if authorization is admin-token
-                            if (request.Authorization.Credentials != "admin-mtcgToken")
+                            if (request.Authorization != null && request.Authorization.Credentials != "admin-mtcgToken")
                                 return new HttpResponse(HttpStatusCode.Forbidden);
 
+                            Package p = JsonSerializer.Deserialize<Package>(request.RequestBody);
 
-
-                            throw new NotImplementedException();
+                            return new HttpResponse(p.ToJson(), HttpStatusCode.Created, "application/json");
                         }
-                        catch(Exception)
+                        catch (Exception)
                         {
                             return new HttpResponse(HttpStatusCode.NotFound);
                         }
@@ -102,6 +100,52 @@ namespace MTCG.Controller
             }
 
             return new HttpResponse(HttpStatusCode.NotFound);
+        }
+
+        public static Package CreateDummyPackage()
+        {
+            List<Card> cards = new();
+            // Add some cards
+            cards.Add(
+                new SpellCard(
+                    "Flame Lance",
+                    "A fiery lance that not many mages are able to cast",
+                    5,
+                    Element.Fire,
+                    Rarity.Rare));
+            cards.Add(
+                new MonsterCard(
+                    "Lazy Peon",
+                    "No work...",
+                    3,
+                    Element.Normal,
+                    Rarity.Common,
+                    Race.Orc));
+            cards.Add(
+                new MonsterCard(
+                    "Deathwing",
+                    "All shall burn, beneath the shadow of my wings",
+                    15,
+                    Element.Fire,
+                    Rarity.Legendary,
+                    Race.Draconid));
+            cards.Add(
+                new MonsterCard(
+                    "Elven Hunter",
+                    "Is there something to hunt?",
+                    4,
+                    Element.Fire,
+                    Rarity.Common,
+                    Race.Elf));
+            cards.Add(
+                new SpellCard(
+                    "Firestorm",
+                    "Fire everything!",
+                    10,
+                    Element.Fire,
+                    Rarity.Epic));
+
+            return new Package("Dummy Package", "This is a dummy package", 5, cards);
         }
     }
 }

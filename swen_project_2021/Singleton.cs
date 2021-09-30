@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTCG
 {
@@ -19,7 +15,7 @@ namespace MTCG
             }
             set
             {
-                if(value != null)
+                if (value != null)
                     _instance = value;
             }
         }

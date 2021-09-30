@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MTCG.Interfaces;
 
 namespace MTCG.Http.Requests
 {
-    [System.Serializable]
-    class CredentialsRequestBody
+    class CredentialsRequestBody : JsonRequestBody<CredentialsRequestBody>
     {
         public string Username { get; }
         public string Password { get; }

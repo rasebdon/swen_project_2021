@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
@@ -21,7 +17,7 @@ namespace MTCG.Models
 
         public CardInstance(OrderedDictionary row) : base(row)
         {
-            CardID = Guid.Parse(row["cardID"].ToString());
+            CardID = Guid.Parse(row["card_id"].ToString());
         }
 
         /// <summary>

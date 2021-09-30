@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using System.IO;
 
 namespace MTCG.Http
 {
@@ -116,6 +113,7 @@ namespace MTCG.Http
                 responseMessage += $"Date: {DateTime.Now:R}\r\n";
                 responseMessage += $"Server: MTCG-Webserver/0.9.15\r\n";
                 // Write content
+                responseMessage += $"Connection: close\r\n";
                 responseMessage += $"Content-Type: {response.ContentType}\r\n";
                 responseMessage += $"Content-Length: {response.ResponseBody.Length}\r\n";
                 responseMessage += $"\r\n";
@@ -123,7 +121,7 @@ namespace MTCG.Http
                 // Encode and send
                 request.Requester.Send(Encoding.UTF8.GetBytes(responseMessage));
                 request.Requester.Close();
-                Console.WriteLine($"Response sent:\n{responseMessage}");
+                System.Console.WriteLine($"Response sent:\n{responseMessage}");
             }
         }
     }

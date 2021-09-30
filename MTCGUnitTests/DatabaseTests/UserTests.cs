@@ -16,9 +16,6 @@ namespace MTCGUnitTests.DatabaseTests
         [TestMethod]
         public void RegisterAndLoginUser()
         {
-            Database.Instance = new("localhost", "mtcg", "mtcgadmin", "p1s2w3r4");
-            Database.Instance.OpenConnection();
-
             UserController.Instance.Register("dummy", "1234");
             User user = UserController.Instance.Login("dummy", "1234");
 
