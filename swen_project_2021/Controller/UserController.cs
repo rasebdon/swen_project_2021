@@ -1,6 +1,5 @@
 ﻿using CryptSharp;
 using MTCG.Controller.Exceptions;
-using MTCG.Database;
 using MTCG.Models;
 using Npgsql;
 using System;
@@ -12,11 +11,11 @@ using MTCG.Http;
 
 namespace MTCG.Controller
 {
-    class UserController : Singleton<UserController>
+    public class UserController : Singleton<UserController>
     {
-        private readonly List<User> LoggedInUsers;
+        public readonly List<User> LoggedInUsers;
 
-        UserController()
+        public UserController()
         {
             LoggedInUsers = new();
         }
@@ -44,29 +43,36 @@ namespace MTCG.Controller
                 $"SELECT username FROM users WHERE LOWER(username)=@username;");
             cmd.Parameters.AddWithValue("username", username.ToLower());
 
-            if (Server.Instance.Database.SelectSingle(cmd) != null)
+            if (Database.Instance.SelectSingle(cmd) != null)
                 throw new DuplicateEntryException(username);
 
             User user = new(username, 20, 1000);
 
             /// Create password hash and insert
             string hash = Crypter.Blowfish.Crypt(password);
-            string sql = $"INSERT INTO users (ID, username, hash, coins, elo) VALUES (@id, @username, @hash, @coins, @elo);";
+            string sql = $"INSERT INTO users (id, username, hash, coins, elo, admin) VALUES (@id, @username, @hash, @coins, @elo, false);";
             cmd = new NpgsqlCommand(sql);
             cmd.Parameters.AddWithValue("id", user.ID);
             cmd.Parameters.AddWithValue("username", username);
             cmd.Parameters.AddWithValue("hash", hash);
-            cmd.Parameters.AddWithValue("coins", user.Coins);
-            cmd.Parameters.AddWithValue("elo", user.ELO);
+            cmd.Parameters.AddWithValue("coins", (int)user.Coins);
+            cmd.Parameters.AddWithValue("elo", (int)user.ELO);
 
             // Check if user was successfully created
-            if (Server.Instance.Database.ExecuteNonQuery(cmd) != 1)
+            if (Database.Instance.ExecuteNonQuery(cmd) != 1)
             {
                 throw new DatabaseInsertException(sql);
             }
 
             // Return the inserted user object
             return user;
+        }
+
+        public bool DeleteUser(Guid id)
+        {
+            NpgsqlCommand cmd = new("DELETE FROM users WHERE id=@id;");
+            cmd.Parameters.AddWithValue("id", id);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
         /// <summary>
@@ -107,7 +113,7 @@ namespace MTCG.Controller
         /// </summary>
         /// <param name="username">The username of the user</param>
         /// <returns>User object on success or null on failure</returns>
-        public static User GetUser(string username)
+        public User GetUser(string username)
         {
             // Create safe query
             var sql = "SELECT * FROM users WHERE username = @username";
@@ -116,7 +122,7 @@ namespace MTCG.Controller
             cmd.Parameters.AddWithValue("username", username);
 
             // Communicate with database
-            OrderedDictionary row = Server.Instance.Database.SelectSingle(cmd);
+            OrderedDictionary row = Database.Instance.SelectSingle(cmd);
 
             // Check if user exists
             if (row == null)
@@ -131,7 +137,7 @@ namespace MTCG.Controller
         /// </summary>
         /// <param name="id">The ID of the user</param>
         /// <returns>User object on success or null on failure</returns>
-        public static User GetUser(Guid id)
+        public User GetUser(Guid id)
         {
             // Create safe query
             var sql = "SELECT * FROM users WHERE id = @id";
@@ -140,7 +146,7 @@ namespace MTCG.Controller
             cmd.Parameters.AddWithValue("id", id);
 
             // Communicate with database
-            OrderedDictionary row = Server.Instance.Database.SelectSingle(cmd);
+            OrderedDictionary row = Database.Instance.SelectSingle(cmd);
 
             // Check if user exists
             if (row == null)
@@ -164,7 +170,7 @@ namespace MTCG.Controller
             cmd.Parameters.AddWithValue("username", username);
 
             // Execute and process result
-            return ParseHash(Server.Instance.Database.SelectSingle(cmd));
+            return ParseHash(Database.Instance.SelectSingle(cmd));
         }
 
         public string GetUserHash(Guid id)
@@ -175,7 +181,7 @@ namespace MTCG.Controller
             cmd.Parameters.AddWithValue("id", id);
 
             // Execute and process result
-            return ParseHash(Server.Instance.Database.SelectSingle(cmd));
+            return ParseHash(Database.Instance.SelectSingle(cmd));
         }
 
         /// <summary>
@@ -253,7 +259,7 @@ namespace MTCG.Controller
             NpgsqlCommand cmd = new(sql);
             cmd.Parameters.AddWithValue("userID", user.ID);
             cmd.Parameters.AddWithValue("cardInstanceID", card.ID);
-            return Server.Instance.Database.ExecuteNonQuery(cmd) == 1;
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
         /// <summary>

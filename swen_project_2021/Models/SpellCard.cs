@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
-    class SpellCard : Card
+    public class SpellCard : Card
     {
         public SpellCard(OrderedDictionary row) : base(row)
         {

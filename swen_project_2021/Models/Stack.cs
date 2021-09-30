@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MTCG.Models
 {
-    class Stack : DataObject
+    public class Stack : DataObject
     {
         public User User { get; private set; }
         public List<Card> Cards { get; private set; }

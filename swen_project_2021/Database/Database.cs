@@ -1,14 +1,16 @@
-﻿using Npgsql;
+﻿using MTCG.Controller.Exceptions;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Runtime.Serialization;
 
-namespace MTCG.Database
+namespace MTCG.Controller
 {
     /// <summary>
     /// Singleton class for managing the general database communication
     /// </summary>
-    class Database
+    public class Database : Singleton<Database>
     {
         private NpgsqlConnection Connection { get; }
 

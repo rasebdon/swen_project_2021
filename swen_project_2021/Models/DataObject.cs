@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 
 namespace MTCG.Models
 {
-    abstract class DataObject
+    public abstract class DataObject
     {
         /// <summary>
         /// The unique object id
@@ -23,7 +23,7 @@ namespace MTCG.Models
         /// <param name="row">The retrieved sql row</param>
         protected DataObject(OrderedDictionary row)
         {
-            ID = Guid.Parse(row["ID"].ToString());
+            ID = Guid.Parse(row["id"].ToString());
         }
     }
 }

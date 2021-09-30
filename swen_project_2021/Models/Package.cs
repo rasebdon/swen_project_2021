@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
-    class Package : DataObject
+    public class Package : DataObject
     {
         public const ushort DrawnCardsAmount = 5;
 

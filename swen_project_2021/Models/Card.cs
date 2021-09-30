@@ -33,7 +33,7 @@ namespace MTCG.Models
     /// and fight with. It splits into multiple subcategories like the MonsterCard
     /// or the SpellCard
     /// </summary>
-    abstract class Card : DataObject
+    public abstract class Card : DataObject
     {
         /// <summary>
         /// The unique name of the card

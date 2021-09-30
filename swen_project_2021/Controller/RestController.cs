@@ -4,10 +4,11 @@ using System.Text.Json;
 using MTCG.Http;
 using MTCG.Http.Requests;
 using MTCG.Models;
+using MTCG.Controller.Exceptions;
 
-namespace MTCG
+namespace MTCG.Controller
 {
-    class RestController : Singleton<RestController>
+    public class RestController : Singleton<RestController>
     {
         public HttpResponse GetResponse(HttpRequest request)
         {
@@ -31,7 +32,7 @@ namespace MTCG
                 switch (path[0])
                 {
                     case "users":
-                        returnData = JsonSerializer.Serialize(UserController.GetUser(path[1]), typeof(Models.User), jsonOptions);
+                        returnData = JsonSerializer.Serialize(UserController.Instance.GetUser(path[1]), typeof(Models.User), jsonOptions);
                         return new HttpResponse(returnData, HttpStatusCode.OK, "application/json");
                 }
             }
@@ -49,15 +50,17 @@ namespace MTCG
                             // Try to register
                             UserController.Instance.Register(registerRequest.Username, registerRequest.Password);
                             // Answer
-                            returnData = JsonSerializer.Serialize(UserController.GetUser(registerRequest.Username));
+                            returnData = JsonSerializer.Serialize(UserController.Instance.GetUser(registerRequest.Username));
                             return new HttpResponse(returnData, HttpStatusCode.Created, "application/json");
                         }
-                        catch(Database.DuplicateEntryException)
+                        catch(DuplicateEntryException e)
                         {
+                            ServerLog.Print(e.ToString(), ServerLog.OutputFormat.Error);
                             return new HttpResponse(HttpStatusCode.Conflict);
                         }
-                        catch(Exception)
+                        catch(Exception e)
                         {
+                            ServerLog.Print(e.ToString(), ServerLog.OutputFormat.Error);
                             return new HttpResponse(HttpStatusCode.BadRequest);
                         }
                     // Login
@@ -71,7 +74,7 @@ namespace MTCG
                             // Return the session key
                             return new HttpResponse($"{{\"SessionToken\": \"{user.SessionToken}\"}}", HttpStatusCode.OK, "application/json");
                         }
-                        catch(Database.InvalidCredentialsException)
+                        catch(InvalidCredentialsException)
                         {
                             return new HttpResponse(HttpStatusCode.Forbidden);
                         }

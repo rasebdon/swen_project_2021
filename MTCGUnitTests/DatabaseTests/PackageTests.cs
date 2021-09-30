@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCG.Controller
+namespace MTCGUnitTests.DatabaseTests
 {
-    public class TradeController : Singleton<TradeController>
+    class PackageTests
     {
-
     }
 }

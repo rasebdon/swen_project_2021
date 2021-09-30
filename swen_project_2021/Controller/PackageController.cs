@@ -12,8 +12,9 @@ namespace MTCG.Controller
     /// <summary>
     /// This controller manages the package related functions
     /// </summary>
-    class PackageController : Singleton<PackageController>
+    public class PackageController : Singleton<PackageController>
     {
+        public PackageController() { }
 
         public bool AddPackage(Package package, HttpAuthorization auth)
         {
@@ -24,14 +25,14 @@ namespace MTCG.Controller
                 return false;
 
             // Insert package data
-            string sql = "INSERT INTO packages (ID, name, description, cost) VALUES (@ID, @name, @description, @cost);";
+            string sql = "INSERT INTO packages (id, name, description, cost) VALUES (@id, @name, @description, @cost);";
             NpgsqlCommand cmd = new(sql);
-            cmd.Parameters.AddWithValue("ID", package.ID);
+            cmd.Parameters.AddWithValue("id", package.ID);
             cmd.Parameters.AddWithValue("name", package.Name);
             cmd.Parameters.AddWithValue("description", package.Description);
-            cmd.Parameters.AddWithValue("cost", package.Cost);
+            cmd.Parameters.AddWithValue("cost", (int)package.Cost);
 
-            bool error = Server.Instance.Database.ExecuteNonQuery(cmd) != 1;
+            bool error = Database.Instance.ExecuteNonQuery(cmd) != 1;
             if (error)
                 throw new Exception("Fatal error inserting package!");
 
@@ -53,25 +54,25 @@ namespace MTCG.Controller
             string sql = "INSERT INTO package_cards (packageID, cardID) VALUES (@packageID, @cardID);";
             NpgsqlCommand cmd = new(sql);
 
-            cmd.Parameters.AddWithValue("packageID", packageID.ToString());
-            cmd.Parameters.AddWithValue("cardID", cardID.ToString());
+            cmd.Parameters.AddWithValue("packageID", packageID);
+            cmd.Parameters.AddWithValue("cardID", cardID);
 
-            return Server.Instance.Database.ExecuteNonQuery(cmd) == 1;
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
         public Package GetPackage(uint packageId)
         {
             // Get the package from the table
-            string sql = "SELECT * FROM packages WHERE ID=@ID";
+            string sql = "SELECT * FROM packages WHERE id=@id";
             NpgsqlCommand cmd = new(sql);
-            cmd.Parameters.AddWithValue("ID", packageId);
-            var packageRow = Server.Instance.Database.SelectSingle(cmd);
+            cmd.Parameters.AddWithValue("id", packageId);
+            var packageRow = Database.Instance.SelectSingle(cmd);
 
             // Get the package cards the table
-            sql = "SELECT * FROM package_cards WHERE packageID=@ID";
+            sql = "SELECT * FROM package_cards WHERE packageID=@id";
             cmd = new(sql);
-            cmd.Parameters.AddWithValue("ID", packageId);
-            var packageCardsRows = Server.Instance.Database.Select(cmd);
+            cmd.Parameters.AddWithValue("id", packageId);
+            var packageCardsRows = Database.Instance.Select(cmd);
 
             return new Package(packageRow, packageCardsRows);
         }

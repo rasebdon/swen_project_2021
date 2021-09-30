@@ -12,7 +12,7 @@ namespace MTCG.Models
     /// <br></br>
     /// Has a unique id
     /// </summary>
-    class CardInstance : DataObject
+    public class CardInstance : DataObject
     {
         /// <summary>
         /// The id of the card that this card is the instance of

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MTCG.Database
+namespace MTCG.Controller.Exceptions
 {
     class DatabaseException : Exception
     {

@@ -4,22 +4,23 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using MTCG.Http;
+using MTCG.Controller;
 
 namespace MTCG
 {
-    class Server : Singleton<Server>
+    public class Server : Singleton<Server>
     {
-        public Database.Database Database { get; }
-
         public HttpClient HttpClient { get; }
 
         // Listener tasks
         private List<Task> ListeningTasks { get; set; }
         private readonly int _port;
-        private const ushort LISTENER_TASKS_AMOUNT = 20;
 
         public Server(string ip, int port)
         {
+            // Configure the output channel
+            ServerLog.Initialize();
+
             _port = port;
 
             // Set singleton
@@ -29,16 +30,20 @@ namespace MTCG
             HttpClient = new(port);
 
             // Initialize database connection
-            this.Database = new("localhost", "mtcg", "mtcgadmin", "p1s2w3r4");
+            Database.Instance = new("localhost", "mtcg", "mtcgadmin", "p1s2w3r4");
         }
+        /// <summary>
+        /// Standard server on port 80
+        /// </summary>
+        public Server() : this("127.0.0.1", 80) { }
 
-        public void Start()
+        public void Start(int threads = 0)
         {
             ServerLog.Print("Starting server...");
 
             try
             {
-                Database.OpenConnection();
+                Database.Instance.OpenConnection();
             }
             catch(Exception ex)
             {
@@ -51,11 +56,9 @@ namespace MTCG
             // Start HTTP server
             try
             {
-                // HttpClient.Start();
-                
                 // Start listening tasks
                 ListeningTasks = new();
-                for (int i = 0; i < LISTENER_TASKS_AMOUNT - 1; i++)
+                for (int i = 0; i < threads - 1; i++)
                 {
                     int taskId = i;
                     var t = Task.Run(() => Listen(taskId));
@@ -77,9 +80,9 @@ namespace MTCG
         private void ListenLast()
         {
             ServerLog.Print("HTTP server started successfully!", ServerLog.OutputFormat.Success);
-            ServerLog.Print($"HTTP server now listening on port {_port} with {LISTENER_TASKS_AMOUNT} listeners!");
+            ServerLog.Print($"HTTP server now listening on port {_port} with {ListeningTasks.Count + 1} listeners!");
 
-            Listen(LISTENER_TASKS_AMOUNT - 1);
+            Listen(ListeningTasks.Count);
         }
 
         private void Listen(int taskId)
@@ -104,7 +107,7 @@ namespace MTCG
                 {
                     ServerLog.Print("Empty request recieved! Continuing to the next request",
                         ServerLog.OutputFormat.Warning);
-                    HttpClient.SendHttpResponse(new HttpResponse("", HttpStatusCode.NotFound, ""), request);
+                    HttpClient.SendHttpResponse(new HttpResponse(HttpStatusCode.NotFound), request);
                     continue;
                 }
                 // Get the response
@@ -118,6 +121,7 @@ namespace MTCG
                     ServerLog.Print("There was an error processing the http request:",
                         ServerLog.OutputFormat.Error);
                     ServerLog.Print(ex.ToString(), ServerLog.OutputFormat.Error);
+                    HttpClient.SendHttpResponse(new HttpResponse(HttpStatusCode.BadRequest), request);
                     continue;
                 }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MTCG
 {
-    abstract class Singleton<T>
+    public abstract class Singleton<T>
     {
         static T _instance;
         public static T Instance
