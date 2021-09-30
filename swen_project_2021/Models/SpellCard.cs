@@ -8,7 +8,7 @@ namespace MTCG.Models
 {
     class SpellCard : Card
     {
-        public SpellCard(uint id, string name, int damage) : base(id, name, damage, CardType.Spell)
+        public SpellCard(uint id, string name, int damage, Element element, Rarity rarity) : base(id, name, damage, CardType.Spell, element, rarity)
         {
 
         }

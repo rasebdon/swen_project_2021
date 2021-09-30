@@ -19,7 +19,7 @@ namespace HttpTests
             SendGetRequest(requestUrl);
 
             // Recieve data
-            HttpRequest request = server.GetRequest();
+            HttpRequest request = server.GetHttpRequest();
 
             Assert.AreEqual(requestUrl, request.Url.AbsoluteUri);
 
@@ -48,7 +48,7 @@ namespace HttpTests
             SendPostRequest("http://127.0.0.1/somedata", clientData);
 
             // Recieve data
-            HttpRequest request = server.GetRequest();
+            HttpRequest request = server.GetHttpRequest();
             SomeData serverData = SomeData.Deserialize(request.RequestBody);
 
             // Send response
@@ -94,10 +94,10 @@ namespace HttpTests
             HttpClient server = new(80);            
             
             // Recieve data
-            HttpRequest request = server.GetRequest();
+            HttpRequest request = server.GetHttpRequest();
 
             // Send response and close the server
-            server.SendResponse(new HttpResponse(actualData.Serialize(), HttpStatusCode.Created, "application/json"), request);
+            server.SendHttpResponse(new HttpResponse(actualData.Serialize(), HttpStatusCode.Created, "application/json"), request);
             server.Close();
         }
     }

@@ -11,7 +11,7 @@ namespace MTCG
     {
         public Database.Database Database { get; }
 
-        public HttpSocket HttpSocket { get; }
+        public HttpClient HttpClient { get; }
 
         // Listener tasks
         private List<Task> ListeningTasks { get; set; }
@@ -26,7 +26,7 @@ namespace MTCG
             Instance = this;
 
             // Setup http server
-            HttpSocket = new(port);
+            HttpClient = new(port);
 
             // Initialize database connection
             this.Database = new("localhost", "mtcg", "mtcgadmin", "p1s2w3r4");
@@ -51,7 +51,7 @@ namespace MTCG
             // Start HTTP server
             try
             {
-                HttpSocket.Start();
+                // HttpClient.Start();
                 
                 // Start listening tasks
                 ListeningTasks = new();
@@ -84,10 +84,10 @@ namespace MTCG
 
         private void Listen(int taskId)
         {
-            while (HttpSocket.IsListening)
+            while (HttpClient.IsListening)
             {
                 // Recieve data
-                HttpRequest request = HttpSocket.GetRequest();
+                HttpRequest request = HttpClient.GetHttpRequest();
 
                 ServerLog.Print($"Listener {taskId} recieved an http request!");
 
@@ -104,7 +104,7 @@ namespace MTCG
                 {
                     ServerLog.Print("Empty request recieved! Continuing to the next request",
                         ServerLog.OutputFormat.Warning);
-                    HttpSocket.Send(new HttpResponse("", HttpStatusCode.NotFound, ""), request);
+                    HttpClient.SendHttpResponse(new HttpResponse("", HttpStatusCode.NotFound, ""), request);
                     continue;
                 }
                 // Get the response
@@ -121,7 +121,7 @@ namespace MTCG
                     continue;
                 }
 
-                HttpSocket.Send(response, request);
+                HttpClient.SendHttpResponse(response, request);
             }
         }
     }

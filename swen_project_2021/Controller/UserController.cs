@@ -8,14 +8,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
+using MTCG.Http;
 
 namespace MTCG.Controller
 {
     class UserController : Singleton<UserController>
     {
-        public List<User> LoggedInUsers { get; }
+        private readonly List<User> LoggedInUsers;
 
-        public UserController()
+        UserController()
         {
             LoggedInUsers = new();
         }
@@ -80,7 +81,6 @@ namespace MTCG.Controller
             if (user == null)
                 throw new InvalidCredentialsException(username);
 
-            // Check if user is already logged in
             if (LoggedInUsers.Contains(user))
                 throw new AlreadyLoggedInException(user);
 
@@ -88,7 +88,7 @@ namespace MTCG.Controller
             if (!authenticated)
                 throw new InvalidCredentialsException(username);
 
-            // Add user to logged in users
+            // Add user to the session
             LoggedInUsers.Add(user);
 
             // Generate auth token
@@ -181,10 +181,9 @@ namespace MTCG.Controller
         /// and an empty string if it was not</returns>
         private string ParseHash(OrderedDictionary row)
         {
-            if (row == null) return "";
+            if (row == null) throw new NullReferenceException("The given row was null");
             return row["hash"].ToString();
         }
-
 
         /// <summary>
         /// Gets the card stack of the given user
@@ -197,7 +196,7 @@ namespace MTCG.Controller
 
             var stack = new Dictionary<Card, int>
             {
-                { new SpellCard(1, "WaterGoblin", 23), 5 }
+                { new SpellCard(1, "WaterGoblin", 23, Element.Fire, Rarity.Common), 5 }
             };
             return stack;
         }
@@ -205,12 +204,43 @@ namespace MTCG.Controller
         /// <summary>
         /// Buy command for the user for buying a card package
         /// </summary>
-        /// <param name="user">The user who buys the package</param>
-        public static void BuyPackage(User user)
+        /// <param name="auth"></param>
+        /// <param name="user"></param>
+        /// <param name="package"></param>
+        /// <returns>If the package buy action was successful</returns>
+        public bool BuyPackage(HttpAuthorization auth, uint packageId)
         {
-            const int cost = 5;
-            const int cards = 5;
+            // Check authorisazion
+            User user = Authenticate(auth);
 
+            if (user == null)
+                return false;
+
+            if (user.Coins < 5)
+                return false;
+
+            // Get package
+            Package package = PackageController.Instance.GetPackage(packageId);
+            user.Coins -= package.Cost;
+
+            // Add cards to user
+            // Create card instances
+        }
+
+        /// <summary>
+        /// Returns the user by its auth token
+        /// </summary>
+        /// <param name="auth">The given auth token of the user</param>
+        /// <returns>The user related to the auth token / null if no user was found</returns>
+        public User Authenticate(HttpAuthorization auth)
+        {
+            // Get user by auth token
+            User user = LoggedInUsers.Find(u => u.SessionToken == auth.Credentials);
+            return user;
+        }
+
+        internal void IsAdmin(HttpAuthorization auth)
+        {
             throw new NotImplementedException();
         }
     }

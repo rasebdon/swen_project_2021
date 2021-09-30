@@ -7,10 +7,25 @@ using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
-    enum CardType
+    public enum CardType
     {
         Monster,
         Spell
+    }
+
+    public enum Element
+    {
+        Normal,
+        Fire,
+        Water
+    }
+
+    public enum Rarity
+    {
+        Common,
+        Rare,
+        Epic,
+        Legendary
     }
 
     /// <summary>
@@ -33,18 +48,28 @@ namespace MTCG.Models
         /// the derived constructors
         /// </summary>
         public CardType CardType { get; }
+        /// <summary>
+        /// The element of the card
+        /// </summary>
+        public Element Element { get; }
+
+        public Rarity Rarity { get; }
 
         protected Card(OrderedDictionary row) : base(row)
         {
             CardType = Enum.Parse<CardType>(row["type"].ToString());
+            Element = Enum.Parse<Element>(row["element"].ToString());
             Name = row["name"].ToString();
             Damage = (int)row["damage"];
+            Rarity = Enum.Parse<Rarity>(row["rarity"].ToString());
         }
-        protected Card(uint id, string name, int damage, CardType cardType) : base(id)
+        protected Card(uint id, string name, int damage, CardType cardType, Element element, Rarity rarity) : base(id)
         {
             CardType = cardType;
             Name = name;
             Damage = damage;
+            Element = element;
+            Rarity = rarity;
         }
     }
 }

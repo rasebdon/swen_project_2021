@@ -69,14 +69,7 @@
       <FileName>Http\HttpRequest.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MTCG.Http.HttpSocket" Collapsed="true">
-    <Position X="13.5" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAQAAAAgACAAAAgAAEAAAACAAAAAAACAAAAAAAAAAAA=</HashCode>
-      <FileName>Http\HttpSocket.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="MTCG.HttpResponse" Collapsed="true">
+  <Class Name="MTCG.Http.HttpResponse" Collapsed="true">
     <Position X="15.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAQAAAAAAA=</HashCode>
@@ -149,7 +142,7 @@
   <Class Name="MTCG.Controller.UserController" Collapsed="true">
     <Position X="10.25" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAgAAAAAAAAIAAAIAAAABAAAAEAAQAAAAIAg=</HashCode>
+      <HashCode>AAAAAAAAAgAAAAAAAAIAAAIACAABAAAAEAAQAAAAIAA=</HashCode>
       <FileName>Controller\UserController.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -170,7 +163,7 @@
   <Class Name="MTCG.Server" Collapsed="true">
     <Position X="6.75" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAACCGAAAFgAAAAAAAAAAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAACGAAAFgAAQAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Server.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -195,6 +188,13 @@
       <FileName>Models\Deck.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="MTCG.Http.HttpClient" Collapsed="true">
+    <Position X="13.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAgAAABAAAAAAAAAAAAAAAAAAAAAQACAAAA=</HashCode>
+      <FileName>Http\HttpClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Enum Name="MTCG.Models.CardType" Collapsed="true">
     <Position X="9" Y="3.75" Width="1.5" />
     <TypeIdentifier>
@@ -209,7 +209,7 @@
       <FileName>Http\HttpRequest.cs</FileName>
     </TypeIdentifier>
   </Enum>
-  <Enum Name="MTCG.HttpStatusCode" Collapsed="true">
+  <Enum Name="MTCG.Http.HttpStatusCode" Collapsed="true">
     <Position X="13.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>CAEAAAAAAAAAAAAgAAAAAAAAAAEAAAQAAAABAAAAAAA=</HashCode>

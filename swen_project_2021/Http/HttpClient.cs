@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Http
 {
-    public class HttpClient
+    public partial class HttpClient
     {
         public bool IsListening { get { return _socket != null && _socket.IsListening; } }
 
@@ -15,18 +15,18 @@ namespace MTCG.Http
         public HttpClient(int port, bool https = false)
         {
             _socket = new HttpSocket(port, https);
-            _socket.Start();
+            _socket.StartListening();
         }
 
         /// <summary>
         /// Waits for an http request and returns the formatted request
         /// </summary>
         /// <returns>The recieved http request</returns>
-        public HttpRequest GetRequest()
+        public HttpRequest GetHttpRequest()
         {
             return _socket.GetRequest();
         }
-        public void SendResponse(HttpResponse response, HttpRequest request)
+        public void SendHttpResponse(HttpResponse response, HttpRequest request)
         {
             _socket.Send(response, request);
         }
