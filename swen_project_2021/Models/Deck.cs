@@ -10,7 +10,7 @@ namespace MTCG.Models
     {
         public List<Card> Cards { get; private set; }
 
-        public Deck(uint id, List<Card> cards) : base(id)
+        public Deck(List<Card> cards) : base()
         {
             Cards = cards;
         }

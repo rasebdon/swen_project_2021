@@ -11,7 +11,7 @@ namespace MTCG.Models
         public User User { get; private set; }
         public List<Card> Cards { get; private set; }
 
-        public Stack(uint id, List<Card> cards, User user) : base(id)
+        public Stack(List<Card> cards, User user) : base()
         {
             Cards = cards;
             User = user;

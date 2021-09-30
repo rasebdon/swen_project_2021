@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 
 namespace MTCG.Models
 {
@@ -7,14 +8,14 @@ namespace MTCG.Models
         /// <summary>
         /// The unique object id
         /// </summary>
-        public uint ID { get; }
+        public Guid ID { get; }
         /// <summary>
         /// Base constructor for DataObjects
         /// </summary>
         /// <param name="id"></param>
-        protected DataObject(uint id)
+        protected DataObject()
         {
-            ID = id;
+            ID = Guid.NewGuid();
         }
         /// <summary>
         /// Parse constructor for DataObjects
@@ -22,7 +23,7 @@ namespace MTCG.Models
         /// <param name="row">The retrieved sql row</param>
         protected DataObject(OrderedDictionary row)
         {
-            ID = (uint)(int)row["ID"];
+            ID = Guid.Parse(row["ID"].ToString());
         }
     }
 }

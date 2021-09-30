@@ -43,6 +43,22 @@ namespace MTCG.Models
         /// The damage of the card
         /// </summary>
         public int Damage { get; }
+
+        public static Card ParseFromDatabase(OrderedDictionary row)
+        {
+            CardType t = Enum.Parse<CardType>(row["type"].ToString());
+
+            switch (t)
+            {
+                case CardType.Monster:
+                    return new MonsterCard(row);
+                case CardType.Spell:
+                    return new MonsterCard(row);
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
         /// <summary>
         /// The type of the card should be set in 
         /// the derived constructors
@@ -55,18 +71,22 @@ namespace MTCG.Models
 
         public Rarity Rarity { get; }
 
+        public string Description { get; }
+
         protected Card(OrderedDictionary row) : base(row)
         {
-            CardType = Enum.Parse<CardType>(row["type"].ToString());
-            Element = Enum.Parse<Element>(row["element"].ToString());
             Name = row["name"].ToString();
+            Description = row["description"].ToString();
+            CardType = (CardType)(int)row["type"];
             Damage = (int)row["damage"];
-            Rarity = Enum.Parse<Rarity>(row["rarity"].ToString());
+            Element = (Element)(int)row["element"];
+            Rarity = (Rarity)(int)row["rarity"];
         }
-        protected Card(uint id, string name, int damage, CardType cardType, Element element, Rarity rarity) : base(id)
+        protected Card(string name, string description, int damage, CardType cardType, Element element, Rarity rarity) : base()
         {
             CardType = cardType;
             Name = name;
+            Description = description;
             Damage = damage;
             Element = element;
             Rarity = rarity;

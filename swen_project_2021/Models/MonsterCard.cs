@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,9 +9,15 @@ namespace MTCG.Models
 {
     class MonsterCard : Card
     {
-        public MonsterCard(uint id, string name, int damage, Element element, Rarity rarity) : base(id, name, damage, CardType.Monster, element, rarity)
+        public MonsterCard(OrderedDictionary row) : base(row)
+        {
+        }
+
+        public MonsterCard(string name, string description, int damage, Element element, Rarity rarity) : base(name, description, damage, CardType.Monster, element, rarity)
         {
 
         }
+
+        
     }
 }

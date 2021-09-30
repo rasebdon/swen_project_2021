@@ -47,12 +47,17 @@ namespace MTCG.Controller
             if (Server.Instance.Database.SelectSingle(cmd) != null)
                 throw new DuplicateEntryException(username);
 
+            User user = new(username, 20, 1000);
+
             /// Create password hash and insert
             string hash = Crypter.Blowfish.Crypt(password);
-            string sql = $"INSERT INTO users (username, hash) VALUES (@username, @hash);";
+            string sql = $"INSERT INTO users (ID, username, hash, coins, elo) VALUES (@id, @username, @hash, @coins, @elo);";
             cmd = new NpgsqlCommand(sql);
+            cmd.Parameters.AddWithValue("id", user.ID);
             cmd.Parameters.AddWithValue("username", username);
             cmd.Parameters.AddWithValue("hash", hash);
+            cmd.Parameters.AddWithValue("coins", user.Coins);
+            cmd.Parameters.AddWithValue("elo", user.ELO);
 
             // Check if user was successfully created
             if (Server.Instance.Database.ExecuteNonQuery(cmd) != 1)
@@ -61,7 +66,7 @@ namespace MTCG.Controller
             }
 
             // Return the inserted user object
-            return UserController.GetUser(username);
+            return user;
         }
 
         /// <summary>
@@ -126,7 +131,7 @@ namespace MTCG.Controller
         /// </summary>
         /// <param name="id">The ID of the user</param>
         /// <returns>User object on success or null on failure</returns>
-        public static User GetUser(int id)
+        public static User GetUser(Guid id)
         {
             // Create safe query
             var sql = "SELECT * FROM users WHERE id = @id";
@@ -162,7 +167,7 @@ namespace MTCG.Controller
             return ParseHash(Server.Instance.Database.SelectSingle(cmd));
         }
 
-        public string GetUserHash(int id)
+        public string GetUserHash(Guid id)
         {
             // Prepare sql
             var sql = "SELECT hash FROM users WHERE id=@id";
@@ -196,7 +201,7 @@ namespace MTCG.Controller
 
             var stack = new Dictionary<Card, int>
             {
-                { new SpellCard(1, "WaterGoblin", 23, Element.Fire, Rarity.Common), 5 }
+                { new SpellCard("WaterGoblin", "A water goblin", 23, Element.Fire, Rarity.Common), 5 }
             };
             return stack;
         }
@@ -216,15 +221,39 @@ namespace MTCG.Controller
             if (user == null)
                 return false;
 
-            if (user.Coins < 5)
-                return false;
-
             // Get package
             Package package = PackageController.Instance.GetPackage(packageId);
+
+            if (package == null)
+                return false;
+
+            if (user.Coins < package.Cost)
+                return false;
+
             user.Coins -= package.Cost;
 
-            // Add cards to user
-            // Create card instances
+            // Open the package
+            List<CardInstance> drawnCards = PackageController.Instance.OpenPackage(package);
+
+            // Add the cards to the user
+            for (int i = 0; i < drawnCards.Count; i++)
+            {
+                AddCardToUser(user, drawnCards[i]);
+            }
+
+            return true;
+        }
+
+        public bool AddCardToUser(User user, CardInstance card)
+        {
+            if (user == null || card == null)
+                return false;
+
+            string sql = "INSERT INTO user_cards (userID, cardInstanceID) VALUES (@userID, @cardInstanceID);";
+            NpgsqlCommand cmd = new(sql);
+            cmd.Parameters.AddWithValue("userID", user.ID);
+            cmd.Parameters.AddWithValue("cardInstanceID", card.ID);
+            return Server.Instance.Database.ExecuteNonQuery(cmd) == 1;
         }
 
         /// <summary>
@@ -239,7 +268,7 @@ namespace MTCG.Controller
             return user;
         }
 
-        internal void IsAdmin(HttpAuthorization auth)
+        public void SetAdmin(Guid userID)
         {
             throw new NotImplementedException();
         }

@@ -9,24 +9,33 @@ namespace MTCG.Models
 {
     class Package : DataObject
     {
-        public const ushort PackageCardsLength = 5;
+        public const ushort DrawnCardsAmount = 5;
 
+        public string Name { get; }
+        public string Description { get; }
         public ushort Cost { get; }
-        public Card[] Cards { get; }
+        public List<Card> Cards { get; }
 
-        public Package(uint id, Card[] cards, ushort cost) : base(id)
+        public Package(List<Card> cards, ushort cost) : base()
         {
             // Check for package card count
-            if (cards == null || cards.Length != PackageCardsLength)
-                throw new ArgumentException("A package needs exactly 5 cards!");
+            if (cards == null || cards.Count == 0)
+                throw new ArgumentException();
 
             Cards = cards;
-
         }
 
-        public Package(OrderedDictionary row) : base(row)
+        public Package(OrderedDictionary packageRow, OrderedDictionary[] packageCardsRows) : base(packageRow)
         {
-            Cards = System.Text.Json.JsonSerializer.Deserialize<Card[]>(row["cards"].ToString());
+            Name = packageRow["name"].ToString();
+            Description = packageRow["description"].ToString();
+            Cost = (ushort)packageRow["cost"];
+
+            // Add cards
+            for (int i = 0; i < packageCardsRows.Length; i++)
+            {
+                Cards.Add(Card.ParseFromDatabase(packageCardsRows[i]));
+            }
         }
     }
 }

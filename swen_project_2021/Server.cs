@@ -16,7 +16,7 @@ namespace MTCG
         // Listener tasks
         private List<Task> ListeningTasks { get; set; }
         private readonly int _port;
-        private const ushort LISTENERS_TASKS_AMOUNT = 20;
+        private const ushort LISTENER_TASKS_AMOUNT = 20;
 
         public Server(string ip, int port)
         {
@@ -55,7 +55,7 @@ namespace MTCG
                 
                 // Start listening tasks
                 ListeningTasks = new();
-                for (int i = 0; i < LISTENERS_TASKS_AMOUNT - 1; i++)
+                for (int i = 0; i < LISTENER_TASKS_AMOUNT - 1; i++)
                 {
                     int taskId = i;
                     var t = Task.Run(() => Listen(taskId));
@@ -77,9 +77,9 @@ namespace MTCG
         private void ListenLast()
         {
             ServerLog.Print("HTTP server started successfully!", ServerLog.OutputFormat.Success);
-            ServerLog.Print($"HTTP server now listening on port {_port} with {LISTENERS_TASKS_AMOUNT} listeners!");
+            ServerLog.Print($"HTTP server now listening on port {_port} with {LISTENER_TASKS_AMOUNT} listeners!");
 
-            Listen(LISTENERS_TASKS_AMOUNT - 1);
+            Listen(LISTENER_TASKS_AMOUNT - 1);
         }
 
         private void Listen(int taskId)
