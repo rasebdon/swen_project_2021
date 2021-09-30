@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
@@ -12,7 +8,7 @@ namespace MTCG.Models
     /// <br></br>
     /// Has a unique id
     /// </summary>
-    class CardInstance : DataObject
+    public class CardInstance : DataObject
     {
         /// <summary>
         /// The id of the card that this card is the instance of
@@ -21,7 +17,7 @@ namespace MTCG.Models
 
         public CardInstance(OrderedDictionary row) : base(row)
         {
-            CardID = Guid.Parse(row["cardID"].ToString());
+            CardID = Guid.Parse(row["card_id"].ToString());
         }
 
         /// <summary>

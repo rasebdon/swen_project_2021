@@ -1,29 +1,39 @@
-﻿using Npgsql;
+﻿using MTCG.Controller.Exceptions;
+using MTCG.Models;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace MTCG.Database
+namespace MTCG.Controller
 {
     /// <summary>
     /// Singleton class for managing the general database communication
     /// </summary>
-    class Database
+    public class Database : Singleton<Database>
     {
         private NpgsqlConnection Connection { get; }
+        public DatabaseConfiguration Configuration { get; }
 
-        public Database(string ip, string database, string username, string password)
+        public Database() : this(DatabaseConfiguration.DefaultConfiguration) { }
+        public Database(DatabaseConfiguration config)
         {
+            Configuration = config;
             // Connect to postgresql database
-            string connectionString = $"Host={ip};Database={database};Username={username};Password={password}";
-            Connection = new NpgsqlConnection(connectionString);
+            Connection = new NpgsqlConnection(config.ConnectionString);
+            OpenConnection();
         }
+        public Database(string ip, string database, string username, string password)
+        : this(new DatabaseConfiguration(ip, database, username, password)) { }
 
         /// <summary>
         /// Opens the database connection
         /// </summary>
-        public void OpenConnection()
+        private void OpenConnection()
         {
+            if (Connection.State == System.Data.ConnectionState.Open)
+                return;
+
             Connection.Open();
 
             // Test connection via version select
@@ -40,8 +50,8 @@ namespace MTCG.Database
                 throw new DatabaseConnectionException();
             }
 
-            ServerLog.Print($"Connection to database successful!", ServerLog.OutputFormat.Success);
-            ServerLog.Print($"Current database version: {result["version"]}");
+            ServerLog.WriteLine($"Connection to database successful!", ServerLog.OutputFormat.Success);
+            ServerLog.WriteLine($"Current database version: {result["version"]}");
         }
 
         /// <summary>

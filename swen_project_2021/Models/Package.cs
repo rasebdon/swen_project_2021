@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
-    class Package : DataObject
+    public class Package : DataObject
     {
         public const ushort DrawnCardsAmount = 5;
 
@@ -16,12 +13,15 @@ namespace MTCG.Models
         public ushort Cost { get; }
         public List<Card> Cards { get; }
 
-        public Package(List<Card> cards, ushort cost) : base()
+        public Package(string name, string description, ushort cost, List<Card> cards) : base()
         {
             // Check for package card count
             if (cards == null || cards.Count == 0)
                 throw new ArgumentException();
 
+            Name = name;
+            Description = description;
+            Cost = cost;
             Cards = cards;
         }
 
@@ -29,8 +29,9 @@ namespace MTCG.Models
         {
             Name = packageRow["name"].ToString();
             Description = packageRow["description"].ToString();
-            Cost = (ushort)packageRow["cost"];
+            Cost = (ushort)(int)packageRow["cost"];
 
+            Cards = new();
             // Add cards
             for (int i = 0; i < packageCardsRows.Length; i++)
             {

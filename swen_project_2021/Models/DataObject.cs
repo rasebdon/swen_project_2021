@@ -1,9 +1,11 @@
-﻿using System;
+﻿using MTCG.Interfaces;
+using System;
 using System.Collections.Specialized;
+using System.Text.Json;
 
 namespace MTCG.Models
 {
-    abstract class DataObject
+    public abstract class DataObject
     {
         /// <summary>
         /// The unique object id
@@ -23,7 +25,17 @@ namespace MTCG.Models
         /// <param name="row">The retrieved sql row</param>
         protected DataObject(OrderedDictionary row)
         {
-            ID = Guid.Parse(row["ID"].ToString());
+            ID = Guid.Parse(row["id"].ToString());
+        }
+
+        public string ToJson()
+        {
+            var jsonOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+
+            return JsonSerializer.Serialize(this, this.GetType(), jsonOptions);
         }
     }
 }

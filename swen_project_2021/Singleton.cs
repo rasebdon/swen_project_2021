@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTCG
 {
-    abstract class Singleton<T>
+    public abstract class Singleton<T>
     {
         static T _instance;
         public static T Instance
@@ -19,7 +15,7 @@ namespace MTCG
             }
             set
             {
-                if(value != null)
+                if (value != null)
                     _instance = value;
             }
         }

@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MTCG.Controller;
 using MTCG.Http;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MTCG
 {
-    class Server : Singleton<Server>
+    public class Server : Singleton<Server>
     {
-        public Database.Database Database { get; }
-
         public HttpClient HttpClient { get; }
 
         // Listener tasks
         private List<Task> ListeningTasks { get; set; }
         private readonly int _port;
-        private const ushort LISTENER_TASKS_AMOUNT = 20;
 
         public Server(string ip, int port)
         {
+            // Configure the output channel
+            ServerLog.Initialize();
+
             _port = port;
 
             // Set singleton
@@ -27,35 +26,35 @@ namespace MTCG
 
             // Setup http server
             HttpClient = new(port);
-
-            // Initialize database connection
-            this.Database = new("localhost", "mtcg", "mtcgadmin", "p1s2w3r4");
         }
+        /// <summary>
+        /// Standard server on port 10001
+        /// </summary>
+        public Server() : this("127.0.0.1", 10001) { }
 
-        public void Start()
+        public void Start(int threads = 0)
         {
-            ServerLog.Print("Starting server...");
+            ServerLog.WriteLine("Starting server...");
 
             try
             {
-                Database.OpenConnection();
+                // Initialize database connection
+                Database.Instance = new("localhost", "mtcg", "mtcgadmin", "p1s2w3r4");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                ServerLog.Print("Fatal error occured while connecting to the database",
+                ServerLog.WriteLine("Fatal error occured while connecting to the database",
                     ServerLog.OutputFormat.Error);
-                ServerLog.Print(ex.ToString(), ServerLog.OutputFormat.Error);
+                ServerLog.WriteLine(ex.ToString(), ServerLog.OutputFormat.Error);
                 return;
             }
 
             // Start HTTP server
             try
             {
-                // HttpClient.Start();
-                
                 // Start listening tasks
                 ListeningTasks = new();
-                for (int i = 0; i < LISTENER_TASKS_AMOUNT - 1; i++)
+                for (int i = 0; i < threads - 1; i++)
                 {
                     int taskId = i;
                     var t = Task.Run(() => Listen(taskId));
@@ -64,9 +63,9 @@ namespace MTCG
             }
             catch (Exception ex)
             {
-                ServerLog.Print("Fatal error occured while starting the HTTP server:",
+                ServerLog.WriteLine("Fatal error occured while starting the HTTP server:",
                     ServerLog.OutputFormat.Error);
-                ServerLog.Print(ex.ToString(), ServerLog.OutputFormat.Error);
+                ServerLog.WriteLine(ex.ToString(), ServerLog.OutputFormat.Error);
                 return;
             }
 
@@ -76,10 +75,10 @@ namespace MTCG
 
         private void ListenLast()
         {
-            ServerLog.Print("HTTP server started successfully!", ServerLog.OutputFormat.Success);
-            ServerLog.Print($"HTTP server now listening on port {_port} with {LISTENER_TASKS_AMOUNT} listeners!");
+            ServerLog.WriteLine("HTTP server started successfully!", ServerLog.OutputFormat.Success);
+            ServerLog.WriteLine($"HTTP server now listening on port {_port} with {ListeningTasks.Count + 1} listeners!");
 
-            Listen(LISTENER_TASKS_AMOUNT - 1);
+            Listen(ListeningTasks.Count);
         }
 
         private void Listen(int taskId)
@@ -89,12 +88,12 @@ namespace MTCG
                 // Recieve data
                 HttpRequest request = HttpClient.GetHttpRequest();
 
-                ServerLog.Print($"Listener {taskId} recieved an http request!");
+                ServerLog.WriteLine($"Listener {taskId} recieved an http request!");
 
                 // Recieved invalid request
                 if (request == null)
                 {
-                    ServerLog.Print("Invalid request recieved! Continuing to the next request",
+                    ServerLog.WriteLine("Invalid request recieved! Continuing to the next request",
                         ServerLog.OutputFormat.Warning);
                     continue;
                 }
@@ -102,22 +101,23 @@ namespace MTCG
                 // No need to process empty get requests
                 if (!request.HasEntityBody && request.HttpMethod != HttpMethod.GET)
                 {
-                    ServerLog.Print("Empty request recieved! Continuing to the next request",
+                    ServerLog.WriteLine("Empty request recieved! Continuing to the next request",
                         ServerLog.OutputFormat.Warning);
-                    HttpClient.SendHttpResponse(new HttpResponse("", HttpStatusCode.NotFound, ""), request);
+                    HttpClient.SendHttpResponse(new HttpResponse(HttpStatusCode.NotFound), request);
                     continue;
                 }
                 // Get the response
                 HttpResponse response;
                 try
                 {
-                     response = RestController.Instance.GetResponse(request);
+                    response = RestController.Instance.GetResponse(request);
                 }
                 catch (Exception ex)
                 {
-                    ServerLog.Print("There was an error processing the http request:",
+                    ServerLog.WriteLine("There was an error processing the http request:",
                         ServerLog.OutputFormat.Error);
-                    ServerLog.Print(ex.ToString(), ServerLog.OutputFormat.Error);
+                    ServerLog.WriteLine(ex.ToString(), ServerLog.OutputFormat.Error);
+                    HttpClient.SendHttpResponse(new HttpResponse(HttpStatusCode.BadRequest), request);
                     continue;
                 }
 

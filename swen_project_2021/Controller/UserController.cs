@@ -1,22 +1,20 @@
 ﻿using CryptSharp;
 using MTCG.Controller.Exceptions;
-using MTCG.Database;
+using MTCG.Http;
 using MTCG.Models;
 using Npgsql;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
-using MTCG.Http;
 
 namespace MTCG.Controller
 {
-    class UserController : Singleton<UserController>
+    public class UserController : Singleton<UserController>
     {
-        private readonly List<User> LoggedInUsers;
+        public readonly List<User> LoggedInUsers;
 
-        UserController()
+        public UserController()
         {
             LoggedInUsers = new();
         }
@@ -44,29 +42,47 @@ namespace MTCG.Controller
                 $"SELECT username FROM users WHERE LOWER(username)=@username;");
             cmd.Parameters.AddWithValue("username", username.ToLower());
 
-            if (Server.Instance.Database.SelectSingle(cmd) != null)
+            if (Database.Instance.SelectSingle(cmd) != null)
                 throw new DuplicateEntryException(username);
 
             User user = new(username, 20, 1000);
 
             /// Create password hash and insert
             string hash = Crypter.Blowfish.Crypt(password);
-            string sql = $"INSERT INTO users (ID, username, hash, coins, elo) VALUES (@id, @username, @hash, @coins, @elo);";
+            string sql = $"INSERT INTO users (id, username, hash, coins, elo, admin) VALUES (@id, @username, @hash, @coins, @elo, false);";
             cmd = new NpgsqlCommand(sql);
             cmd.Parameters.AddWithValue("id", user.ID);
             cmd.Parameters.AddWithValue("username", username);
             cmd.Parameters.AddWithValue("hash", hash);
-            cmd.Parameters.AddWithValue("coins", user.Coins);
-            cmd.Parameters.AddWithValue("elo", user.ELO);
+            cmd.Parameters.AddWithValue("coins", (int)user.Coins);
+            cmd.Parameters.AddWithValue("elo", (int)user.ELO);
 
             // Check if user was successfully created
-            if (Server.Instance.Database.ExecuteNonQuery(cmd) != 1)
+            if (Database.Instance.ExecuteNonQuery(cmd) != 1)
             {
                 throw new DatabaseInsertException(sql);
             }
 
             // Return the inserted user object
             return user;
+        }
+
+        public bool DeleteUser(User user)
+        {
+            return DeleteUser(user.ID);
+        }
+        public bool DeleteUser(string username)
+        {
+
+            NpgsqlCommand cmd = new("DELETE FROM users WHERE username=@username;");
+            cmd.Parameters.AddWithValue("username", username);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
+        }
+        public bool DeleteUser(Guid id)
+        {
+            NpgsqlCommand cmd = new("DELETE FROM users WHERE id=@id;");
+            cmd.Parameters.AddWithValue("id", id);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
         /// <summary>
@@ -107,7 +123,7 @@ namespace MTCG.Controller
         /// </summary>
         /// <param name="username">The username of the user</param>
         /// <returns>User object on success or null on failure</returns>
-        public static User GetUser(string username)
+        public User GetUser(string username)
         {
             // Create safe query
             var sql = "SELECT * FROM users WHERE username = @username";
@@ -116,7 +132,7 @@ namespace MTCG.Controller
             cmd.Parameters.AddWithValue("username", username);
 
             // Communicate with database
-            OrderedDictionary row = Server.Instance.Database.SelectSingle(cmd);
+            OrderedDictionary row = Database.Instance.SelectSingle(cmd);
 
             // Check if user exists
             if (row == null)
@@ -131,7 +147,7 @@ namespace MTCG.Controller
         /// </summary>
         /// <param name="id">The ID of the user</param>
         /// <returns>User object on success or null on failure</returns>
-        public static User GetUser(Guid id)
+        public User GetUser(Guid id)
         {
             // Create safe query
             var sql = "SELECT * FROM users WHERE id = @id";
@@ -140,7 +156,7 @@ namespace MTCG.Controller
             cmd.Parameters.AddWithValue("id", id);
 
             // Communicate with database
-            OrderedDictionary row = Server.Instance.Database.SelectSingle(cmd);
+            OrderedDictionary row = Database.Instance.SelectSingle(cmd);
 
             // Check if user exists
             if (row == null)
@@ -164,7 +180,7 @@ namespace MTCG.Controller
             cmd.Parameters.AddWithValue("username", username);
 
             // Execute and process result
-            return ParseHash(Server.Instance.Database.SelectSingle(cmd));
+            return ParseHash(Database.Instance.SelectSingle(cmd));
         }
 
         public string GetUserHash(Guid id)
@@ -175,7 +191,7 @@ namespace MTCG.Controller
             cmd.Parameters.AddWithValue("id", id);
 
             // Execute and process result
-            return ParseHash(Server.Instance.Database.SelectSingle(cmd));
+            return ParseHash(Database.Instance.SelectSingle(cmd));
         }
 
         /// <summary>
@@ -193,31 +209,45 @@ namespace MTCG.Controller
         /// <summary>
         /// Gets the card stack of the given user
         /// </summary>
-        /// <param name="user">The user of which the card stack should be retrieved</param>
+        /// <param name="userId">The id of the user of which the card stack should be retrieved</param>
         /// <returns>The card stack of the given user</returns>
-        public Dictionary<Card, int> GetUserCardStack(User user)
+        public List<CardInstance> GetUserCardStack(Guid userId)
         {
-            throw new NotImplementedException();
+            // Get the instaces from the user
+            NpgsqlCommand cmd = new("SELECT card_instances.* FROM user_cards, card_instances WHERE user_id=@userId AND card_instance_id=id;");
+            cmd.Parameters.AddWithValue("userId", userId);
+            var cardInstanceIds = Database.Instance.Select(cmd);
 
-            var stack = new Dictionary<Card, int>
+            List<CardInstance> stack = new();
+            for (int i = 0; i < cardInstanceIds.Length; i++)
             {
-                { new SpellCard("WaterGoblin", "A water goblin", 23, Element.Fire, Rarity.Common), 5 }
-            };
+                stack.Add(new CardInstance(cardInstanceIds[i]));
+            }
             return stack;
         }
 
         /// <summary>
         /// Buy command for the user for buying a card package
         /// </summary>
-        /// <param name="auth"></param>
-        /// <param name="user"></param>
-        /// <param name="package"></param>
         /// <returns>If the package buy action was successful</returns>
-        public bool BuyPackage(HttpAuthorization auth, uint packageId)
+        public bool BuyPackage(Guid userId, Guid packageId)
         {
-            // Check authorisazion
-            User user = Authenticate(auth);
-
+            return BuyPackage(GetUser(userId), packageId);
+        }
+        /// <summary>
+        /// Buy command for the user for buying a card package
+        /// </summary>
+        /// <returns>If the package buy action was successful</returns>
+        public bool BuyPackage(HttpAuthorization auth, Guid packageId)
+        {
+            return BuyPackage(Authenticate(auth), packageId);
+        }
+        /// <summary>
+        /// Buy command for the user for buying a card package
+        /// </summary>
+        /// <returns>If the package buy action was successful</returns>
+        public bool BuyPackage(User user, Guid packageId)
+        {
             if (user == null)
                 return false;
 
@@ -241,7 +271,23 @@ namespace MTCG.Controller
                 AddCardToUser(user, drawnCards[i]);
             }
 
+            // Update user money
+            UpdateUserCoins(user);
+
             return true;
+        }
+
+        public bool UpdateUserCoins(User user)
+        {
+            NpgsqlCommand cmd = new("UPDATE users SET coins=@coins");
+            cmd.Parameters.AddWithValue("coins", (int)user.Coins);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
+        }
+        public bool UpdateUserELO(User user)
+        {
+            NpgsqlCommand cmd = new("UPDATE users SET elo=@elo");
+            cmd.Parameters.AddWithValue("elo", (int)user.ELO);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
         public bool AddCardToUser(User user, CardInstance card)
@@ -249,11 +295,11 @@ namespace MTCG.Controller
             if (user == null || card == null)
                 return false;
 
-            string sql = "INSERT INTO user_cards (userID, cardInstanceID) VALUES (@userID, @cardInstanceID);";
+            string sql = "INSERT INTO user_cards (user_id, card_instance_id) VALUES (@userID, @cardInstanceID);";
             NpgsqlCommand cmd = new(sql);
             cmd.Parameters.AddWithValue("userID", user.ID);
             cmd.Parameters.AddWithValue("cardInstanceID", card.ID);
-            return Server.Instance.Database.ExecuteNonQuery(cmd) == 1;
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
         /// <summary>

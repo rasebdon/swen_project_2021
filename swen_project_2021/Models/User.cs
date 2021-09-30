@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 
 namespace MTCG.Models
 {
-    class User : DataObject
+    public class User : DataObject
     {
         /// <summary>
         /// The unique username of the user

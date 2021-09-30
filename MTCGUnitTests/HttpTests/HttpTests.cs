@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace HttpTests
+namespace MTCGUnitTests.HttpTests
 {
     [TestClass]
     public class GetTests

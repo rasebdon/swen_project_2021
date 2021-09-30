@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MTCG.Http
+﻿namespace MTCG.Http
 {
     public partial class HttpClient
     {
@@ -28,7 +22,7 @@ namespace MTCG.Http
         }
         public void SendHttpResponse(HttpResponse response, HttpRequest request)
         {
-            _socket.Send(response, request);
+            _socket.SendAsync(response, request);
         }
         public void Close()
         {

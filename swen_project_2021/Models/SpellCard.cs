@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Specialized;
 
 namespace MTCG.Models
 {
-    class SpellCard : Card
+    public class SpellCard : Card
     {
         public SpellCard(OrderedDictionary row) : base(row)
         {

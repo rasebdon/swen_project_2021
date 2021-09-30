@@ -1,39 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MTCG.Models;
+﻿using MTCG.Models;
 using Npgsql;
+using System;
+using System.Collections.Generic;
 
 namespace MTCG.Controller
 {
-    class CardController : Singleton<CardController>
+    public class CardController : Singleton<CardController>
     {
+        public CardController() { }
+
         public bool InsertCard(Card card)
         {
-            string sql = 
-                @"INSERT INTO cards (ID, name, description, type, damage, element, rarity)
-                  VALUES (@ID, @name, @description, @type, @damage, @element, @rarity)";
+            string sql =
+                @"INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+                  VALUES (@id, @name, @description, @type, @damage, @element, @rarity, @race)";
             NpgsqlCommand cmd = new(sql);
-            cmd.Parameters.AddWithValue("ID", card.ID);
+            cmd.Parameters.AddWithValue("id", card.ID);
             cmd.Parameters.AddWithValue("name", card.Name);
             cmd.Parameters.AddWithValue("description", card.Description);
             cmd.Parameters.AddWithValue("type", (int)card.CardType);
             cmd.Parameters.AddWithValue("damage", card.Damage);
             cmd.Parameters.AddWithValue("element", (int)card.Element);
             cmd.Parameters.AddWithValue("rarity", (int)card.Rarity);
+            int raceVal = card.GetType() == typeof(MonsterCard) ? (int)((MonsterCard)card).Race : 0;
+            cmd.Parameters.AddWithValue("race", raceVal);
 
-            return Server.Instance.Database.ExecuteNonQuery(cmd) == 1;
+
+
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
+        }
+        public bool InsertCards(List<Card> cards)
+        {
+            int errno = 0;
+
+            for (int i = 0; i < cards.Count; i++)
+            {
+                errno += InsertCard(cards[i]) ? 0 : 1;
+            }
+
+            return errno == 0;
         }
         public Card GetCard(Guid cardID)
         {
-            string sql = "SELECT * FROM cards WHERE ID=@ID;";
-            NpgsqlCommand cmd = new(sql);
-            cmd.Parameters.AddWithValue("ID", cardID.ToString());
-            var row = Server.Instance.Database.SelectSingle(cmd);
+            NpgsqlCommand cmd = new("SELECT * FROM cards WHERE id=@id;");
+            cmd.Parameters.AddWithValue("id", cardID);
+            var row = Database.Instance.SelectSingle(cmd);
 
             return row != null ? Card.ParseFromDatabase(row) : null;
+        }
+
+        public CardInstance GetCardInstance(Guid cardInstanceID)
+        {
+            NpgsqlCommand cmd = new("SELECT * FROM card_instances WHERE id=@id;");
+            cmd.Parameters.AddWithValue("id", cardInstanceID);
+            return new CardInstance(Database.Instance.SelectSingle(cmd));
+        }
+
+        public bool DeleteCard(Card card)
+        {
+            NpgsqlCommand cmd = new("DELETE FROM cards WHERE id=@id;");
+            cmd.Parameters.AddWithValue("id", card.ID);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
+        }
+        public bool DeleteCards(List<Card> cards)
+        {
+            int errno = 0;
+
+            for (int i = 0; i < cards.Count; i++)
+            {
+                errno += DeleteCard(cards[i]) ? 0 : 1;
+            }
+            return errno == 0;
         }
 
         /// <summary>
@@ -43,11 +80,11 @@ namespace MTCG.Controller
         /// <returns>If the insert was successful</returns>
         public bool InsertCardInstance(CardInstance card)
         {
-            string sql = "INSERT INTO card_instances (ID, cardID) VALUES (@ID, @cardID);";
+            string sql = "INSERT INTO card_instances (id, card_id) VALUES (@id, @cardID);";
             var cmd = new Npgsql.NpgsqlCommand(sql);
-            cmd.Parameters.AddWithValue("ID", card.ID);
-            cmd.Parameters.AddWithValue("cardID", card.ID);
-            return Server.Instance.Database.ExecuteNonQuery(cmd) == 1;
+            cmd.Parameters.AddWithValue("id", card.ID);
+            cmd.Parameters.AddWithValue("cardID", card.CardID);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
         /// <summary>
         /// Inserts a bunch of cards into the database
@@ -66,10 +103,10 @@ namespace MTCG.Controller
 
         public bool DeleteCardInstance(CardInstance card)
         {
-            string sql = "DELETE FROM card_instances WHERE ID = @ID;";
+            string sql = "DELETE FROM card_instances WHERE id = @id;";
             var cmd = new Npgsql.NpgsqlCommand(sql);
-            cmd.Parameters.AddWithValue("ID", card.ID);
-            return Server.Instance.Database.ExecuteNonQuery(cmd) == 1;
+            cmd.Parameters.AddWithValue("id", card.ID);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
         public bool DeleteCardInstances(List<CardInstance> cards)
         {

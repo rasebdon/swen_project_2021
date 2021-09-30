@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using System.IO;
 
 namespace MTCG.Http
 {
@@ -52,7 +49,10 @@ namespace MTCG.Http
                 // Get the http header line
                 string[] headerData = reader.ReadLine().Split(' ');
                 // Parse method
-                HttpMethod httpMethod = (HttpMethod)Enum.Parse(typeof(HttpMethod), headerData[0]);
+                HttpMethod httpMethod = HttpMethod.GET;
+                if (headerData[0] != "HEAD")
+                    httpMethod = (HttpMethod)Enum.Parse(typeof(HttpMethod), headerData[0]);
+
                 // Parse url
                 string baseUrl = $"{(_https ? "https" : "http")}://{((IPEndPoint)LocalEndPoint).Address.MapToIPv4()}";
                 Uri requestUrl = new(
@@ -106,24 +106,22 @@ namespace MTCG.Http
             /// </summary>
             /// <param name="response"></param>
             /// <param name="request"></param>
-            public void Send(HttpResponse response, HttpRequest request)
+            public void SendAsync(HttpResponse response, HttpRequest request)
             {
                 // Write response http header
                 var responseMessage = $"{request.HttpVersion} {(int)response.HttpStatusCode}\r\n";
                 responseMessage += $"Date: {DateTime.Now:R}\r\n";
                 responseMessage += $"Server: MTCG-Webserver/0.9.15\r\n";
                 // Write content
-                if (response.ContentType != "" && response.ResponseBody != "")
-                {
-                    responseMessage += $"Content-Type: {response.ContentType}\r\n";
-                    responseMessage += $"Content-Length: {response.ResponseBody.Length}\r\n";
-                    responseMessage += $"\r\n";
-                    responseMessage += response.ResponseBody + "\r\n";
-                }
+                responseMessage += $"Connection: close\r\n";
+                responseMessage += $"Content-Type: {response.ContentType}\r\n";
+                responseMessage += $"Content-Length: {response.ResponseBody.Length}\r\n";
+                responseMessage += $"\r\n";
+                responseMessage += response.ResponseBody + "\r\n";
                 // Encode and send
                 request.Requester.Send(Encoding.UTF8.GetBytes(responseMessage));
                 request.Requester.Close();
-                Console.WriteLine($"Response:\n{responseMessage}");
+                System.Console.WriteLine($"Response sent:\n{responseMessage}");
             }
         }
     }
