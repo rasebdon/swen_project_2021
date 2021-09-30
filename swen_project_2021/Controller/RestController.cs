@@ -4,7 +4,8 @@ using MTCG.Http.Requests;
 using MTCG.Models;
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
+using Newtonsoft.Json;
+using MTCG.Serialization;
 
 namespace MTCG.Controller
 {
@@ -85,15 +86,26 @@ namespace MTCG.Controller
                         try
                         {
                             // Check if authorization is admin-token
-                            if (request.Authorization != null && request.Authorization.Credentials != "admin-mtcgToken")
+                            if (request.Authorization == null || request.Authorization.Token != "admin-mtcgToken")
                                 return new HttpResponse(HttpStatusCode.Forbidden);
 
-                            Package p = JsonSerializer.Deserialize<Package>(request.RequestBody);
+                            // Parse package
+                            var converter = new CardConverter();
+                            Package package = JsonConvert.DeserializeObject<Package>(request.RequestBody, converter);
 
-                            return new HttpResponse(p.ToJson(), HttpStatusCode.Created, "application/json");
+                            // Insert cards
+                            if (!CardController.Instance.InsertCards(package.Cards))
+                                return new HttpResponse(HttpStatusCode.BadRequest);
+                            // Insert package
+                            if (!PackageController.Instance.AddPackage(package))
+                                return new HttpResponse(HttpStatusCode.BadRequest);
+
+                            return new HttpResponse(package.ToJson(), HttpStatusCode.Created, "application/json");
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
+                            ServerLog.WriteLine(e.ToString(), ServerLog.OutputFormat.Error);
+
                             return new HttpResponse(HttpStatusCode.NotFound);
                         }
                 }

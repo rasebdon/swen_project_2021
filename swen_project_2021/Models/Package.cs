@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace MTCG.Models
 {
@@ -13,6 +15,7 @@ namespace MTCG.Models
         public ushort Cost { get; }
         public List<Card> Cards { get; }
 
+        [JsonConstructor]
         public Package(string name, string description, ushort cost, List<Card> cards) : base()
         {
             // Check for package card count

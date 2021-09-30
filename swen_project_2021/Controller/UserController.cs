@@ -310,7 +310,7 @@ namespace MTCG.Controller
         public User Authenticate(HttpAuthorization auth)
         {
             // Get user by auth token
-            User user = LoggedInUsers.Find(u => u.SessionToken == auth.Credentials);
+            User user = LoggedInUsers.Find(u => u.SessionToken == auth.Token);
             return user;
         }
 

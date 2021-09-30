@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Specialized;
 
 namespace MTCG.Models
@@ -20,6 +21,7 @@ namespace MTCG.Models
         Goblin
     }
 
+    [Serializable]
     public class MonsterCard : Card
     {
         /// <summary>
@@ -32,6 +34,7 @@ namespace MTCG.Models
             Race = (Race)(int)row["race"];
         }
 
+        [JsonConstructor]
         public MonsterCard(string name, string description, int damage, Element element, Rarity rarity, Race race) : base(name, description, damage, CardType.Monster, element, rarity)
         {
             Race = race;

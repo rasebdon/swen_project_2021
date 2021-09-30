@@ -5,6 +5,7 @@ using System.Text.Json;
 
 namespace MTCG.Models
 {
+    [Serializable]
     public abstract class DataObject
     {
         /// <summary>
@@ -15,9 +16,13 @@ namespace MTCG.Models
         /// Base constructor for DataObjects
         /// </summary>
         /// <param name="id"></param>
-        protected DataObject()
+        public DataObject()
         {
             ID = Guid.NewGuid();
+        }
+        public DataObject(Guid id)
+        {
+            ID = id;
         }
         /// <summary>
         /// Parse constructor for DataObjects
@@ -30,12 +35,7 @@ namespace MTCG.Models
 
         public string ToJson()
         {
-            var jsonOptions = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-
-            return JsonSerializer.Serialize(this, this.GetType(), jsonOptions);
+            return JsonSerializer.Serialize(this, this.GetType());
         }
     }
 }

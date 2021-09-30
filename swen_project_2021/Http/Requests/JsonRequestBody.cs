@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace MTCG.Http.Requests
 {
@@ -11,7 +11,7 @@ namespace MTCG.Http.Requests
     {
         public static T FromJson(string json)
         {
-            return JsonSerializer.Deserialize<T>(json);
+            return JsonConvert.DeserializeObject<T>(json);
         }
     }
 }
