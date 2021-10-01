@@ -19,14 +19,14 @@ namespace MTCGUnitTests.DatabaseTests
             UserController.Instance.Register("dummy", "1234");
             User user = UserController.Instance.Login("dummy", "1234");
 
-            MTCG.Http.HttpAuthorization auth = new("Basic", user.SessionToken);
-
             try
             {
+                MTCG.Http.HttpAuthorization auth = new("Basic", user.SessionToken);
+
                 // Check if session key is correctly set
                 Assert.IsNotNull(UserController.Instance.Authenticate(auth), "The session key was incorrectly set!");
                 // Check if the user was inserted correctly
-                Assert.IsNotNull(UserController.Instance.GetUser(user.ID), "User with the inserted id was not found!");
+                Assert.IsNotNull(UserController.Instance.Select(user.ID), "User with the inserted id was not found!");
             }
             finally
             {
@@ -34,7 +34,7 @@ namespace MTCGUnitTests.DatabaseTests
                 UserController.Instance.LoggedInUsers.Clear();
 
                 // Delete created user
-                UserController.Instance.DeleteUser(user.ID);
+                UserController.Instance.Delete(user.ID);
             }
         }
     }

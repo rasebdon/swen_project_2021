@@ -28,7 +28,7 @@ namespace MTCG.Controller
                 switch (path[0])
                 {
                     case "users":
-                        returnData = UserController.Instance.GetUser(path[1]).ToJson();
+                        returnData = UserController.Instance.Select(path[1]).ToJson();
                         return new HttpResponse(returnData, HttpStatusCode.OK, "application/json");
                 }
             }
@@ -46,7 +46,7 @@ namespace MTCG.Controller
                             // Try to register
                             UserController.Instance.Register(registerRequest.Username, registerRequest.Password);
                             // Answer
-                            returnData = UserController.Instance.GetUser(registerRequest.Username).ToJson();
+                            returnData = UserController.Instance.Select(registerRequest.Username).ToJson();
                             return new HttpResponse(returnData, HttpStatusCode.Created, "application/json");
                         }
                         catch (DuplicateEntryException e)
@@ -91,10 +91,10 @@ namespace MTCG.Controller
                             Package package = JsonConvert.DeserializeObject<Package>(request.RequestBody, converter);
 
                             // Insert cards
-                            if (!CardController.Instance.InsertCards(package.Cards))
+                            if (!CardController.Instance.Insert(package.Cards))
                                 return new HttpResponse(HttpStatusCode.BadRequest);
                             // Insert package
-                            if (!PackageController.Instance.AddPackage(package))
+                            if (!PackageController.Instance.Insert(package))
                                 return new HttpResponse(HttpStatusCode.BadRequest);
 
                             return new HttpResponse(package.ToJson(), HttpStatusCode.Created, "application/json");
@@ -123,7 +123,7 @@ namespace MTCG.Controller
                                     BuyPackageRequestBody data = BuyPackageRequestBody.FromJson(request.RequestBody);
 
                                     // Get package via name
-                                    Package package = PackageController.Instance.GetPackage(data.PackageName);
+                                    Package package = PackageController.Instance.Select(data.PackageName);
 
                                     // Buy packages
                                     List<CardInstance> drawnCrads = new();

@@ -1,5 +1,6 @@
 ﻿using MTCG.Controller.Exceptions;
 using MTCG.Models;
+using MTCG.Serialization;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -115,5 +116,34 @@ namespace MTCG.Controller
             cmd.Connection = this.Connection;
             return cmd.ExecuteNonQuery();
         }
+    
+        //public int Update(string row, string condition, params Tuple<string, object, Type>[] values)
+        //{
+        //    CharStream s = new();
+        //    s.Write($"UPDATE {row} SET ");
+        //    for (int i = 0; i < values.Length; i++)
+        //    {
+        //        s.Write($"{values[i].Item1}=");
+        //        s.Write($"@{values[i].Item1} ");
+        //        if (i < values.Length - 1)
+        //            s.Write(", ");
+        //    }
+        //    s.Write($"WHERE {condition};");
+
+        //    var sql = s.ToString();
+        //    NpgsqlCommand cmd = new(sql)
+        //    {
+        //        Connection = this.Connection
+        //    };
+
+        //    // Add parameters
+        //    for (int i = 0; i < values.Length; i++)
+        //    {
+        //        var value = Convert.ChangeType(values[i].Item2, values[i].Item3);
+        //        cmd.Parameters.AddWithValue(values[i].Item1, value);
+        //    }
+
+        //    return cmd.ExecuteNonQuery();
+        //}
     }
 }

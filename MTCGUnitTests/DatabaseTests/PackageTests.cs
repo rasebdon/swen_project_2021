@@ -21,11 +21,11 @@ namespace MTCGUnitTests.DatabaseTests
             try
             {
                 // Insert cards
-                CardController.Instance.InsertCards(package.Cards);
+                CardController.Instance.Insert(package.Cards);
                 // Insert package
-                PackageController.Instance.AddPackage(package);
+                PackageController.Instance.Insert(package);
 
-                var inserted = PackageController.Instance.GetPackage(package.ID);
+                var inserted = PackageController.Instance.Select(package.ID);
 
                 Assert.AreEqual(package.Cards.Count, inserted.Cards.Count);
                 Assert.AreEqual(package.ID, inserted.ID);
@@ -33,9 +33,9 @@ namespace MTCGUnitTests.DatabaseTests
             finally
             {
                 // Delete package
-                PackageController.Instance.DeletePackage(package);
+                PackageController.Instance.Delete(package);
                 // Delete cards
-                CardController.Instance.DeleteCards(package.Cards);
+                CardController.Instance.Delete(package.Cards);
             }
         }
 
@@ -45,9 +45,9 @@ namespace MTCGUnitTests.DatabaseTests
             // Create package
             Package package = PackageTests.CreateDummyPackage();
             // Insert cards
-            CardController.Instance.InsertCards(package.Cards);
+            CardController.Instance.Insert(package.Cards);
             // Insert package
-            PackageController.Instance.AddPackage(package);
+            PackageController.Instance.Insert(package);
             // Create user
             User user = UserController.Instance.Register("dummy", "1234");
 
@@ -57,17 +57,17 @@ namespace MTCGUnitTests.DatabaseTests
                 bool success = UserController.Instance.BuyPackage(user, package.ID).Count == 5;
 
                 Assert.IsTrue(success, "There was an error buying the package");
-                Assert.AreEqual(user.Coins, UserController.Instance.GetUser("dummy").Coins, "Package cost were not subtracted correcty");
+                Assert.AreEqual(user.Coins, UserController.Instance.Select("dummy").Coins, "Package cost were not subtracted correcty");
                 Assert.AreEqual((int)Package.DrawnCardsAmount, UserController.Instance.GetUserCardStack(user.ID).Count, "Cards were not added to the user successfully");
             }
             finally
             {
                 // Delete user
-                UserController.Instance.DeleteUser(user);
+                UserController.Instance.Delete(user);
                 // Delete package
-                PackageController.Instance.DeletePackage(package);
+                PackageController.Instance.Delete(package);
                 // Delete cards
-                CardController.Instance.DeleteCards(package.Cards);
+                CardController.Instance.Delete(package.Cards);
             }
         }
 

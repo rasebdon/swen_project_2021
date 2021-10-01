@@ -1,4 +1,5 @@
-﻿using MTCG.Models;
+﻿using MTCG.Interfaces;
+using MTCG.Models;
 using MTCG.Serialization;
 using Npgsql;
 using System;
@@ -8,11 +9,14 @@ using System.Text;
 
 namespace MTCG.Controller
 {
-    public class CardController : Singleton<CardController>
+    public class CardController : Singleton<CardController>,
+        ISelectable<Card>, 
+        IDeletable<Card>, IDeleteMultiple<Card>,
+        IInsertable<Card>, IInsertMultiple<Card>
     {
         public CardController() { }
 
-        public bool InsertCard(Card card)
+        public bool Insert(Card card)
         {
             string sql =
                 @"INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
@@ -30,18 +34,19 @@ namespace MTCG.Controller
 
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
-        public bool InsertCards(List<Card> cards)
+        public bool Insert(List<Card> cards)
         {
             int errno = 0;
 
             for (int i = 0; i < cards.Count; i++)
             {
-                errno += InsertCard(cards[i]) ? 0 : 1;
+                errno += Insert(cards[i]) ? 0 : 1;
             }
 
             return errno == 0;
         }
-        public Card GetCard(Guid cardID)
+        
+        public Card Select(Guid cardID)
         {
             NpgsqlCommand cmd = new("SELECT * FROM cards WHERE id=@id;");
             cmd.Parameters.AddWithValue("id", cardID);
@@ -50,76 +55,24 @@ namespace MTCG.Controller
             return row != null ? Card.ParseFromDatabase(row) : null;
         }
 
-        public CardInstance GetCardInstance(Guid cardInstanceID)
-        {
-            NpgsqlCommand cmd = new("SELECT * FROM card_instances WHERE id=@id;");
-            cmd.Parameters.AddWithValue("id", cardInstanceID);
-            return new CardInstance(Database.Instance.SelectSingle(cmd));
-        }
-
-        public bool DeleteCard(Card card)
+        public bool Delete(Card card)
         {
             NpgsqlCommand cmd = new("DELETE FROM cards WHERE id=@id;");
             cmd.Parameters.AddWithValue("id", card.ID);
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
-        public bool DeleteCards(List<Card> cards)
+        public bool Delete(List<Card> cards)
         {
             int errno = 0;
 
             for (int i = 0; i < cards.Count; i++)
             {
-                errno += DeleteCard(cards[i]) ? 0 : 1;
+                errno += Delete(cards[i]) ? 0 : 1;
             }
             return errno == 0;
         }
 
-        /// <summary>
-        /// Inserts a card instance into the database
-        /// </summary>
-        /// <param name="card"></param>
-        /// <returns>If the insert was successful</returns>
-        public bool InsertCardInstance(CardInstance card)
-        {
-            string sql = "INSERT INTO card_instances (id, card_id) VALUES (@id, @cardID);";
-            var cmd = new Npgsql.NpgsqlCommand(sql);
-            cmd.Parameters.AddWithValue("id", card.ID);
-            cmd.Parameters.AddWithValue("cardID", card.CardID);
-            return Database.Instance.ExecuteNonQuery(cmd) == 1;
-        }
-        /// <summary>
-        /// Inserts a bunch of cards into the database
-        /// </summary>
-        /// <param name="cards"></param>
-        /// <returns>If the all the inserts were successful</returns>
-        public bool InsertCardInstances(List<CardInstance> cards)
-        {
-            int err = 0;
-            for (int i = 0; i < cards.Count; i++)
-            {
-                err += InsertCardInstance(cards[i]) ? 0 : 1;
-            }
-            return err == 0;
-        }
-
-        public bool DeleteCardInstance(CardInstance card)
-        {
-            string sql = "DELETE FROM card_instances WHERE id = @id;";
-            var cmd = new Npgsql.NpgsqlCommand(sql);
-            cmd.Parameters.AddWithValue("id", card.ID);
-            return Database.Instance.ExecuteNonQuery(cmd) == 1;
-        }
-        public bool DeleteCardInstances(List<CardInstance> cards)
-        {
-            int err = 0;
-            for (int i = 0; i < cards.Count; i++)
-            {
-                err += DeleteCardInstance(cards[i]) ? 0 : 1;
-            }
-            return err == 0;
-        }
-
-
+        // Serialization
         public string GetDetailedCardsJson(List<CardInstance> cards)
         {
             CharStream s = new();
@@ -141,7 +94,7 @@ namespace MTCG.Controller
             CharStream s = new();
             s.Write($"{{\"CardInstanceID\":\"{cardInstance.ID}\",");
 
-            Card card = GetCard(cardInstance.CardID);
+            Card card = Select(cardInstance.CardID);
 
             s.Write($"\"CardID\":\"{card.ID}\",");
             s.Write($"\"Name\":\"{card.Name}\",");

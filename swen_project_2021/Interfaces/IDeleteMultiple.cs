@@ -2,8 +2,8 @@
 
 namespace MTCG.Interfaces
 {
-    public interface IInsertable<T>
+    public interface IDeleteMultiple<T>
     {
-        bool Insert(T item);
+        bool Delete(List<T> items);
     }
 }

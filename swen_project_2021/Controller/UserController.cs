@@ -1,6 +1,7 @@
 ﻿using CryptSharp;
 using MTCG.Controller.Exceptions;
 using MTCG.Http;
+using MTCG.Interfaces;
 using MTCG.Models;
 using Npgsql;
 using System;
@@ -10,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace MTCG.Controller
 {
-    public class UserController : Singleton<UserController>
+    public class UserController : Singleton<UserController>, ISelectable<User>, IDeletable<User>
     {
         public readonly List<User> LoggedInUsers;
 
@@ -19,6 +20,7 @@ namespace MTCG.Controller
             LoggedInUsers = new();
         }
 
+        // Insert
         /// <summary>
         /// Registers a new user in the database
         /// </summary>
@@ -67,24 +69,74 @@ namespace MTCG.Controller
             return user;
         }
 
-        public bool DeleteUser(User user)
+        // Delete
+        public bool Delete(User user)
         {
-            return DeleteUser(user.ID);
+            return Delete(user.ID);
         }
-        public bool DeleteUser(string username)
+        public bool Delete(string username)
         {
 
             NpgsqlCommand cmd = new("DELETE FROM users WHERE username=@username;");
             cmd.Parameters.AddWithValue("username", username);
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
-        public bool DeleteUser(Guid id)
+        public bool Delete(Guid id)
         {
             NpgsqlCommand cmd = new("DELETE FROM users WHERE id=@id;");
             cmd.Parameters.AddWithValue("id", id);
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
+        // Select
+        /// <summary>
+        /// Returns the user with the specified username or null on failure
+        /// </summary>
+        /// <param name="username">The username of the user</param>
+        /// <returns>User object on success or null on failure</returns>
+        public User Select(string username)
+        {
+            // Create safe query
+            var sql = "SELECT * FROM users WHERE username = @username";
+            // Prepare statement
+            var cmd = new NpgsqlCommand(sql);
+            cmd.Parameters.AddWithValue("username", username);
+
+            // Communicate with database
+            OrderedDictionary row = Database.Instance.SelectSingle(cmd);
+
+            // Check if user exists
+            if (row == null)
+                return null;
+            var user = new User(row);
+
+            return user;
+        }
+        /// <summary>
+        /// Returns the user with the specified ID or null on failure
+        /// </summary>
+        /// <param name="id">The ID of the user</param>
+        /// <returns>User object on success or null on failure</returns>
+        public User Select(Guid id)
+        {
+            // Create safe query
+            var sql = "SELECT * FROM users WHERE id = @id";
+            // Prepare statement
+            var cmd = new NpgsqlCommand(sql);
+            cmd.Parameters.AddWithValue("id", id);
+
+            // Communicate with database
+            OrderedDictionary row = Database.Instance.SelectSingle(cmd);
+
+            // Check if user exists
+            if (row == null)
+                return null;
+            var user = new User(row);
+
+            return user;
+        }
+
+        // Login
         /// <summary>
         /// Returns a user on success and throws an InvalidCredentialsException on failure
         /// </summary>
@@ -97,7 +149,7 @@ namespace MTCG.Controller
             if (username.Length <= 0 || password.Length <= 0)
                 throw new ArgumentException("Username or password input is not valid!");
 
-            var user = GetUser(username);
+            var user = Select(username);
 
             if (user == null)
                 throw new InvalidCredentialsException(username);
@@ -117,55 +169,6 @@ namespace MTCG.Controller
 
             return user;
         }
-
-        /// <summary>
-        /// Returns the user with the specified username or null on failure
-        /// </summary>
-        /// <param name="username">The username of the user</param>
-        /// <returns>User object on success or null on failure</returns>
-        public User GetUser(string username)
-        {
-            // Create safe query
-            var sql = "SELECT * FROM users WHERE username = @username";
-            // Prepare statement
-            var cmd = new NpgsqlCommand(sql);
-            cmd.Parameters.AddWithValue("username", username);
-
-            // Communicate with database
-            OrderedDictionary row = Database.Instance.SelectSingle(cmd);
-
-            // Check if user exists
-            if (row == null)
-                return null;
-            var user = new User(row);
-
-            return user;
-        }
-
-        /// <summary>
-        /// Returns the user with the specified ID or null on failure
-        /// </summary>
-        /// <param name="id">The ID of the user</param>
-        /// <returns>User object on success or null on failure</returns>
-        public User GetUser(Guid id)
-        {
-            // Create safe query
-            var sql = "SELECT * FROM users WHERE id = @id";
-            // Prepare statement
-            var cmd = new NpgsqlCommand(sql);
-            cmd.Parameters.AddWithValue("id", id);
-
-            // Communicate with database
-            OrderedDictionary row = Database.Instance.SelectSingle(cmd);
-
-            // Check if user exists
-            if (row == null)
-                return null;
-            var user = new User(row);
-
-            return user;
-        }
-
         /// <summary>
         /// Gets the hash of a user with the given username
         /// </summary>
@@ -182,7 +185,6 @@ namespace MTCG.Controller
             // Execute and process result
             return ParseHash(Database.Instance.SelectSingle(cmd));
         }
-
         public string GetUserHash(Guid id)
         {
             // Prepare sql
@@ -193,7 +195,6 @@ namespace MTCG.Controller
             // Execute and process result
             return ParseHash(Database.Instance.SelectSingle(cmd));
         }
-
         /// <summary>
         /// Parses the user hash from the given row
         /// </summary>
@@ -205,7 +206,8 @@ namespace MTCG.Controller
             if (row == null) throw new NullReferenceException("The given row was null");
             return row["hash"].ToString();
         }
-
+        
+        // Stack
         /// <summary>
         /// Gets the card stack of the given user
         /// </summary>
@@ -225,14 +227,15 @@ namespace MTCG.Controller
             }
             return stack;
         }
-
+        
+        // Packages
         /// <summary>
         /// Buy command for the user for buying a card package
         /// </summary>
         /// <returns>The cards that the user has drawn</returns>
         public List<CardInstance> BuyPackage(Guid userId, Guid packageId)
         {
-            return BuyPackage(GetUser(userId), packageId);
+            return BuyPackage(Select(userId), packageId);
         }
         /// <summary>
         /// Buy command for the user for buying a card package
@@ -252,7 +255,7 @@ namespace MTCG.Controller
                 return null;
 
             // Get package
-            Package package = PackageController.Instance.GetPackage(packageId);
+            Package package = PackageController.Instance.Select(packageId);
 
             if (package == null)
                 return null;
@@ -277,16 +280,19 @@ namespace MTCG.Controller
             return drawnCards;
         }
 
+        // Patch
         public bool UpdateUserCoins(User user)
         {
-            NpgsqlCommand cmd = new("UPDATE users SET coins=@coins");
+            NpgsqlCommand cmd = new("UPDATE users SET coins=@coins WHERE id=@id;");
             cmd.Parameters.AddWithValue("coins", (int)user.Coins);
+            cmd.Parameters.AddWithValue("id", user.ID);
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
         public bool UpdateUserELO(User user)
         {
-            NpgsqlCommand cmd = new("UPDATE users SET elo=@elo");
+            NpgsqlCommand cmd = new("UPDATE users SET elo=@elo WHERE id=@id");
             cmd.Parameters.AddWithValue("elo", (int)user.ELO);
+            cmd.Parameters.AddWithValue("id", user.ID);
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 

@@ -19,13 +19,13 @@ namespace MTCGUnitTests.DatabaseTests
 
             try
             {
-                CardController.Instance.InsertCard(card);
+                CardController.Instance.Insert(card);
 
-                Assert.AreEqual(card, CardController.Instance.GetCard(card.ID));
+                Assert.AreEqual(card, CardController.Instance.Select(card.ID));
             }
             finally
             {
-                CardController.Instance.DeleteCard(card);
+                CardController.Instance.Delete(card);
             }
         }
 
@@ -36,14 +36,14 @@ namespace MTCGUnitTests.DatabaseTests
 
             try
             {
-                CardController.Instance.InsertCard(card);
-                Card insertedCard = CardController.Instance.GetCard(card.ID);
+                CardController.Instance.Insert(card);
+                Card insertedCard = CardController.Instance.Select(card.ID);
 
                 Assert.AreEqual(card, insertedCard);
             }
             finally
             {
-                CardController.Instance.DeleteCard(card);
+                CardController.Instance.Delete(card);
             }
         }
 
@@ -55,18 +55,18 @@ namespace MTCGUnitTests.DatabaseTests
 
             try
             {
-                CardController.Instance.InsertCard(card);
-                CardController.Instance.InsertCardInstance(instance);
+                CardController.Instance.Insert(card);
+                CardInstanceController.Instance.Insert(instance);
 
-                CardInstance inserted = CardController.Instance.GetCardInstance(instance.ID);
+                CardInstance inserted = CardInstanceController.Instance.Select(instance.ID);
 
                 Assert.AreEqual(instance.ID, inserted.ID);
                 Assert.AreEqual(instance.CardID, inserted.CardID);
             }
             finally
             {
-                CardController.Instance.DeleteCardInstance(instance);
-                CardController.Instance.DeleteCard(card);
+                CardInstanceController.Instance.Delete(instance);
+                CardController.Instance.Delete(card);
             }
         }
     }

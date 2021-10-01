@@ -1,4 +1,5 @@
 ﻿using MTCG.Controller.Exceptions;
+using MTCG.Interfaces;
 using MTCG.Models;
 using Npgsql;
 using System;
@@ -9,11 +10,54 @@ namespace MTCG.Controller
     /// <summary>
     /// This controller manages the package related functions
     /// </summary>
-    public class PackageController : Singleton<PackageController>
+    public class PackageController : Singleton<PackageController>, ISelectable<Package>, IInsertable<Package>
     {
         public PackageController() { }
+        
+        // Select
+        public Package Select(Guid packageId)
+        {
+            // Get the package from the table
+            string sql = "SELECT * FROM packages WHERE id=@id";
+            NpgsqlCommand cmd = new(sql);
+            cmd.Parameters.AddWithValue("id", packageId);
+            var packageRow = Database.Instance.SelectSingle(cmd);
 
-        public bool AddPackage(Package package)
+            // Get the package cards the table
+            sql = "SELECT * FROM package_cards, cards WHERE package_id=@id AND cards.id=package_cards.card_id";
+            cmd = new(sql);
+            cmd.Parameters.AddWithValue("id", packageId);
+            var packageCardsRows = Database.Instance.Select(cmd);
+
+            if (packageCardsRows == null)
+                throw new NullReferenceException($"There are no cards in the package {packageId}!");
+
+            return new Package(packageRow, packageCardsRows);
+        }
+        public Package Select(string packageName)
+        {
+            // Get the package from the table
+            string sql = "SELECT * FROM packages WHERE name=@packageName";
+            NpgsqlCommand cmd = new(sql);
+            cmd.Parameters.AddWithValue("packageName", packageName);
+            var packageRow = Database.Instance.SelectSingle(cmd);
+
+            if (packageRow == null || packageRow["id"] == null)
+                throw new NoEntryFoundException(sql);
+
+            // Get the package cards the table
+            cmd = new("SELECT * FROM package_cards, cards WHERE package_id=@id AND cards.id=package_cards.card_id");
+            cmd.Parameters.AddWithValue("id", packageRow["id"]);
+            var packageCardsRows = Database.Instance.Select(cmd);
+
+            if (packageCardsRows == null)
+                throw new NullReferenceException($"There are no cards in the package {packageRow["id"]}!");
+
+            return new Package(packageRow, packageCardsRows);
+        }
+
+        // Insert
+        public bool Insert(Package package)
         {
             // Insert package data
             string sql = "INSERT INTO packages (id, name, description, cost) VALUES (@id, @name, @description, @cost);";
@@ -39,7 +83,6 @@ namespace MTCG.Controller
 
             return true;
         }
-
         public bool LinkPackageCard(Guid packageID, Guid cardID)
         {
             string sql = "INSERT INTO package_cards (package_id, card_id) VALUES (@packageID, @cardID);";
@@ -51,55 +94,16 @@ namespace MTCG.Controller
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
-        public Package GetPackage(Guid packageId)
-        {
-            // Get the package from the table
-            string sql = "SELECT * FROM packages WHERE id=@id";
-            NpgsqlCommand cmd = new(sql);
-            cmd.Parameters.AddWithValue("id", packageId);
-            var packageRow = Database.Instance.SelectSingle(cmd);
-
-            // Get the package cards the table
-            sql = "SELECT * FROM package_cards, cards WHERE package_id=@id AND cards.id=package_cards.card_id";
-            cmd = new(sql);
-            cmd.Parameters.AddWithValue("id", packageId);
-            var packageCardsRows = Database.Instance.Select(cmd);
-
-            if (packageCardsRows == null)
-                throw new NullReferenceException($"There are no cards in the package {packageId}!");
-
-            return new Package(packageRow, packageCardsRows);
-        }
-        public Package GetPackage(string packageName)
-        {
-            // Get the package from the table
-            string sql = "SELECT * FROM packages WHERE name=@packageName";
-            NpgsqlCommand cmd = new(sql);
-            cmd.Parameters.AddWithValue("packageName", packageName);
-            var packageRow = Database.Instance.SelectSingle(cmd);
-
-            if (packageRow == null || packageRow["id"] == null)
-                throw new NoEntryFoundException(sql);
-
-            // Get the package cards the table
-            cmd = new("SELECT * FROM package_cards, cards WHERE package_id=@id AND cards.id=package_cards.card_id");
-            cmd.Parameters.AddWithValue("id", packageRow["id"]);
-            var packageCardsRows = Database.Instance.Select(cmd);
-
-            if (packageCardsRows == null)
-                throw new NullReferenceException($"There are no cards in the package {packageRow["id"]}!");
-
-            return new Package(packageRow, packageCardsRows);
-        }
-
-        public bool DeletePackage(Package package)
+        // Delete
+        public bool Delete(Package package)
         {
             NpgsqlCommand cmd = new("DELETE FROM packages WHERE id=@id;");
             cmd.Parameters.AddWithValue("id", package.ID);
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
 
-        public List<Card> GetCardsWithRarity(List<Card> _cards, Rarity rarity)
+        // Helper Methods
+        private List<Card> GetCardsWithRarity(List<Card> _cards, Rarity rarity)
         {
             // Get the cards with the correct rarity
             List<Card> correctRarity = _cards.FindAll(c => c.Rarity == rarity);
@@ -107,14 +111,14 @@ namespace MTCG.Controller
                 return null;
             return correctRarity;
         }
-        public Card GetRandomCardWithRarity(List<Card> cards, Rarity rarity)
+        private Card GetRandomCardWithRarity(List<Card> cards, Rarity rarity)
         {
             var c = GetCardsWithRarity(cards, rarity);
             if (c == null)
                 return null;
             return c[new Random().Next(0, c.Count)];
         }
-        public CardInstance GetRandomCardInstanceWithRarity(List<Card> cards, Rarity rarity)
+        private CardInstance GetRandomCardInstanceWithRarity(List<Card> cards, Rarity rarity)
         {
             var c = GetRandomCardWithRarity(cards, rarity);
             if (c == null)
@@ -156,12 +160,12 @@ namespace MTCG.Controller
             }
 
             // Add drawn cards to database
-            if (!CardController.Instance.InsertCardInstances(drawnCards))
+            if (!CardInstanceController.Instance.Insert(drawnCards))
             {
                 ServerLog.WriteLine("An error occured while drawing cards! Redrawing...", ServerLog.OutputFormat.Error);
 
                 // Error occured, delete drawn cards
-                CardController.Instance.DeleteCardInstances(drawnCards);
+                CardInstanceController.Instance.Delete(drawnCards);
 
                 // Redraw cards
                 return OpenPackage(package);
