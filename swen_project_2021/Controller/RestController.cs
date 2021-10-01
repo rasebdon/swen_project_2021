@@ -30,9 +30,6 @@ namespace MTCG.Controller
                     case "users":
                         returnData = UserController.Instance.GetUser(path[1]).ToJson();
                         return new HttpResponse(returnData, HttpStatusCode.OK, "application/json");
-                    case "packages":
-                        returnData = CreateDummyPackage().ToJson();
-                        return new HttpResponse(returnData, HttpStatusCode.OK, "application/json");
                 }
             }
             // Process POST requests
@@ -108,56 +105,51 @@ namespace MTCG.Controller
 
                             return new HttpResponse(HttpStatusCode.NotFound);
                         }
+                    // Transactions
+                    case "transactions":
+                        try
+                        {
+                            switch (path[1])
+                            {
+                                // Buying packages
+                                case "packages":
+                                    // Get user via auth token
+                                    User user = UserController.Instance.Authenticate(request.Authorization);
+
+                                    if (user == null)
+                                        return new HttpResponse(HttpStatusCode.BadRequest);
+
+                                    // Parse request body
+                                    BuyPackageRequestBody data = BuyPackageRequestBody.FromJson(request.RequestBody);
+
+                                    // Get package via name
+                                    Package package = PackageController.Instance.GetPackage(data.PackageName);
+
+                                    // Buy packages
+                                    List<CardInstance> drawnCrads = new();
+                                    for (int i = 0; i < data.PackageAmount; i++)
+                                    {
+                                        var d = UserController.Instance.BuyPackage(user.ID, package.ID);
+
+                                        if(d != null)
+                                            drawnCrads.AddRange(d);
+                                    }
+                                    // Serialize the drawn cards
+                                    string cardsJson = CardController.Instance.GetDetailedCardsJson(drawnCrads);
+
+                                    return new HttpResponse(cardsJson, HttpStatusCode.Created, "application/json");
+                            }
+                        }
+                        catch(Exception e)
+                        {
+                            ServerLog.WriteLine(e.ToString(), ServerLog.OutputFormat.Error);
+                            break;
+                        }
+                        break;
                 }
             }
 
             return new HttpResponse(HttpStatusCode.NotFound);
-        }
-
-        public static Package CreateDummyPackage()
-        {
-            List<Card> cards = new();
-            // Add some cards
-            cards.Add(
-                new SpellCard(
-                    "Flame Lance",
-                    "A fiery lance that not many mages are able to cast",
-                    5,
-                    Element.Fire,
-                    Rarity.Rare));
-            cards.Add(
-                new MonsterCard(
-                    "Lazy Peon",
-                    "No work...",
-                    3,
-                    Element.Normal,
-                    Rarity.Common,
-                    Race.Orc));
-            cards.Add(
-                new MonsterCard(
-                    "Deathwing",
-                    "All shall burn, beneath the shadow of my wings",
-                    15,
-                    Element.Fire,
-                    Rarity.Legendary,
-                    Race.Draconid));
-            cards.Add(
-                new MonsterCard(
-                    "Elven Hunter",
-                    "Is there something to hunt?",
-                    4,
-                    Element.Fire,
-                    Rarity.Common,
-                    Race.Elf));
-            cards.Add(
-                new SpellCard(
-                    "Firestorm",
-                    "Fire everything!",
-                    10,
-                    Element.Fire,
-                    Rarity.Epic));
-
-            return new Package("Dummy Package", "This is a dummy package", 5, cards);
         }
     }
 }

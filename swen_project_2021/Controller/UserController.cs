@@ -229,36 +229,36 @@ namespace MTCG.Controller
         /// <summary>
         /// Buy command for the user for buying a card package
         /// </summary>
-        /// <returns>If the package buy action was successful</returns>
-        public bool BuyPackage(Guid userId, Guid packageId)
+        /// <returns>The cards that the user has drawn</returns>
+        public List<CardInstance> BuyPackage(Guid userId, Guid packageId)
         {
             return BuyPackage(GetUser(userId), packageId);
         }
         /// <summary>
         /// Buy command for the user for buying a card package
         /// </summary>
-        /// <returns>If the package buy action was successful</returns>
-        public bool BuyPackage(HttpAuthorization auth, Guid packageId)
+        /// <returns>The cards that the user has drawn</returns>
+        public List<CardInstance> BuyPackage(HttpAuthorization auth, Guid packageId)
         {
             return BuyPackage(Authenticate(auth), packageId);
         }
         /// <summary>
         /// Buy command for the user for buying a card package
         /// </summary>
-        /// <returns>If the package buy action was successful</returns>
-        public bool BuyPackage(User user, Guid packageId)
+        /// <returns>The cards that the user has drawn</returns>
+        public List<CardInstance> BuyPackage(User user, Guid packageId)
         {
             if (user == null)
-                return false;
+                return null;
 
             // Get package
             Package package = PackageController.Instance.GetPackage(packageId);
 
             if (package == null)
-                return false;
+                return null;
 
             if (user.Coins < package.Cost)
-                return false;
+                return null;
 
             user.Coins -= package.Cost;
 
@@ -274,7 +274,7 @@ namespace MTCG.Controller
             // Update user money
             UpdateUserCoins(user);
 
-            return true;
+            return drawnCards;
         }
 
         public bool UpdateUserCoins(User user)
@@ -309,6 +309,9 @@ namespace MTCG.Controller
         /// <returns>The user related to the auth token / null if no user was found</returns>
         public User Authenticate(HttpAuthorization auth)
         {
+            if (auth == null)
+                return null;
+
             // Get user by auth token
             User user = LoggedInUsers.Find(u => u.SessionToken == auth.Token);
             return user;

@@ -6,7 +6,7 @@ using System.Text.Json;
 namespace MTCG.Models
 {
     [Serializable]
-    public abstract class DataObject
+    public abstract class DataObject : IJsonSerializable
     {
         /// <summary>
         /// The unique object id

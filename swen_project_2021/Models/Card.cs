@@ -26,46 +26,6 @@ namespace MTCG.Models
         Legendary
     }
 
-    //public class CardConverter : JsonConverter<Card>
-    //{
-    //    public override Card Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    //    {
-    //        while (reader.Read())
-    //        {
-    //            switch (reader.TokenType)
-    //            {
-    //                case JsonTokenType.StartObject:
-    //                case JsonTokenType.EndObject:
-    //                case JsonTokenType.StartArray:
-    //                case JsonTokenType.EndArray:
-    //                    Console.WriteLine($"TokenType={reader.TokenType}");
-    //                    break;
-    //                case JsonTokenType.String:
-    //                    Console.WriteLine($"TokenType=String Value={reader.GetString()}");
-    //                    break;
-    //                case JsonTokenType.Number:
-    //                    Console.WriteLine($"TokenType=Number Value={reader.GetInt32()}");
-    //                    break;
-    //                case JsonTokenType.PropertyName:
-    //                    Console.WriteLine($"TokenType=PropertyName Value={reader.GetString()}");
-    //                    break;
-    //            }
-    //        }
-    //        return null;
-    //    }
-
-    //    public override void Write(Utf8JsonWriter writer, Card value, JsonSerializerOptions options)
-    //    {
-    //        writer.WriteStringValue(value.ID);
-    //        writer.WriteStringValue(value.Name);
-    //        writer.WriteStringValue(value.Description);
-    //        writer.WriteStringValue(value.Damage.ToString());
-    //        writer.WriteStringValue(((int)value.Element).ToString());
-    //        writer.WriteStringValue(((int)value.Rarity).ToString());
-    //        writer.WriteStringValue(((int)value.CardType).ToString());
-    //    }
-    //}
-
     /// <summary>
     /// A card is the abstract representation of the cards, the user can obtain
     /// and fight with. It splits into multiple subcategories like the MonsterCard

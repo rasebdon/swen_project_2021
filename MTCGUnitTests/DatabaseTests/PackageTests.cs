@@ -54,7 +54,7 @@ namespace MTCGUnitTests.DatabaseTests
             try
             {
                 // Acquire package
-                bool success = UserController.Instance.BuyPackage(user, package.ID);
+                bool success = UserController.Instance.BuyPackage(user, package.ID).Count == 5;
 
                 Assert.IsTrue(success, "There was an error buying the package");
                 Assert.AreEqual(user.Coins, UserController.Instance.GetUser("dummy").Coins, "Package cost were not subtracted correcty");

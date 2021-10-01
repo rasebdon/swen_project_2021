@@ -1,4 +1,5 @@
-﻿using MTCG.Models;
+﻿using MTCG.Controller.Exceptions;
+using MTCG.Models;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,6 @@ namespace MTCG.Controller
 
         public bool AddPackage(Package package)
         {
-            // Check if auth is related to an admin
-            //User user = UserController.Instance.Authenticate(auth);
-
-            //if (!user.IsAdmin)
-            //    return false;
-
             // Insert package data
             string sql = "INSERT INTO packages (id, name, description, cost) VALUES (@id, @name, @description, @cost);";
             NpgsqlCommand cmd = new(sql);
@@ -72,6 +67,27 @@ namespace MTCG.Controller
 
             if (packageCardsRows == null)
                 throw new NullReferenceException($"There are no cards in the package {packageId}!");
+
+            return new Package(packageRow, packageCardsRows);
+        }
+        public Package GetPackage(string packageName)
+        {
+            // Get the package from the table
+            string sql = "SELECT * FROM packages WHERE name=@packageName";
+            NpgsqlCommand cmd = new(sql);
+            cmd.Parameters.AddWithValue("packageName", packageName);
+            var packageRow = Database.Instance.SelectSingle(cmd);
+
+            if (packageRow == null || packageRow["id"] == null)
+                throw new NoEntryFoundException(sql);
+
+            // Get the package cards the table
+            cmd = new("SELECT * FROM package_cards, cards WHERE package_id=@id AND cards.id=package_cards.card_id");
+            cmd.Parameters.AddWithValue("id", packageRow["id"]);
+            var packageCardsRows = Database.Instance.Select(cmd);
+
+            if (packageCardsRows == null)
+                throw new NullReferenceException($"There are no cards in the package {packageRow["id"]}!");
 
             return new Package(packageRow, packageCardsRows);
         }
