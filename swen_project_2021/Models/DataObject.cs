@@ -16,11 +16,11 @@ namespace MTCG.Models
         /// Base constructor for DataObjects
         /// </summary>
         /// <param name="id"></param>
-        public DataObject()
+        protected DataObject()
         {
             ID = Guid.NewGuid();
         }
-        public DataObject(Guid id)
+        protected DataObject(Guid id)
         {
             ID = id;
         }
@@ -30,7 +30,7 @@ namespace MTCG.Models
         /// <param name="row">The retrieved sql row</param>
         protected DataObject(OrderedDictionary row)
         {
-            ID = Guid.Parse(row["id"].ToString());
+            ID = (Guid)row["id"];
         }
 
         public string ToJson()

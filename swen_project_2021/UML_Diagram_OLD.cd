@@ -9,28 +9,29 @@
   <Class Name="MTCG.Models.Card" Collapsed="true">
     <Position X="8" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAACAAAAAAAAAAAAAAAQAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAACAQAAgAAAAgAgAAAQAAAgAQIAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Card.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MTCG.Models.DataObject" Collapsed="true">
     <Position X="8" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
       <FileName>Models\DataObject.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="MTCG.Models.MonsterCard" Collapsed="true">
     <Position X="7" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>QAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\MonsterCard.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MTCG.Models.Package" Collapsed="true">
     <Position X="9.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAABQIAAAAAAAAQAAAAAAAAAA=</HashCode>
       <FileName>Models\Package.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -44,7 +45,7 @@
   <Class Name="MTCG.Models.User" Collapsed="true">
     <Position X="6.25" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAQAAAQAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAACAAAAQAAAQAACAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\User.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -52,13 +53,13 @@
     <Position X="17" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAQAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
-      <FileName>Http\Requests\RegisterRequestBody.cs</FileName>
+      <FileName>Http\Requests\CredentialsRequestBody.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MTCG.Http.HttpAuthorization" Collapsed="true">
     <Position X="17" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAQAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAABAAA=</HashCode>
       <FileName>Http\HttpAuthorization.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -128,25 +129,27 @@
   <Class Name="MTCG.Controller.CardController" Collapsed="true">
     <Position X="8.5" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAEAAAAAAABAAAAAAAAAAAAEAAAAAAAAAQAAAIAA=</HashCode>
       <FileName>Controller\CardController.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="MTCG.Controller.TradeController" Collapsed="true">
     <Position X="13.75" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
       <FileName>Controller\TradeController.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MTCG.Controller.UserController" Collapsed="true">
     <Position X="10.25" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAgAAAAAAAAIAAAIACAABAAAAEAAQAAAAIAA=</HashCode>
+      <HashCode>AAABAAAAAgAAAAAAABIABgIAAAEBAAAAAAAQQAAAIAg=</HashCode>
       <FileName>Controller\UserController.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
-  <Class Name="MTCG.RestController" Collapsed="true">
+  <Class Name="MTCG.Controller.RestController" Collapsed="true">
     <Position X="12" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
@@ -163,15 +166,15 @@
   <Class Name="MTCG.Server" Collapsed="true">
     <Position X="6.75" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAACGAAAFgAAQAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Server.cs</FileName>
+      <HashCode>AAAAAAAACCAAAFgAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Server\Server.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MTCG.ServerLog" Collapsed="true">
     <Position X="6.75" Y="8.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAQAQAAAAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
-      <FileName>ServerLog.cs</FileName>
+      <HashCode>AIAAAAAAAAAQAQAIAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Server\ServerLog.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MTCG.Models.Stack" Collapsed="true">
