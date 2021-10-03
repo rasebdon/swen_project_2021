@@ -28,6 +28,12 @@ namespace MTCG.Models
             Cards = cards;
         }
 
+        public void SetID(Guid guid)
+        {
+            if (guid != Guid.Empty)
+                ID = guid;
+        }
+
         public Package(OrderedDictionary packageRow, OrderedDictionary[] packageCardsRows) : base(packageRow)
         {
             Name = packageRow["name"].ToString();

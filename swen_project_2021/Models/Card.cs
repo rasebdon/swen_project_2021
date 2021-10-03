@@ -38,6 +38,7 @@ namespace MTCG.Models
         /// The unique name of the card
         /// </summary>
         public string Name { get; }
+
         /// <summary>
         /// The damage of the card
         /// </summary>
@@ -109,6 +110,12 @@ namespace MTCG.Models
         public override int GetHashCode()
         {
             return HashCode.Combine(ID, Name, Damage, CardType, Element, Rarity, Description);
+        }
+
+        public void SetID(Guid guid)
+        {
+            if(guid != Guid.Empty)
+                ID = guid;
         }
     }
 }

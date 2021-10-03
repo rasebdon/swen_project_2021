@@ -11,7 +11,8 @@ namespace MTCG.Models
         /// <summary>
         /// The unique object id
         /// </summary>
-        public Guid ID { get; }
+        public Guid ID { get; protected set; }
+
         /// <summary>
         /// Base constructor for DataObjects
         /// </summary>
