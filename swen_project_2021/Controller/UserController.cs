@@ -228,6 +228,31 @@ namespace MTCG.Controller
             return stack;
         }
         
+        // Deck
+        public List<Deck> GetUserDecks(User user)
+        {
+            List<Deck> decks = new();
+
+            // Get the decks information
+            NpgsqlCommand cmd = new(
+                "SELECT decks.*, user_decks.user_id FROM user_decks, decks WHERE user_decks.user_id=@userId AND user_decks.deck_id=decks.id;");
+            cmd.Parameters.AddWithValue("userId", user.ID);
+            var deckInformations = Database.Instance.Select(cmd);
+
+            // Get the cards from the decks
+            for (int i = 0; i < deckInformations.Length; i++)
+            {
+                var info = deckInformations[i];
+                cmd = new("SELECT card_instance.* FROM deck_cards, card_instances WHERE deck_cards.deck_id=@deckId AND card_instances.id=deck_cards.card_instance_id");
+                cmd.Parameters.AddWithValue("deckId", info["id"]);
+                var cards = Database.Instance.Select(cmd);
+
+                decks.Add(new(info, cards));
+            }
+
+            return decks;
+        }
+
         // Packages
         /// <summary>
         /// Buy command for the user for buying a card package
@@ -280,7 +305,7 @@ namespace MTCG.Controller
             return drawnCards;
         }
 
-        // Patch
+        // Update user info
         public bool UpdateUserCoins(User user)
         {
             NpgsqlCommand cmd = new("UPDATE users SET coins=@coins WHERE id=@id;");

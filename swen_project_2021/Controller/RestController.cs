@@ -37,6 +37,13 @@ namespace MTCG.Controller
                         returnData = CardController.Instance.GetDetailedCardsJson(
                             UserController.Instance.GetUserCardStack(user.ID));
                         return new HttpResponse(returnData, HttpStatusCode.OK, "application/json");
+                    case "deck":
+                        // Authenticate user
+                        user = UserController.Instance.Authenticate(request.Authorization);
+
+                        returnData = CardController.Instance.GetDetailedDecksJson(
+                            UserController.Instance.GetUserDecks(user));
+                        return new HttpResponse(returnData, HttpStatusCode.OK, "application/json");
                 }
             }
             // Process POST requests

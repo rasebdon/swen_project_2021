@@ -76,7 +76,7 @@ namespace MTCG.Controller
         public string GetDetailedCardsJson(List<CardInstance> cards)
         {
             CharStream s = new();
-            s.Write("{ Cards: [");
+            s.Write("{ \"Cards\": [");
 
             for (int i = 0; i < cards.Count; i++)
             {
@@ -106,6 +106,41 @@ namespace MTCG.Controller
             if(card.CardType == CardType.Monster)
                 s.Write($"\"Race\":\"{(card as MonsterCard).Race}\",");
             s.Write("}");
+            return s.ToString();
+        }
+        public string GetDetailedDeckJson(Deck deck)
+        {
+            CharStream s = new();
+            s.Write("{");
+            s.Write($"\"ID\":\"{deck.ID}\",");
+            s.Write($"\"Name\":\"{deck.Name}\",");
+            s.Write($"\"UserID\":\"{deck.UserID}\",");
+            s.Write($"\"Cards\": [");
+
+            for (int i = 0; i < deck.Cards.Count; i++)
+            {
+                s.Write(GetDetailedCardJson(deck.Cards[i]));
+                if (i < deck.Cards.Count - 1)
+                    s.Write(",");
+            }
+
+            s.Write("]}");
+            return s.ToString();
+        }
+        public string GetDetailedDecksJson(List<Deck> decks)
+        {
+            CharStream s = new();
+            s.Write("{ \"Decks\": [");
+
+            for (int i = 0; i < decks.Count; i++)
+            {
+                s.Write(GetDetailedDeckJson(decks[i]));
+                if (i < decks.Count - 1)
+                    s.Write(",");
+            }
+
+            s.Write("]}");
+
             return s.ToString();
         }
     }
