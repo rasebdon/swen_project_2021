@@ -37,5 +37,57 @@ namespace MTCGUnitTests.DatabaseTests
                 UserController.Instance.Delete(user.ID);
             }
         }
+
+        [TestMethod]
+        public void UpdateUserELO()
+        {
+            User user = null;
+
+            try
+            {
+                user = UserController.Instance.Register("dummy", "1234");
+
+                int oldElo = user.ELO;
+                user.ELO = ushort.MaxValue;
+
+                bool success = UserController.Instance.UpdateUserELO(user);
+
+                user = UserController.Instance.Select(user.ID);
+
+                Assert.IsTrue(success);
+                Assert.AreEqual(ushort.MaxValue, user.ELO);
+            }
+            finally
+            {
+                if(user != null)
+                    UserController.Instance.Delete(user);
+            }
+        }
+
+        [TestMethod]
+        public void UpdateUserCoins()
+        {
+            User user = null;
+
+            try
+            {
+                user = UserController.Instance.Register("dummy", "1234");
+
+                uint oldCoins = user.Coins;
+                user.Coins = ushort.MaxValue;
+
+                bool success = UserController.Instance.UpdateUserCoins(user);
+
+                user = UserController.Instance.Select(user.ID);
+
+                Assert.IsTrue(success);
+                Assert.AreEqual(ushort.MaxValue, user.Coins);
+            }
+            finally
+            {
+                if (user != null)
+                    UserController.Instance.Delete(user);
+            }
+        }
     }
 }
