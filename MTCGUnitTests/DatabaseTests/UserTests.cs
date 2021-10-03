@@ -73,7 +73,7 @@ namespace MTCGUnitTests.DatabaseTests
             {
                 user = UserController.Instance.Register("dummy", "1234");
 
-                uint oldCoins = user.Coins;
+                int oldCoins = user.Coins;
                 user.Coins = ushort.MaxValue;
 
                 bool success = UserController.Instance.UpdateUserCoins(user);

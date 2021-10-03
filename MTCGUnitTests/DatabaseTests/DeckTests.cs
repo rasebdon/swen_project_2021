@@ -40,7 +40,8 @@ namespace MTCGUnitTests.DatabaseTests
                                 stack[1],
                                 stack[2],
                                 stack[3]
-                        });
+                        },
+                        false);
 
                     try
                     {
@@ -57,6 +58,7 @@ namespace MTCGUnitTests.DatabaseTests
                         Assert.AreEqual(1, decks.Count);
                         Assert.AreEqual(deck.ID, inserted.ID);
                         Assert.IsNotNull(decks.Find(d => d.ID == inserted.ID));
+                        Assert.IsTrue(inserted.MainDeck);
                     }
                     finally
                     {
@@ -103,7 +105,8 @@ namespace MTCGUnitTests.DatabaseTests
                                 stack[1],
                                 stack[2],
                                 stack[3]
-                        });
+                        },
+                        false);
 
                     try
                     {
@@ -118,7 +121,8 @@ namespace MTCGUnitTests.DatabaseTests
                                 stack[2],
                                 stack[3],
                                 stack[4]
-                            });
+                            },
+                        false);
 
                         bool success = DeckController.Instance.Update(deck, newDeck);
                         Assert.IsTrue(success, "Update failed!");
@@ -129,6 +133,7 @@ namespace MTCGUnitTests.DatabaseTests
                         Assert.AreEqual(newDeck.Name, updated.Name);
                         Assert.AreEqual(deck.ID, updated.ID, "Deck ids are not equal");
                         Assert.IsNotNull(updated.Cards.Find(c => c.ID == stack[4].ID), "Card ids are not equal");
+                        Assert.IsTrue(updated.MainDeck);
                     }
                     finally
                     {

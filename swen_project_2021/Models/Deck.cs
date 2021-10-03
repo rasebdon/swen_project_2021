@@ -10,11 +10,17 @@ namespace MTCG.Models
     public class Deck : DataObject
     {
         public const ushort DeckSize = 4;
+        public string Name { get; }
+        public Guid UserID { get; }
+        public List<CardInstance> Cards { get; }
+
+        public bool MainDeck { get; }
 
         public Deck(OrderedDictionary deckInformationRow, OrderedDictionary[] cardRows) : base(deckInformationRow)
         {
             UserID = (Guid)deckInformationRow["user_id"];
             Name = deckInformationRow["name"].ToString();
+            MainDeck = (bool)deckInformationRow["main_deck"];
 
             Cards = new();
             // Add cards
@@ -24,21 +30,16 @@ namespace MTCG.Models
             }
         }
 
-        public Deck(string name, Guid userID, List<CardInstance> cards)
+        public Deck(string name, Guid userID, List<CardInstance> cards, bool mainDeck)
         {
             // Check for package card count
             if (cards == null || cards.Count != DeckSize)
                 throw new ArgumentException($"The cards of a deck must be { DeckSize }"!);
 
+            MainDeck = mainDeck;
             Name = name;
             UserID = userID;
             Cards = cards;
         }
-
-        public string Name { get; }
-        public Guid UserID { get; }
-        public List<CardInstance> Cards { get; }
-
-
     }
 }

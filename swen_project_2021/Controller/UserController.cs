@@ -47,17 +47,19 @@ namespace MTCG.Controller
             if (Database.Instance.SelectSingle(cmd) != null)
                 throw new DuplicateEntryException(username);
 
-            User user = new(username, 20, 1000);
+            // Default user values
+            User user = new(username, 20, 1000, 0);
 
             /// Create password hash and insert
             string hash = Crypter.Blowfish.Crypt(password);
-            string sql = $"INSERT INTO users (id, username, hash, coins, elo, admin) VALUES (@id, @username, @hash, @coins, @elo, false);";
+            string sql = $"INSERT INTO users (id, username, hash, coins, elo, admin, played_games) VALUES (@id, @username, @hash, @coins, @elo, false, @played_games);";
             cmd = new NpgsqlCommand(sql);
             cmd.Parameters.AddWithValue("id", user.ID);
             cmd.Parameters.AddWithValue("username", username);
             cmd.Parameters.AddWithValue("hash", hash);
             cmd.Parameters.AddWithValue("coins", (int)user.Coins);
             cmd.Parameters.AddWithValue("elo", (int)user.ELO);
+            cmd.Parameters.AddWithValue("played_games", user.PlayedGames);
 
             // Check if user was successfully created
             if (Database.Instance.ExecuteNonQuery(cmd) != 1)
@@ -231,12 +233,16 @@ namespace MTCG.Controller
         // Deck
         public List<Deck> GetUserDecks(User user)
         {
+            return GetUserDecks(user.ID);
+        }
+        public List<Deck> GetUserDecks(Guid userId)
+        {
             List<Deck> decks = new();
 
             // Get the decks information
             NpgsqlCommand cmd = new(
-                "SELECT decks.*, user_decks.user_id FROM user_decks, decks WHERE user_decks.user_id=@userId AND user_decks.deck_id=decks.id;");
-            cmd.Parameters.AddWithValue("userId", user.ID);
+                "SELECT decks.*, user_decks.user_id, user_decks.main_deck FROM user_decks, decks WHERE user_decks.user_id=@userId AND user_decks.deck_id=decks.id;");
+            cmd.Parameters.AddWithValue("userId", userId);
             var deckInformations = Database.Instance.Select(cmd);
 
             // Get the cards from the decks

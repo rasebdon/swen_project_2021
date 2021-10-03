@@ -9,9 +9,15 @@ namespace MTCG.Controller
 {
     public class BattleController : Singleton<BattleController>
     {
-        public void Battle(User user1, User user2)
-        {
+        public const int MaxPlayedRounds = 100;
 
+        public void Battle(Deck deck1, Deck deck2)
+        {
+            // Init battle
+            for (int i = 0; i < MaxPlayedRounds; i++)
+            {
+
+            }
         }
     }
 }
