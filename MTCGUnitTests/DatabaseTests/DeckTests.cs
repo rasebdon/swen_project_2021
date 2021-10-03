@@ -46,7 +46,7 @@ namespace MTCGUnitTests.DatabaseTests
                     {
                         bool success = DeckController.Instance.Insert(deck);
 
-                        Assert.IsTrue(success);
+                        Assert.IsTrue(success, "Insert failed");
 
                         // Retrieve deck
                         Deck inserted = DeckController.Instance.Select(deck.ID);
@@ -108,7 +108,7 @@ namespace MTCGUnitTests.DatabaseTests
                     try
                     {
                         DeckController.Instance.Insert(deck);
-
+                        
                         Deck newDeck = new(
                             "Dummy Deck New",
                             user.ID,
@@ -121,8 +121,7 @@ namespace MTCGUnitTests.DatabaseTests
                             });
 
                         bool success = DeckController.Instance.Update(deck, newDeck);
-
-                        Assert.IsTrue(success);
+                        Assert.IsTrue(success, "Update failed!");
 
                         // Retrieve deck
                         Deck updated = DeckController.Instance.Select(deck.ID);

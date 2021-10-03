@@ -160,9 +160,52 @@ namespace MTCG.Controller
                             break;
                         }
                         break;
+                    case "decks":
+                        try
+                        {
+                            // Get user auth
+                            User user = UserController.Instance.Authenticate(request.Authorization);
+                            // Create deck
+                            Deck deck = JsonConvert.DeserializeObject<Deck>(request.RequestBody);
+                            // Insert deck
+                            bool success = DeckController.Instance.Insert(deck);
+                            return new HttpResponse(HttpStatusCode.Created);
+                        }
+                        catch (Exception e)
+                        {
+                            ServerLog.WriteLine(e.ToString(), ServerLog.OutputFormat.Error);
+                            return new HttpResponse(HttpStatusCode.BadRequest);
+                        }
                 }
             }
-
+            // Process PUT requests
+            else if(request.HttpMethod == HttpMethod.PUT)
+            {
+                switch (path[0])
+                {
+                    case "decks":
+                        try
+                        {
+                            // Get user auth
+                            User user = UserController.Instance.Authenticate(request.Authorization);
+                            // Create deck
+                            Deck deck = JsonConvert.DeserializeObject<Deck>(request.RequestBody);
+                            // Get deck to update id from query
+                            Deck deckToUpdate = DeckController.Instance.Select(Guid.Parse(path[1]));
+                            // Check if user is owner of deck
+                            if (deckToUpdate.UserID != user.ID)
+                                return new HttpResponse(HttpStatusCode.Forbidden);
+                            // Update deck
+                            bool success = DeckController.Instance.Update(deckToUpdate, deck);
+                            return new HttpResponse(HttpStatusCode.Created);
+                        }
+                        catch (Exception e)
+                        {
+                            ServerLog.WriteLine(e.ToString(), ServerLog.OutputFormat.Error);
+                            return new HttpResponse(HttpStatusCode.BadRequest);
+                        }
+                }
+            }
             return new HttpResponse(HttpStatusCode.NotFound);
         }
     }
