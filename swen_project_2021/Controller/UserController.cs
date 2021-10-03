@@ -243,7 +243,7 @@ namespace MTCG.Controller
             for (int i = 0; i < deckInformations.Length; i++)
             {
                 var info = deckInformations[i];
-                cmd = new("SELECT card_instance.* FROM deck_cards, card_instances WHERE deck_cards.deck_id=@deckId AND card_instances.id=deck_cards.card_instance_id");
+                cmd = new("SELECT card_instances.* FROM deck_cards, card_instances WHERE deck_cards.deck_id=@deckId AND card_instances.id=deck_cards.card_instance_id");
                 cmd.Parameters.AddWithValue("deckId", info["id"]);
                 var cards = Database.Instance.Select(cmd);
 
