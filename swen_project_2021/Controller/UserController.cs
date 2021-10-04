@@ -48,7 +48,7 @@ namespace MTCG.Controller
                 throw new DuplicateEntryException(username);
 
             // Default user values
-            User user = new(username, 20, 1000, 0);
+            User user = new(username, 20, 100, 0);
 
             /// Create password hash and insert
             string hash = Crypter.Blowfish.Crypt(password);
@@ -74,7 +74,9 @@ namespace MTCG.Controller
         // Delete
         public bool Delete(User user)
         {
-            return Delete(user.ID);
+            if(user != null)
+                return Delete(user.ID);
+            return false;
         }
         public bool Delete(string username)
         {
@@ -171,6 +173,7 @@ namespace MTCG.Controller
 
             return user;
         }
+
         /// <summary>
         /// Gets the hash of a user with the given username
         /// </summary>
@@ -323,6 +326,13 @@ namespace MTCG.Controller
         {
             NpgsqlCommand cmd = new("UPDATE users SET elo=@elo WHERE id=@id");
             cmd.Parameters.AddWithValue("elo", (int)user.ELO);
+            cmd.Parameters.AddWithValue("id", user.ID);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
+        }
+        public bool UpdatePlayedRounds(User user)
+        {
+            NpgsqlCommand cmd = new("UPDATE users SET played_games=@played_games WHERE id=@id");
+            cmd.Parameters.AddWithValue("played_games", user.PlayedGames);
             cmd.Parameters.AddWithValue("id", user.ID);
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }

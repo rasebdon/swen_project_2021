@@ -11,9 +11,7 @@ namespace MTCG.Serialization
     {
         public void Write(char c)
         {
-            byte[] b = BitConverter.GetBytes(c);
-
-            Write(b, 0, b.Length);
+            Write(c + "");
         }
         public void Write(string s)
         {
@@ -23,6 +21,11 @@ namespace MTCG.Serialization
         public override string ToString()
         {
             return Encoding.UTF8.GetString(this.ToArray());
+        }
+
+        public void WriteLine(string s = "")
+        {
+            Write(s + "\n");
         }
     }
 }
