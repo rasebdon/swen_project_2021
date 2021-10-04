@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -28,6 +29,15 @@ namespace MTCG.Models
             {
                 Cards.Add(new CardInstance(cardRows[i]));
             }
+        }
+
+        [JsonConstructor]
+        public Deck(string name, Guid userId, bool mainDeck, CardInstance[] cards)
+        {
+            Name = name;
+            UserID = userId;
+            MainDeck = mainDeck;
+            Cards = new(cards);
         }
 
         public Deck(string name, Guid userID, List<CardInstance> cards, bool mainDeck)

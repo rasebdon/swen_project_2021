@@ -79,9 +79,9 @@ namespace MTCGUnitTests.DatabaseTests
                         DeckController.Instance.Insert(deckUser1);
                         DeckController.Instance.Insert(deckUser2);
 
-                        // Retrieve decks
+                        // Retrieve decks (Matchmaking)
                         deckUser1 = DeckController.Instance.Select(deckUser1.ID);
-                        deckUser2 = DeckController.Instance.Select(deckUser2.ID);
+                        deckUser2 = BattleController.Instance.FindMatch(deckUser1);
 
                         // Battle
                         BattleResult result = BattleController.Instance.Battle(deckUser1, deckUser2);

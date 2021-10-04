@@ -16,6 +16,17 @@ namespace MTCG.Models
         public List<Card> Cards { get; }
 
         [JsonConstructor]
+        public Package(Guid id, string name, string description, ushort cost, List<Card> cards) : base(id)
+        {
+            // Check for package card count
+            if (cards == null || cards.Count == 0)
+                throw new ArgumentException();
+
+            Name = name;
+            Description = description;
+            Cost = cost;
+            Cards = cards;
+        }
         public Package(string name, string description, ushort cost, List<Card> cards) : base()
         {
             // Check for package card count

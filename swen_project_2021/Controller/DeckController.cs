@@ -21,9 +21,9 @@ namespace MTCG.Controller
 
             cmd = new("SELECT card_instances.* FROM deck_cards, card_instances WHERE deck_cards.deck_id=@deckId AND card_instances.id=deck_cards.card_instance_id");
             cmd.Parameters.AddWithValue("deckId", deckId);
-            var deckCardsRow = Database.Instance.Select(cmd);
+            var deckCardsRow = Database.Instance.SelectAsync(cmd);
 
-            return new Deck(deckInfoRow, deckCardsRow);
+            return new Deck(deckInfoRow, deckCardsRow.Result);
         }
         public bool Delete(Deck deck)
         {

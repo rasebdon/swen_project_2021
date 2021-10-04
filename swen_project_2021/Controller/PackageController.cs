@@ -27,12 +27,12 @@ namespace MTCG.Controller
             sql = "SELECT * FROM package_cards, cards WHERE package_id=@id AND cards.id=package_cards.card_id";
             cmd = new(sql);
             cmd.Parameters.AddWithValue("id", packageId);
-            var packageCardsRows = Database.Instance.Select(cmd);
+            var packageCardsRows = Database.Instance.SelectAsync(cmd);
 
             if (packageCardsRows == null)
                 throw new NullReferenceException($"There are no cards in the package {packageId}!");
 
-            return new Package(packageRow, packageCardsRows);
+            return new Package(packageRow, packageCardsRows.Result);
         }
         public Package Select(string packageName)
         {
@@ -48,12 +48,12 @@ namespace MTCG.Controller
             // Get the package cards the table
             cmd = new("SELECT * FROM package_cards, cards WHERE package_id=@id AND cards.id=package_cards.card_id");
             cmd.Parameters.AddWithValue("id", packageRow["id"]);
-            var packageCardsRows = Database.Instance.Select(cmd);
+            var packageCardsRows = Database.Instance.SelectAsync(cmd);
 
             if (packageCardsRows == null)
                 throw new NullReferenceException($"There are no cards in the package {packageRow["id"]}!");
 
-            return new Package(packageRow, packageCardsRows);
+            return new Package(packageRow, packageCardsRows.Result);
         }
 
         // Insert

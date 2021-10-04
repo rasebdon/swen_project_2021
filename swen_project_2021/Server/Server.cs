@@ -98,14 +98,6 @@ namespace MTCG
                     continue;
                 }
                 /// Process data
-                // No need to process empty get requests
-                if (!request.HasEntityBody && request.HttpMethod != HttpMethod.GET)
-                {
-                    ServerLog.WriteLine("Empty request recieved! Continuing to the next request",
-                        ServerLog.OutputFormat.Warning);
-                    HttpClient.SendHttpResponse(new HttpResponse(HttpStatusCode.NotFound), request);
-                    continue;
-                }
                 // Get the response
                 HttpResponse response;
                 try

@@ -5,6 +5,7 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 
 namespace MTCG.Controller
 {
@@ -63,7 +64,7 @@ namespace MTCG.Controller
         public OrderedDictionary SelectSingle(NpgsqlCommand cmd)
         {
             // Execute sql
-            var results = Select(cmd);
+            OrderedDictionary[] results = SelectAsync(cmd).Result;
 
             // Return data
             if (results.Length > 0)
@@ -76,11 +77,11 @@ namespace MTCG.Controller
         /// </summary>
         /// <param name="sql">The sql query</param>
         /// <returns>All rows of the result or null if no results where found</returns>
-        public OrderedDictionary[] Select(NpgsqlCommand cmd)
+        public async Task<OrderedDictionary[]> SelectAsync(NpgsqlCommand cmd)
         {
             // Execute query
             cmd.Connection = this.Connection;
-            NpgsqlDataReader rdr = cmd.ExecuteReader();
+            NpgsqlDataReader rdr = await cmd.ExecuteReaderAsync();
 
             if (!rdr.HasRows)
             {

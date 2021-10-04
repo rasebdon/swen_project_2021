@@ -223,7 +223,7 @@ namespace MTCG.Controller
             // Get the instaces from the user
             NpgsqlCommand cmd = new("SELECT card_instances.* FROM user_cards, card_instances WHERE user_id=@userId AND card_instance_id=id;");
             cmd.Parameters.AddWithValue("userId", userId);
-            var cardInstanceIds = Database.Instance.Select(cmd);
+            var cardInstanceIds = Database.Instance.SelectAsync(cmd).Result;
 
             List<CardInstance> stack = new();
             for (int i = 0; i < cardInstanceIds.Length; i++)
@@ -244,19 +244,22 @@ namespace MTCG.Controller
 
             // Get the decks information
             NpgsqlCommand cmd = new(
-                "SELECT decks.*, user_decks.user_id, user_decks.main_deck FROM user_decks, decks WHERE user_decks.user_id=@userId AND user_decks.deck_id=decks.id;");
+                @"SELECT decks.*, user_id, main_deck
+                FROM decks, user_decks
+                WHERE user_id=@userId
+                AND deck_id=id;");
             cmd.Parameters.AddWithValue("userId", userId);
-            var deckInformations = Database.Instance.Select(cmd);
+            var deckInformations = Database.Instance.SelectAsync(cmd);
 
             // Get the cards from the decks
-            for (int i = 0; i < deckInformations.Length; i++)
+            for (int i = 0; i < deckInformations.Result.Length; i++)
             {
-                var info = deckInformations[i];
+                var info = deckInformations.Result[i];
                 cmd = new("SELECT card_instances.* FROM deck_cards, card_instances WHERE deck_cards.deck_id=@deckId AND card_instances.id=deck_cards.card_instance_id");
                 cmd.Parameters.AddWithValue("deckId", info["id"]);
-                var cards = Database.Instance.Select(cmd);
+                var cards = Database.Instance.SelectAsync(cmd);
 
-                decks.Add(new(info, cards));
+                decks.Add(new(info, cards.Result));
             }
 
             return decks;

@@ -37,7 +37,7 @@ namespace MTCG.Controller
                         returnData = CardController.Instance.GetDetailedCardsJson(
                             UserController.Instance.GetUserCardStack(user.ID));
                         return new HttpResponse(returnData, HttpStatusCode.OK, "application/json");
-                    case "deck":
+                    case "decks":
                         // Authenticate user
                         user = UserController.Instance.Authenticate(request.Authorization);
 
@@ -160,6 +160,7 @@ namespace MTCG.Controller
                             break;
                         }
                         break;
+                    // Add new deck
                     case "decks":
                         try
                         {
@@ -172,6 +173,29 @@ namespace MTCG.Controller
                             return new HttpResponse(HttpStatusCode.Created);
                         }
                         catch (Exception e)
+                        {
+                            ServerLog.WriteLine(e.ToString(), ServerLog.OutputFormat.Error);
+                            return new HttpResponse(HttpStatusCode.BadRequest);
+                        }
+                    // Queue for battle
+                    case "battle":
+                        try
+                        {
+                            // Auth user
+                            User user = UserController.Instance.Authenticate(request.Authorization);
+                            // Get main deck of user
+                            Deck deck = UserController.Instance.GetUserDecks(user.ID).Find(d => d.MainDeck == true);
+                            // Get any other main deck
+                            Deck enemyDeck = BattleController.Instance.FindMatch(deck);
+
+                            if(enemyDeck == null || deck == null)
+                                return new HttpResponse(HttpStatusCode.BadRequest);
+
+                            BattleResult result = BattleController.Instance.Battle(deck, enemyDeck);
+
+                            return new HttpResponse(JsonConvert.SerializeObject(result), HttpStatusCode.Created, "application/json");
+                        }
+                        catch(Exception e)
                         {
                             ServerLog.WriteLine(e.ToString(), ServerLog.OutputFormat.Error);
                             return new HttpResponse(HttpStatusCode.BadRequest);

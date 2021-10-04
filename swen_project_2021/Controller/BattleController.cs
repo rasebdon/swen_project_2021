@@ -12,12 +12,12 @@ namespace MTCG.Controller
     {
         public const int MaxPlayedRounds = 100;
 
-        public List<Deck> MatchQueue { get; }
+        //public List<Deck> MatchQueue { get; }
 
-        public BattleController()
-        {
-            MatchQueue = new();
-        }
+        //public BattleController()
+        //{
+        //    MatchQueue = new();
+        //}
 
         public BattleResult Battle(Deck deck1, Deck deck2)
         {
@@ -149,6 +149,12 @@ namespace MTCG.Controller
         private BattleResult Tie(User u1, User u2, CharStream log)
         {
             log.WriteLine("Maximum rounds reached! The battle ends in a tie");
+            
+            u1.PlayedGames++;
+            u2.PlayedGames++;
+            UserController.Instance.UpdatePlayedRounds(u1);
+            UserController.Instance.UpdatePlayedRounds(u2);
+
             return new BattleResult(u1.ID, u2.ID, log.ToString(), true);
         }
 
@@ -255,6 +261,14 @@ namespace MTCG.Controller
 
             // Should not be possible
             return attacker.Damage;
+        }
+
+        public Deck FindMatch(Deck searcher)
+        {
+            Npgsql.NpgsqlCommand cmd = new("SELECT deck_id FROM user_decks WHERE deck_id!=@searcher_id AND main_deck=True ORDER BY RANDOM() LIMIT 1");
+            cmd.Parameters.AddWithValue("searcher_id", searcher.ID);
+            var row = Database.Instance.SelectSingle(cmd);
+            return DeckController.Instance.Select((Guid)row["deck_id"]);
         }
 
         /// <summary>
