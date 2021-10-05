@@ -281,7 +281,7 @@ namespace MTCG.Controller
         /// <param name="defender"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        bool LoseDueToSpecialty(Race attacker, Race defender, CharStream log)
+        public bool LoseDueToSpecialty(Race attacker, Race defender, CharStream log)
         {
             if (attacker == Race.Goblin && defender == Race.Draconid)
             {

@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MTCG.Controller;
 using MTCG.Models;
 
-namespace MTCGUnitTests.DatabaseTests
+namespace MTCGUnitTests.ControllerTests
 {
     [TestClass]
     public class DeckTests

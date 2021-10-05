@@ -8,7 +8,7 @@ using MTCG.Models;
 using MTCG.Controller;
 using MTCG;
 
-namespace MTCGUnitTests.DatabaseTests
+namespace MTCGUnitTests.ControllerTests
 {
     [TestClass]
     public class UserTests

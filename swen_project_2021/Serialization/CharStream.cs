@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Serialization
 {
-    class CharStream : MemoryStream
+    public class CharStream : MemoryStream
     {
         public void Write(char c)
         {

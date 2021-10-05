@@ -1,13 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MTCG.Controller;
 using MTCG.Models;
+using MTCG.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCGUnitTests.DatabaseTests
+namespace MTCGUnitTests.ControllerTests
 {
     [TestClass]
     public class BattleTests
@@ -116,6 +117,44 @@ namespace MTCGUnitTests.DatabaseTests
                 UserController.Instance.Delete(user1);
                 UserController.Instance.Delete(user2);
             }
+        }
+    
+        [TestMethod]
+        public void MonsterBattleModifierTest()
+        {
+            CharStream log = new();
+
+            // Dragon should lose
+            bool dragonLose = BattleController.Instance.LoseDueToSpecialty(Race.Draconid, Race.FireElf, log);
+            bool fireElfLose = BattleController.Instance.LoseDueToSpecialty(Race.FireElf, Race.Draconid, log);
+
+            // Orc should lose
+            bool orcLose = BattleController.Instance.LoseDueToSpecialty(Race.Orc, Race.Mage, log);
+            bool mageLose = BattleController.Instance.LoseDueToSpecialty(Race.Mage, Race.Orc, log);
+
+            // Goblin should lose
+            bool goblinLose = BattleController.Instance.LoseDueToSpecialty(Race.Goblin, Race.Draconid, log);
+            bool dragonGoblinLose = BattleController.Instance.LoseDueToSpecialty(Race.Draconid, Race.Goblin, log);
+
+            // Verify results
+            Assert.IsTrue(dragonLose);
+            Assert.IsFalse(fireElfLose);
+            Assert.IsTrue(orcLose);
+            Assert.IsFalse(mageLose);
+            Assert.IsTrue(goblinLose);
+            Assert.IsFalse(dragonGoblinLose);
+        }
+
+        [TestMethod]
+        public void SpellElementModifierTest()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void MixedFightModifierTest()
+        {
+            Assert.Fail();
         }
     }
 }
