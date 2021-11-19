@@ -21,9 +21,9 @@ namespace MTCG.Controller
 
             cmd = new("SELECT card_instances.* FROM deck_cards, card_instances WHERE deck_cards.deck_id=@deckId AND card_instances.id=deck_cards.card_instance_id");
             cmd.Parameters.AddWithValue("deckId", deckId);
-            var deckCardsRow = Database.Instance.Select(cmd);
+            var deckCardsRow = Database.Instance.SelectAsync(cmd);
 
-            return new Deck(deckInfoRow, deckCardsRow);
+            return new Deck(deckInfoRow, deckCardsRow.Result);
         }
         public bool Delete(Deck deck)
         {
@@ -37,17 +37,37 @@ namespace MTCG.Controller
         {
             Validate(deck);
 
+            NpgsqlCommand cmd;
+            bool mainDeck;
+
+            if (!deck.MainDeck)
+            {
+                // Check if it is the first deck of the user => make it the main deck
+                mainDeck = UserController.Instance.GetUserDecks(deck.UserID).Count == 0;
+            }
+            else
+            {
+                // Uncheck old main deck
+                cmd = new("UPDATE user_decks SET main_deck=False WHERE main_deck=True AND user_id=@user_id");
+                cmd.Parameters.AddWithValue("user_id", deck.UserID);
+                Database.Instance.ExecuteNonQuery(cmd);
+
+                // Set this deck as new main deck
+                mainDeck = true;
+            }
+
             int errorno = 0;
             // Insert deck metadata
-            NpgsqlCommand cmd = new("INSERT INTO decks (id, name) VALUES (@id, @name);");
+            cmd = new("INSERT INTO decks (id, name) VALUES (@id, @name);");
             cmd.Parameters.AddWithValue("id", deck.ID);
             cmd.Parameters.AddWithValue("name", deck.Name);
             errorno += Database.Instance.ExecuteNonQuery(cmd) == 1 ? 0 : 1;
 
             // Insert user link
-            cmd = new("INSERT INTO user_decks (deck_id, user_id) VALUES (@deck_id, @user_id);");
+            cmd = new("INSERT INTO user_decks (deck_id, user_id, main_deck) VALUES (@deck_id, @user_id, @main_deck);");
             cmd.Parameters.AddWithValue("deck_id", deck.ID);
             cmd.Parameters.AddWithValue("user_id", deck.UserID);
+            cmd.Parameters.AddWithValue("main_deck", mainDeck);
             errorno += Database.Instance.ExecuteNonQuery(cmd) == 1 ? 0 : 1;
 
             // Insert card links
@@ -74,8 +94,34 @@ namespace MTCG.Controller
 
             try
             {
-                // Update deck information
                 NpgsqlCommand cmd;
+                bool mainDeck;
+                if (!newDeck.MainDeck)
+                {
+                    // Check if it is the first deck of the user => make it the main deck
+                    mainDeck = UserController.Instance.GetUserDecks(newDeck.UserID).Count == 0;
+                }
+                else
+                {
+                    // Uncheck old main deck
+                    cmd = new("UPDATE user_decks SET main_deck=False WHERE main_deck=True AND user_id=@user_id");
+                    cmd.Parameters.AddWithValue("user_id", newDeck.UserID);
+                    Database.Instance.ExecuteNonQuery(cmd);
+
+                    // Set this deck as new main deck
+                    mainDeck = true;
+                }
+
+                // Update main deck
+                if(mainDeck)
+                {
+                    cmd = new("UPDATE user_decks SET main_deck=True WHERE user_id=@user_id AND deck_id=@deck_id");
+                    cmd.Parameters.AddWithValue("user_id", newDeck.UserID);
+                    cmd.Parameters.AddWithValue("deck_id", oldDeck.ID);
+                    Database.Instance.ExecuteNonQuery(cmd);
+                }
+
+                // Update deck information
                 if (oldDeck.Name != newDeck.Name)
                 {
                     cmd = new("UPDATE decks SET name=@name;");

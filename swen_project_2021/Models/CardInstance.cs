@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Specialized;
 
 namespace MTCG.Models
@@ -27,6 +28,12 @@ namespace MTCG.Models
         public CardInstance(Card card) : base()
         {
             CardID = card.ID;
+        }
+
+        [JsonConstructor]
+        public CardInstance(Guid id, Guid cardId) : base(id)
+        {
+            CardID = cardId;
         }
     }
 }

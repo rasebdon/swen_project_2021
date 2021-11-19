@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCGUnitTests.DatabaseTests
+namespace MTCGUnitTests.ControllerTests
 {
     [TestClass]
     public class CardTests
@@ -66,6 +66,43 @@ namespace MTCGUnitTests.DatabaseTests
             finally
             {
                 CardInstanceController.Instance.Delete(instance);
+                CardController.Instance.Delete(card);
+            }
+        }
+    
+        [TestMethod]
+        public void GetCardsFromInstances()
+        {
+            Card card = new MonsterCard("Monster", "This is a monster", 32, Element.Fire, Rarity.Legendary, Race.Beast);
+            List<CardInstance> instances = new()
+            {
+                new(card),
+                new(card),
+                new(card),
+                new(card)
+            };
+
+            try
+            {
+                CardController.Instance.Insert(card);
+                CardInstanceController.Instance.Insert(instances);
+
+                var cards = CardController.Instance.GetCards(instances);
+
+                bool areEqual = true;
+                for (int i = 0; i < instances.Count; i++)
+                {
+                    if (cards[i].ID != instances[i].CardID)
+                    {
+                        areEqual = false;
+                        break;
+                    }
+                }
+
+                Assert.IsTrue(areEqual);
+            }
+            finally
+            {
                 CardController.Instance.Delete(card);
             }
         }

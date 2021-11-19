@@ -47,17 +47,19 @@ namespace MTCG.Controller
             if (Database.Instance.SelectSingle(cmd) != null)
                 throw new DuplicateEntryException(username);
 
-            User user = new(username, 20, 1000);
+            // Default user values
+            User user = new(username, 20, 100, 0);
 
             /// Create password hash and insert
             string hash = Crypter.Blowfish.Crypt(password);
-            string sql = $"INSERT INTO users (id, username, hash, coins, elo, admin) VALUES (@id, @username, @hash, @coins, @elo, false);";
+            string sql = $"INSERT INTO users (id, username, hash, coins, elo, admin, played_games) VALUES (@id, @username, @hash, @coins, @elo, false, @played_games);";
             cmd = new NpgsqlCommand(sql);
             cmd.Parameters.AddWithValue("id", user.ID);
             cmd.Parameters.AddWithValue("username", username);
             cmd.Parameters.AddWithValue("hash", hash);
             cmd.Parameters.AddWithValue("coins", (int)user.Coins);
             cmd.Parameters.AddWithValue("elo", (int)user.ELO);
+            cmd.Parameters.AddWithValue("played_games", user.PlayedGames);
 
             // Check if user was successfully created
             if (Database.Instance.ExecuteNonQuery(cmd) != 1)
@@ -72,7 +74,9 @@ namespace MTCG.Controller
         // Delete
         public bool Delete(User user)
         {
-            return Delete(user.ID);
+            if(user != null)
+                return Delete(user.ID);
+            return false;
         }
         public bool Delete(string username)
         {
@@ -169,6 +173,7 @@ namespace MTCG.Controller
 
             return user;
         }
+
         /// <summary>
         /// Gets the hash of a user with the given username
         /// </summary>
@@ -218,7 +223,7 @@ namespace MTCG.Controller
             // Get the instaces from the user
             NpgsqlCommand cmd = new("SELECT card_instances.* FROM user_cards, card_instances WHERE user_id=@userId AND card_instance_id=id;");
             cmd.Parameters.AddWithValue("userId", userId);
-            var cardInstanceIds = Database.Instance.Select(cmd);
+            var cardInstanceIds = Database.Instance.SelectAsync(cmd).Result;
 
             List<CardInstance> stack = new();
             for (int i = 0; i < cardInstanceIds.Length; i++)
@@ -231,23 +236,30 @@ namespace MTCG.Controller
         // Deck
         public List<Deck> GetUserDecks(User user)
         {
+            return GetUserDecks(user.ID);
+        }
+        public List<Deck> GetUserDecks(Guid userId)
+        {
             List<Deck> decks = new();
 
             // Get the decks information
             NpgsqlCommand cmd = new(
-                "SELECT decks.*, user_decks.user_id FROM user_decks, decks WHERE user_decks.user_id=@userId AND user_decks.deck_id=decks.id;");
-            cmd.Parameters.AddWithValue("userId", user.ID);
-            var deckInformations = Database.Instance.Select(cmd);
+                @"SELECT decks.*, user_id, main_deck
+                FROM decks, user_decks
+                WHERE user_id=@userId
+                AND deck_id=id;");
+            cmd.Parameters.AddWithValue("userId", userId);
+            var deckInformations = Database.Instance.SelectAsync(cmd);
 
             // Get the cards from the decks
-            for (int i = 0; i < deckInformations.Length; i++)
+            for (int i = 0; i < deckInformations.Result.Length; i++)
             {
-                var info = deckInformations[i];
+                var info = deckInformations.Result[i];
                 cmd = new("SELECT card_instances.* FROM deck_cards, card_instances WHERE deck_cards.deck_id=@deckId AND card_instances.id=deck_cards.card_instance_id");
                 cmd.Parameters.AddWithValue("deckId", info["id"]);
-                var cards = Database.Instance.Select(cmd);
+                var cards = Database.Instance.SelectAsync(cmd);
 
-                decks.Add(new(info, cards));
+                decks.Add(new(info, cards.Result));
             }
 
             return decks;
@@ -317,6 +329,13 @@ namespace MTCG.Controller
         {
             NpgsqlCommand cmd = new("UPDATE users SET elo=@elo WHERE id=@id");
             cmd.Parameters.AddWithValue("elo", (int)user.ELO);
+            cmd.Parameters.AddWithValue("id", user.ID);
+            return Database.Instance.ExecuteNonQuery(cmd) == 1;
+        }
+        public bool UpdatePlayedRounds(User user)
+        {
+            NpgsqlCommand cmd = new("UPDATE users SET played_games=@played_games WHERE id=@id");
+            cmd.Parameters.AddWithValue("played_games", user.PlayedGames);
             cmd.Parameters.AddWithValue("id", user.ID);
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }

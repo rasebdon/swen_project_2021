@@ -34,6 +34,28 @@ namespace MTCG.Controller
 
             return Database.Instance.ExecuteNonQuery(cmd) == 1;
         }
+
+        /// <summary>
+        /// Get a list of cards that are related to the given card instances
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
+        public List<Card> GetCards(List<CardInstance> cardInstances)
+        {
+            List<Card> cards = new();
+            NpgsqlCommand cmd = new("SELECT * FROM cards WHERE id=@card_id;");
+
+            for (int i = 0; i < cardInstances.Count; i++)
+            {
+                cmd.Parameters.AddWithValue("card_id", cardInstances[i].CardID);
+                var row = Database.Instance.SelectSingle(cmd);
+                cmd.Parameters.Clear();
+
+                cards.Add(Card.ParseFromDatabase(row));
+            }
+            return cards;
+        }
+
         public bool Insert(List<Card> cards)
         {
             int errno = 0;

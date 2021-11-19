@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCGUnitTests.DatabaseTests
+namespace MTCGUnitTests.ControllerTests
 {
     [TestClass]
     public class PackageTests
