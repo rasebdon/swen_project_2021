@@ -8,7 +8,8 @@ namespace MTCG.Http
         GET,
         POST,
         DELETE,
-        PUT
+        PUT,
+        PATCH
     }
 
     public class HttpRequest
