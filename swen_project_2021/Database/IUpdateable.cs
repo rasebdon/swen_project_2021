@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCG.Interfaces
+namespace MTCG.DAL
 {
-    interface IInsertMultiple<T>
+    public interface IUpdateable
     {
-        bool Insert(List<T> items);
+        void Update(Database database);
     }
 }

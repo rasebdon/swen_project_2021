@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
-    public class Trade : DataObject
+    public class Trade : DatabaseObject
     {
         public Guid UserOneID { get; }
         public Guid UserTwoID { get; }

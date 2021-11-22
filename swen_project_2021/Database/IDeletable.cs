@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCG.Interfaces
+namespace MTCG.DAL
 {
-    interface IUpdateable<T>
+    public interface IDeletable
     {
-        public bool Update(T oldItem, T newItem);
+        void Delete(Database database);
     }
 }

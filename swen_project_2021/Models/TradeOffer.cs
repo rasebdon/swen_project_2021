@@ -1,30 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MTCG.DAL;
+using System.Text.Json.Serialization;
+using System;
 
 namespace MTCG.Models
 {
-    public class TradeOffer : DataObject
+    [Serializable]
+    [TableName("offers")]
+    public class TradeOffer : DatabaseObject
     {
+        [JsonPropertyName("user_id")]
         public Guid UserID { get; }
+        [JsonPropertyName("offered_card_id")]
         public Guid OfferedCardID { get; }
+        [JsonPropertyName("wanted_card_id")]
         public Guid WantedCardID { get; }
 
-        public TradeOffer(User user, CardInstance offeredCard, Card wantedCard) : base()
+        public TradeOffer(User user, CardInstance offeredCard, Card wantedCard) : base(Guid.NewGuid())
         {
-            UserID = user.ID;
-            OfferedCardID = offeredCard.ID;
-            WantedCardID = wantedCard.ID;
+            UserID = user.Id;
+            OfferedCardID = offeredCard.Id;
+            WantedCardID = wantedCard.Id;
         }
 
-        public TradeOffer(OrderedDictionary row) : base(row)
+        public override object Clone()
         {
-            UserID = (Guid)row["user_id"];
-            OfferedCardID = (Guid)row["offered_card_id"];
-            WantedCardID = (Guid)row["wanted_card_id"];
+            throw new NotImplementedException();
         }
     }
 }
