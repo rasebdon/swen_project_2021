@@ -8,6 +8,6 @@ namespace MTCG.DAL
 {
     public interface IInsertable
     {
-        void Insert(Database database);
+        bool Insert(Database database);
     }
 }

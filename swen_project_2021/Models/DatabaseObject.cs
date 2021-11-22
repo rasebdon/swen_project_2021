@@ -42,12 +42,12 @@ namespace MTCG.Models
             return dict;
         }
 
-        public void Delete(Database database)
+        public bool Delete(Database database)
         {
-            database.ExecuteNonQuery(
-                new NpgsqlCommand($"DELETE FROM user WHERE Id=\"{ Id }\";"));
+            return database.ExecuteNonQuery(
+                new NpgsqlCommand($"DELETE FROM user WHERE Id=\"{ Id }\";")) > 0;
         }
-        public void Insert(Database database)
+        public bool Insert(Database database)
         {
             var dict = GetPropertyPairs(this);
             string valuesSql = "(";
@@ -73,9 +73,9 @@ namespace MTCG.Models
 
             var insertSql = new NpgsqlCommand(
                 $"INSERT INTO { _tableName } { namesSql } VALUES { valuesSql };");
-            database.ExecuteNonQuery(insertSql);
+            return database.ExecuteNonQuery(insertSql) == 1;
         }
-        public void Update(Database database)
+        public bool Update(Database database) // Change return type to bool => revert changes on fail
         {
             var dict = GetPropertyPairs(this);
             string sql = $"UPDATE { _tableName } SET ";
@@ -95,7 +95,9 @@ namespace MTCG.Models
                 }
             }
             sql = $"{ sql.Remove(sql.Length - 1) } WHERE Id=\"{ Id }\";";
-            database.ExecuteNonQuery(new NpgsqlCommand(sql));
+            return database.ExecuteNonQuery(new NpgsqlCommand(sql)) == 1;
+
+            // Try update foreign table n:m
         }
     
         public bool Equals(DatabaseObject obj)

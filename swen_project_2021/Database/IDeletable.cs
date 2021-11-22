@@ -8,6 +8,6 @@ namespace MTCG.DAL
 {
     public interface IDeletable
     {
-        void Delete(Database database);
+        bool Delete(Database database);
     }
 }

@@ -8,6 +8,6 @@ namespace MTCG.DAL
 {
     public interface IUpdateable
     {
-        void Update(Database database);
+        bool Update(Database database);
     }
 }

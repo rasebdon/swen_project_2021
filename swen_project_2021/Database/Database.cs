@@ -59,7 +59,29 @@ namespace MTCG.DAL
                         {
                             value = Guid.Parse(reader[p.Name].ToString());
                         }
-                        else Convert.ChangeType(value, p.ParameterType);
+                        else if (p.GetCustomAttribute<ForeignTableAttribute>() != null)
+                        {
+                            // Parse other row into collection
+                            ForeignTableAttribute attr = p.GetCustomAttribute<ForeignTableAttribute>();
+                            List<object> values = new List<object>();
+
+                            // Check for N to M connection
+                            if(attr.ConnectingTableName != "") // there is a table for conecting the keys
+                            {
+                                cmd = new NpgsqlCommand(
+                                    $"SELECT * FROM { tableName }, { attr.ConnectingTableName }, { attr.ForeignTableName }" +
+                                    $"WHERE { attr.ThisForeignRowName }={ attr.ThisConnectingRowName }" +
+                                    $"AND { attr.ForeignConnectingRowName}={ attr.ForeignRowName };"
+                                    , _databaseConnection);
+                            }
+                            else // No table for connecting keys
+                            {
+
+                            }
+
+                            value = values;
+                            Convert.ChangeType(value, p.ParameterType);
+                        } else Convert.ChangeType(value, p.ParameterType);
 
                         @params.Add(value);
                     }
