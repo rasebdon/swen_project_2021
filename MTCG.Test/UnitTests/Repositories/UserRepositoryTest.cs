@@ -1,0 +1,130 @@
+﻿using NUnit.Framework;
+using MTCG.DAL.Repositories;
+using MTCG.DAL;
+using Moq;
+using MTCG.Models;
+using System;
+using Npgsql;
+using System.Collections.Specialized;
+using System.Collections;
+
+namespace MTCG.Test.UnitTests.Repositories
+{
+    public class UserRepositoryTest
+    {
+        private UserRepository _repository;
+        private User _user;
+        
+        private TestLog _log;
+        private Mock<IDatabase> _mockDb;
+
+        [SetUp]
+        public void SetUp()
+        {
+            // Arrange
+            _user = new User(Guid.NewGuid(), "test", "hash", 50, 50, 50);
+            _mockDb = new Mock<IDatabase>();
+            _log = new TestLog();
+            _repository = new UserRepository(_mockDb.Object, _log);
+        }
+
+        [Test]
+        public void InsertTest()
+        {
+            // Act
+            bool insert = _repository.Insert(_user);
+
+            // Assert
+            Assert.IsFalse(insert); // No rows are affected in mocking
+            Assert.AreEqual(2, _mockDb.Invocations.Count);
+            Assert.AreEqual(typeof(IDatabase).GetMethod("SelectSingle"), _mockDb.Invocations[0].Method);    // Username check
+            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[1].Method); // Inserting
+        }
+
+        [Test]
+        public void DeleteTest()
+        {
+            // Act
+            bool delete = _repository.Delete(_user);
+
+            // Assert
+            Assert.IsFalse(delete); // No rows are affected in mocking
+            Assert.AreEqual(2, _mockDb.Invocations.Count);
+            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[0].Method); // Delete by id call
+            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[1].Method); // Delete by username call
+        }
+
+        [Test]
+        public void UpdateTest()
+        {
+            // Act
+            bool update = _repository.Update(_user, _user);
+
+            // Assert
+            Assert.IsFalse(update); // No rows are affected in mocking
+            Assert.AreEqual(1, _mockDb.Invocations.Count);
+            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[0].Method); // Update call
+        }
+
+        [Test]
+        public void ParseFromRowTest()
+        {
+            // Arrange
+            OrderedDictionary row = new();
+            row.Add("id", _user.ID);
+            row.Add("username", _user.Username);
+            row.Add("hash", _user.Hash);
+            row.Add("elo", _user.ELO);
+            row.Add("played_games", _user.PlayedGames);
+            row.Add("is_admin", _user.IsAdmin);
+            row.Add("coins", _user.Coins);
+
+            // Act
+            User? user = UserRepository.ParseFromRow(row, _log);
+
+            // Assert
+            Assert.NotNull(user);
+            Assert.AreEqual(_user, user);
+        }
+
+        [Test]
+        public void GetByIdTest()
+        {
+            // Act
+            User? user = _repository.GetById(Guid.Empty);
+
+            // Assert
+            Assert.IsNull(user); // No user in database
+            Assert.AreEqual(1, _mockDb.Invocations.Count);
+            Assert.AreEqual(typeof(IDatabase).GetMethod("SelectSingle"), _mockDb.Invocations[0].Method); // Select by id call
+        }
+
+        [Test]
+        public void GetByUsernameTest()
+        {
+            // Act
+            User? user = _repository.GetByUsername("");
+
+            // Assert
+            Assert.IsNull(user); // No user in database
+            Assert.AreEqual(1, _mockDb.Invocations.Count);
+            Assert.AreEqual(typeof(IDatabase).GetMethod("SelectSingle"), _mockDb.Invocations[0].Method); // Select by username call
+        }
+
+        [Test]
+        public void GetAllTest()
+        {
+            // Act
+            IEnumerable users = _repository.GetAll();
+
+            // Assert
+            Assert.IsNotNull(users);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+
+        }
+    }
+}

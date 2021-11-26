@@ -1,11 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31624.102
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG", "swen_project_2021\MTCG.csproj", "{FBCEB109-F6E6-439A-9060-46BED3E1CAE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG.Test.Old", "MTCGUnitTests\MTCG.Test.Old.csproj", "{C338B7CC-01F1-425D-AE77-9FC8F44217EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTCGUnitTests", "MTCGUnitTests\MTCGUnitTests.csproj", "{C338B7CC-01F1-425D-AE77-9FC8F44217EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG.DAL", "MTCG.DAL\MTCG.DAL.csproj", "{4395EA51-67A6-4693-82F8-601006D58F46}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG.Models", "MTCG.Models\MTCG.Models.csproj", "{4DA4A817-88AC-4C85-8EF6-49188F6FA9CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG.BL", "MTCG.BL\MTCG.BL.csproj", "{C09AB34B-413F-4CE2-9FE5-7E1C0C4D1127}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG.PL", "MTCG.PL\MTCG.PL.csproj", "{115E9511-0069-4A49-91A1-9EAC04C24808}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTCG.Test", "MTCG.Test\MTCG.Test.csproj", "{D480ADD9-EEEC-42E4-A64F-D1C0DA8EDA58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +21,30 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FBCEB109-F6E6-439A-9060-46BED3E1CAE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBCEB109-F6E6-439A-9060-46BED3E1CAE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FBCEB109-F6E6-439A-9060-46BED3E1CAE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FBCEB109-F6E6-439A-9060-46BED3E1CAE7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C338B7CC-01F1-425D-AE77-9FC8F44217EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C338B7CC-01F1-425D-AE77-9FC8F44217EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C338B7CC-01F1-425D-AE77-9FC8F44217EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C338B7CC-01F1-425D-AE77-9FC8F44217EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4395EA51-67A6-4693-82F8-601006D58F46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4395EA51-67A6-4693-82F8-601006D58F46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4395EA51-67A6-4693-82F8-601006D58F46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4395EA51-67A6-4693-82F8-601006D58F46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DA4A817-88AC-4C85-8EF6-49188F6FA9CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DA4A817-88AC-4C85-8EF6-49188F6FA9CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DA4A817-88AC-4C85-8EF6-49188F6FA9CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DA4A817-88AC-4C85-8EF6-49188F6FA9CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C09AB34B-413F-4CE2-9FE5-7E1C0C4D1127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C09AB34B-413F-4CE2-9FE5-7E1C0C4D1127}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C09AB34B-413F-4CE2-9FE5-7E1C0C4D1127}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C09AB34B-413F-4CE2-9FE5-7E1C0C4D1127}.Release|Any CPU.Build.0 = Release|Any CPU
+		{115E9511-0069-4A49-91A1-9EAC04C24808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{115E9511-0069-4A49-91A1-9EAC04C24808}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{115E9511-0069-4A49-91A1-9EAC04C24808}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{115E9511-0069-4A49-91A1-9EAC04C24808}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D480ADD9-EEEC-42E4-A64F-D1C0DA8EDA58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D480ADD9-EEEC-42E4-A64F-D1C0DA8EDA58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D480ADD9-EEEC-42E4-A64F-D1C0DA8EDA58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D480ADD9-EEEC-42E4-A64F-D1C0DA8EDA58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
