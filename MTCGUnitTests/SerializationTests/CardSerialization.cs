@@ -12,7 +12,7 @@
 //        public void SerializeCard()
 //        {
 //            var card = DummyMonsterCard();
-            
+
 //            string json = card.ToJson();
 //            Card serialized = JsonConvert.DeserializeObject<Card>(json);
 

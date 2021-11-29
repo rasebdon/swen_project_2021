@@ -1,19 +1,16 @@
 ﻿using MTCG.Models;
 using Npgsql;
-using System.Collections;
 using System.Collections.Specialized;
 
 namespace MTCG.DAL.Repositories
 {
     public class DeckRepository : IRepository<Deck>
     {
-        private readonly StackRepository _stackRepository;
         private readonly IDatabase _db;
         private readonly ILog _log;
 
-        public DeckRepository(IDatabase db, StackRepository stackRepository, ILog log)
+        public DeckRepository(IDatabase db, ILog log)
         {
-            _stackRepository = stackRepository;
             _db = db;
             _log = log;
         }
@@ -23,11 +20,6 @@ namespace MTCG.DAL.Repositories
             NpgsqlCommand cmd = new("DELETE FROM decks WHERE id=@id;");
             cmd.Parameters.AddWithValue("id", deck.ID);
             return _db.ExecuteNonQuery(cmd) == 1;
-        }
-
-        public IEnumerable GetAll()
-        {
-            throw new NotImplementedException();
         }
 
         public Deck? GetById(Guid deckid)
@@ -47,7 +39,7 @@ namespace MTCG.DAL.Repositories
                 cmd.Parameters.AddWithValue("deckId", deckid);
                 OrderedDictionary[] cards = _db.Select(cmd);
 
-                return ParseFromRow(deckInfo, cards);
+                return ParseFromRow(deckInfo, cards, _log);
             }
             catch (Exception ex)
             {
@@ -229,14 +221,14 @@ namespace MTCG.DAL.Repositories
             return true;
         }
 
-        private Deck? ParseFromRow(OrderedDictionary deckInfo, OrderedDictionary[] cardRows)
+        public static Deck? ParseFromRow(OrderedDictionary deckInfo, OrderedDictionary[] cardRows, ILog _log)
         {
             try
             {
                 List<CardInstance> cards = new();
                 foreach (OrderedDictionary row in cardRows)
                 {
-                    CardInstance? card = CardInstanceRepository.ParseFromRow(row);
+                    CardInstance? card = CardInstanceRepository.ParseFromRow(row, _log);
                     if (card != null)
                         cards.Add(card);
                 }

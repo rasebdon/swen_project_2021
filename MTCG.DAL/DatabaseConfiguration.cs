@@ -13,17 +13,19 @@
         {
             get
             {
-                return $"Host={IP};Database={Database};Username={Username};Password={Password}";
+                return $"Host={IP};Port={Port};Database={Database};Username={Username};Password={Password};";
             }
         }
         public string IP { get; }
+        public ushort Port { get; }
         public string Database { get; }
         public string Username { get; }
         public string Password { get; }
 
-        public DatabaseConfiguration(string ip, string database, string username, string password)
+        public DatabaseConfiguration(string ip, string database, string username, string password, ushort port = 5432)
         {
             IP = ip;
+            Port = port;
             Database = database;
             Username = username;
             Password = password;

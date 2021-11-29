@@ -1,12 +1,10 @@
-﻿using NUnit.Framework;
-using MTCG.DAL.Repositories;
+﻿using Moq;
 using MTCG.DAL;
-using Moq;
+using MTCG.DAL.Repositories;
 using MTCG.Models;
+using NUnit.Framework;
 using System;
-using Npgsql;
 using System.Collections.Specialized;
-using System.Collections;
 
 namespace MTCG.Test.UnitTests.Repositories
 {
@@ -14,7 +12,7 @@ namespace MTCG.Test.UnitTests.Repositories
     {
         private UserRepository _repository;
         private User _user;
-        
+
         private TestLog _log;
         private Mock<IDatabase> _mockDb;
 
@@ -54,6 +52,19 @@ namespace MTCG.Test.UnitTests.Repositories
             Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[1].Method); // Delete by username call
         }
 
+
+        [Test]
+        public void TryDeleteWithNullObject()
+        {
+            // Act
+            bool delete = _repository.Delete(null);
+
+            // Assert
+            Assert.IsFalse(delete); // No rows are affected in mocking
+            Assert.AreEqual(0, _mockDb.Invocations.Count);
+        }
+
+
         [Test]
         public void UpdateTest()
         {
@@ -61,9 +72,24 @@ namespace MTCG.Test.UnitTests.Repositories
             bool update = _repository.Update(_user, _user);
 
             // Assert
-            Assert.IsFalse(update); // No rows are affected in mocking
+            Assert.IsFalse(update);
             Assert.AreEqual(1, _mockDb.Invocations.Count);
             Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[0].Method); // Update call
+        }
+
+
+        [Test]
+        public void TryUpdateWithNull()
+        {
+            // Act
+            bool update1 = _repository.Update(_user, null);
+            bool update2 = _repository.Update(null, _user);
+            bool update3 = _repository.Update(null, null);
+
+            Assert.IsFalse(update1);
+            Assert.IsFalse(update2);
+            Assert.IsFalse(update3);
+            Assert.AreEqual(0, _mockDb.Invocations.Count);
         }
 
         [Test]
@@ -109,16 +135,6 @@ namespace MTCG.Test.UnitTests.Repositories
             Assert.IsNull(user); // No user in database
             Assert.AreEqual(1, _mockDb.Invocations.Count);
             Assert.AreEqual(typeof(IDatabase).GetMethod("SelectSingle"), _mockDb.Invocations[0].Method); // Select by username call
-        }
-
-        [Test]
-        public void GetAllTest()
-        {
-            // Act
-            IEnumerable users = _repository.GetAll();
-
-            // Assert
-            Assert.IsNotNull(users);
         }
 
         [TearDown]

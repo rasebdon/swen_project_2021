@@ -62,8 +62,8 @@ namespace MTCG.BL.Http
                 foreach (MethodInfo method in type.GetMethods())
                 {
                     // Iterate through method attributes
-                    foreach (HttpMethodAttribute attribute in method.GetCustomAttributes<HttpMethodAttribute>()) 
-                    { 
+                    foreach (HttpMethodAttribute attribute in method.GetCustomAttributes<HttpMethodAttribute>())
+                    {
                         string endpoint = endpointAttribute.Endpoint;
 
                         // Check if the endpoint is overridden

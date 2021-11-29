@@ -5,10 +5,6 @@ using MTCG.Models;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTCG.Test.UnitTests.Repositories
 {
@@ -35,7 +31,7 @@ namespace MTCG.Test.UnitTests.Repositories
         }
 
         [Test]
-        public void InsertTest()
+        public void InsertNotImplementedTest()
         {
             // Act & Assert
             Assert.Throws<NotImplementedException>(() => _repository.Delete(_stack));
@@ -49,7 +45,7 @@ namespace MTCG.Test.UnitTests.Repositories
         }
 
         [Test]
-        public void UpdateTest()
+        public void UpdateNotImplementedTest()
         {
             // Act & Assert
             Assert.Throws<NotImplementedException>(() => _repository.Update(_stack, _stack));
@@ -66,13 +62,6 @@ namespace MTCG.Test.UnitTests.Repositories
             Assert.IsEmpty(stack); // No stack in mocked database
             Assert.AreEqual(1, _mockDb.Invocations.Count);
             Assert.AreEqual(typeof(IDatabase).GetMethod("Select"), _mockDb.Invocations[0].Method); // Select by id call
-        }
-
-        [Test]
-        public void GetAllTest()
-        {
-            // Act & Assert
-            Assert.Throws<NotImplementedException>(() => _repository.GetAll());
         }
 
         [TearDown]

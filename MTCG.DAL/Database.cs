@@ -13,7 +13,7 @@ namespace MTCG.DAL
         public DatabaseConfiguration Configuration { get; }
 
         private bool _disposed;
-        
+
         private readonly ILog _log;
         private readonly DbConnection _connection; // TODO : Connection pooling
         private readonly object _connectionLock = new();
@@ -47,7 +47,7 @@ namespace MTCG.DAL
                 _connection.Open();
 
                 // Test connection via version select
-                var sql = "SELECT * FROM info;";
+                var sql = $"SELECT * FROM info;";
                 DbCommand cmd = new NpgsqlCommand(sql);
 
                 OrderedDictionary result;
@@ -65,7 +65,7 @@ namespace MTCG.DAL
 
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _log.WriteLine(ex.ToString());
                 return false;
@@ -79,7 +79,8 @@ namespace MTCG.DAL
         /// <returns>The first row of the result or an empty collection if no results where found</returns>
         public OrderedDictionary SelectSingle(DbCommand cmd)
         {
-            if (_disposed) throw new ObjectDisposedException(GetType().FullName);
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
 
             // Execute sql
             OrderedDictionary[] results = Select(cmd);
@@ -139,7 +140,8 @@ namespace MTCG.DAL
         /// <returns>Number of rows affected</returns>
         public int ExecuteNonQuery(DbCommand cmd)
         {
-            if(_disposed) throw new ObjectDisposedException(GetType().FullName);
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
 
             cmd.Connection = this._connection;
             int rowsAffected;

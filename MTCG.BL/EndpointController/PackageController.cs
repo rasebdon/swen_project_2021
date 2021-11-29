@@ -178,7 +178,7 @@ namespace MTCG.BL.EndpointController
                 return new HttpResponse(HttpStatusCode.InternalServerError);
             }
         }
-    
+
         [HttpPost]
         [HttpEndpoint("transactions/packages")]
         public HttpResponse BuyPackagePost(HttpRequest request)
@@ -200,7 +200,7 @@ namespace MTCG.BL.EndpointController
                 // Get package via name
                 Package? package = _packageRepository.GetById(data.PackageId);
 
-                if(package == null)
+                if (package == null)
                     throw new Exception("Error retrieving package from db!");
 
                 // Buy package
@@ -215,7 +215,7 @@ namespace MTCG.BL.EndpointController
                     HttpStatusCode.Created,
                     MediaTypeNames.Application.Json);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _log.WriteLine(ex.ToString(), OutputFormat.Error);
                 return new HttpResponse(HttpStatusCode.InternalServerError);

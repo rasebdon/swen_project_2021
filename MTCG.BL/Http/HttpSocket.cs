@@ -43,7 +43,7 @@ namespace MTCG.BL.Http
             //    for (int i = 0; i < receiveBytes; received.Add(_buffer[i++])) ;
             //    offset += receiveBytes;
             //}
-            
+
             byte[] received = new byte[ReceiveBufferSize];
             conn.Receive(received, 0, received.Length, SocketFlags.None);
 
@@ -59,7 +59,7 @@ namespace MTCG.BL.Http
                 throw new Exception("Empty http header!");
 
             string[] headerData = header.Split(' ');
-            
+
             // Parse method
             HttpMethod httpMethod = HttpMethod.GET;
             if (headerData[0] != "HEAD")

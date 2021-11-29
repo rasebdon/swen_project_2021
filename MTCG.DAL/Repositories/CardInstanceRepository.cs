@@ -1,6 +1,5 @@
 ﻿using MTCG.Models;
 using Npgsql;
-using System.Collections;
 using System.Collections.Specialized;
 
 namespace MTCG.DAL.Repositories
@@ -23,118 +22,173 @@ namespace MTCG.DAL.Repositories
         /// <returns>If the insert was successful</returns>
         public bool Insert(CardInstance card)
         {
-            var cmd = new NpgsqlCommand(
+            try
+            {
+                var cmd = new NpgsqlCommand(
                 "INSERT INTO card_instances (id, card_id) VALUES (@id, @cardID);");
-            cmd.Parameters.AddWithValue("id", card.ID);
-            cmd.Parameters.AddWithValue("cardID", card.CardID);
-            return _db.ExecuteNonQuery(cmd) == 1;
+                cmd.Parameters.AddWithValue("id", card.ID);
+                cmd.Parameters.AddWithValue("cardID", card.CardID);
+                return _db.ExecuteNonQuery(cmd) == 1;
+            }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return false;
+            }
         }
 
         public bool Delete(CardInstance card)
         {
-            string sql = "DELETE FROM card_instances WHERE id = @id;";
-            var cmd = new Npgsql.NpgsqlCommand(sql);
-            cmd.Parameters.AddWithValue("id", card.ID);
-            return _db.ExecuteNonQuery(cmd) == 1;
-        }
-
-        public IEnumerable GetAll()
-        {
-            throw new NotImplementedException();
+            try
+            {
+                string sql = "DELETE FROM card_instances WHERE id = @id;";
+                var cmd = new Npgsql.NpgsqlCommand(sql);
+                cmd.Parameters.AddWithValue("id", card.ID);
+                return _db.ExecuteNonQuery(cmd) == 1;
+            }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return false;
+            }
         }
 
         public CardInstance? GetById(Guid id)
         {
-            NpgsqlCommand cmd = new("SELECT * FROM card_instances WHERE id=@id;");
-            cmd.Parameters.AddWithValue("id", id);
-
-            OrderedDictionary row = _db.SelectSingle(cmd);
-
-            return ParseFromRow(row);
+            try
+            {
+                NpgsqlCommand cmd = new("SELECT * FROM card_instances WHERE id=@id;");
+                cmd.Parameters.AddWithValue("id", id);
+                return ParseFromRow(_db.SelectSingle(cmd), _log);
+            }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return null;
+            }
         }
 
         public bool AddCardInstanceToUser(User user, CardInstance card)
         {
-            string sql = 
+            try
+            {
+                string sql =
                 @"INSERT INTO user_cards (user_id, card_instance_id) 
                 VALUES (@user_id, @card_instance_id);";
-            NpgsqlCommand cmd = new(sql);
-            cmd.Parameters.AddWithValue("user_id", user.ID);
-            cmd.Parameters.AddWithValue("card_instance_id", card.ID);
-
-            if(_db.ExecuteNonQuery(cmd) != 1)
-            {
-                // Revert changes
-                cmd = new(
-                    @"DELETE FROM user_cards WHERE 
-                        user_id=@user_id AND card_instance_id=@card_instance_id");
+                NpgsqlCommand cmd = new(sql);
                 cmd.Parameters.AddWithValue("user_id", user.ID);
                 cmd.Parameters.AddWithValue("card_instance_id", card.ID);
 
-                _db.ExecuteNonQuery(cmd);
-
-                return false;
-            }
-            return true;
-        }
-        public bool AddCardInstancesToUser(User user, List<CardInstance> cards)
-        {
-            string sql =
-                @"INSERT INTO user_cards (user_id, card_instance_id) 
-                VALUES (@user_id, @card_instance_id);";
-            NpgsqlCommand cmd = new(sql);
-            cmd.Parameters.Add("user_id", NpgsqlTypes.NpgsqlDbType.Uuid);
-            cmd.Parameters.Add("card_instance_id", NpgsqlTypes.NpgsqlDbType.Uuid);
-
-            List<CardInstance> addedCards = new();
-
-            foreach (CardInstance card in cards)
-            {
-                cmd.Parameters["user_id"].Value = user.ID;
-                cmd.Parameters["card_instance_id"].Value = card.ID;
-
-                // Check if transaction was successful
-                if(_db.ExecuteNonQuery(cmd) != 1)
+                if (_db.ExecuteNonQuery(cmd) != 1)
                 {
                     // Revert changes
                     cmd = new(
                         @"DELETE FROM user_cards WHERE 
                         user_id=@user_id AND card_instance_id=@card_instance_id");
-                    cmd.Parameters.Add("user_id", NpgsqlTypes.NpgsqlDbType.Uuid);
-                    cmd.Parameters.Add("card_instance_id", NpgsqlTypes.NpgsqlDbType.Uuid);
+                    cmd.Parameters.AddWithValue("user_id", user.ID);
+                    cmd.Parameters.AddWithValue("card_instance_id", card.ID);
 
-                    foreach (CardInstance c in addedCards)
-                    {
-                        cmd.Parameters["user_id"].Value = user.ID;
-                        cmd.Parameters["card_instance_id"].Value = c.ID;
+                    _db.ExecuteNonQuery(cmd);
 
-                        _db.ExecuteNonQuery(cmd);
-                    }
                     return false;
                 }
-                addedCards.Add(card);
+                return true;
             }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return false;
+            }
+        }
+        public bool AddCardInstancesToUser(User user, List<CardInstance> cards)
+        {
+            try
+            {
+                string sql =
+                @"INSERT INTO user_cards (user_id, card_instance_id) 
+                VALUES (@user_id, @card_instance_id);";
+                NpgsqlCommand cmd = new(sql);
+                cmd.Parameters.Add("user_id", NpgsqlTypes.NpgsqlDbType.Uuid);
+                cmd.Parameters.Add("card_instance_id", NpgsqlTypes.NpgsqlDbType.Uuid);
 
-            return true;
+                List<CardInstance> addedCards = new();
+
+                foreach (CardInstance card in cards)
+                {
+                    cmd.Parameters["user_id"].Value = user.ID;
+                    cmd.Parameters["card_instance_id"].Value = card.ID;
+
+                    // Check if transaction was successful
+                    if (_db.ExecuteNonQuery(cmd) != 1)
+                    {
+                        // Revert changes
+                        cmd = new(
+                            @"DELETE FROM user_cards WHERE 
+                            user_id=@user_id AND card_instance_id=@card_instance_id");
+                        cmd.Parameters.Add("user_id", NpgsqlTypes.NpgsqlDbType.Uuid);
+                        cmd.Parameters.Add("card_instance_id", NpgsqlTypes.NpgsqlDbType.Uuid);
+
+                        foreach (CardInstance c in addedCards)
+                        {
+                            cmd.Parameters["user_id"].Value = user.ID;
+                            cmd.Parameters["card_instance_id"].Value = c.ID;
+
+                            _db.ExecuteNonQuery(cmd);
+                        }
+                        return false;
+                    }
+                    addedCards.Add(card);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return false;
+            }
         }
 
         public bool Update(CardInstance entityOld, CardInstance entityNew)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string sql = "UPDATE card_instances SET (card_id) VALUES (@card_id) WHERE id=@id;";
+                NpgsqlCommand cmd = new(sql);
+                cmd.Parameters.AddWithValue("id", entityOld.ID);
+                cmd.Parameters.AddWithValue("card_id", entityNew.CardID);
+
+                return _db.ExecuteNonQuery(cmd) == 1;
+            }
+            catch(Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return false;
+            }
         }
 
-        public static CardInstance? ParseFromRow(OrderedDictionary row)
+        public static CardInstance? ParseFromRow(OrderedDictionary row, ILog log)
         {
-            return new(
-                Guid.Parse(row?["id"]?.ToString() ?? ""),
-                Guid.Parse(row?["card_id"]?.ToString() ?? ""),
-                row?["name"]?.ToString() ?? "",
-                row?["description"]?.ToString() ?? "",
-                int.Parse(row?["damage"]?.ToString() ?? ""),
-                Enum.Parse<CardType>(row?["card_type"]?.ToString() ?? ""),
-                Enum.Parse<Element>(row?["element"]?.ToString() ?? ""),
-                Enum.Parse<Race>(row?["race"]?.ToString() ?? ""),
-                Enum.Parse<Rarity>(row?["rarity"]?.ToString() ?? ""));
+            try
+            {
+                CardInstance instance = new(
+                    Guid.Parse(row?["id"]?.ToString() ?? ""),
+                    Guid.Parse(row?["card_id"]?.ToString() ?? ""),
+                    row?["name"]?.ToString() ?? "",
+                    row?["description"]?.ToString() ?? "",
+                    int.Parse(row?["damage"]?.ToString() ?? ""),
+                    Enum.Parse<CardType>(row?["card_type"]?.ToString() ?? ""),
+                    Enum.Parse<Element>(row?["element"]?.ToString() ?? ""),
+                    Enum.Parse<Race>(row?["race"]?.ToString() ?? ""),
+                    Enum.Parse<Rarity>(row?["rarity"]?.ToString() ?? ""));
+
+                return instance;
+            }
+            catch (Exception ex)
+            {
+                log.WriteLine(ex.ToString());
+                return null;
+            }
         }
     }
 }

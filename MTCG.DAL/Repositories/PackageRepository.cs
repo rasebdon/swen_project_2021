@@ -1,7 +1,6 @@
 ﻿using MTCG.Models;
-using System.Collections;
-using System.Collections.Specialized;
 using Npgsql;
+using System.Collections.Specialized;
 
 namespace MTCG.DAL.Repositories
 {
@@ -23,29 +22,24 @@ namespace MTCG.DAL.Repositories
             return _db.ExecuteNonQuery(cmd) == 1;
         }
 
-        public IEnumerable GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
         public Package? GetById(Guid id)
         {
             // Get the package from the table
-            string sql = "SELECT * FROM packages WHERE id=@id";
+            string sql = "SELECT * FROM packages WHERE id=@id;";
             NpgsqlCommand cmd = new(sql);
             cmd.Parameters.AddWithValue("id", id);
             OrderedDictionary packageRow = _db.SelectSingle(cmd);
 
             // Get the package cards the table
-            sql = "SELECT * FROM package_cards, cards WHERE package_id=@id AND cards.id=package_cards.card_id";
+            sql = "SELECT * FROM package_cards, cards WHERE package_id=@id AND cards.id=package_cards.card_id;";
             cmd = new(sql);
             cmd.Parameters.AddWithValue("id", id);
             OrderedDictionary[] packageCardRows = _db.Select(cmd);
 
-            return ParseFromRow(packageRow, packageCardRows);
+            return ParseFromRow(packageRow, packageCardRows, _log);
         }
 
-        private Package? ParseFromRow(OrderedDictionary packageRow, OrderedDictionary[] cardRows)
+        public static Package? ParseFromRow(OrderedDictionary packageRow, OrderedDictionary[] cardRows, ILog _log)
         {
             try
             {
@@ -98,14 +92,14 @@ namespace MTCG.DAL.Repositories
                     cmd.Parameters["package_id"].Value = package.ID;
                     cmd.Parameters["card_id"].Value = package.Cards[i].ID;
 
-                    if(_db.ExecuteNonQuery(cmd) != 1)
+                    if (_db.ExecuteNonQuery(cmd) != 1)
                     {
                         throw new Exception("Fatal error linking package with cards!");
                     }
                 }
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _log.WriteLine(ex.ToString());
                 // Revert changes

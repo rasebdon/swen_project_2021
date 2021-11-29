@@ -1,6 +1,5 @@
 ﻿using MTCG.Models;
 using Npgsql;
-using System.Collections;
 using System.Collections.Specialized;
 
 namespace MTCG.DAL.Repositories
@@ -14,23 +13,6 @@ namespace MTCG.DAL.Repositories
         {
             _db = db;
             _log = log;
-        }
-
-        public IEnumerable GetAll()
-        {
-            // Create safe query
-            var sql = "SELECT * FROM users;";
-            // Prepare statement
-            var rows = _db.Select(new NpgsqlCommand(sql));
-
-            List<User> users = new List<User>();
-            foreach (var row in rows)
-            {
-                User? user = ParseFromRow(row, _log);
-                if(user != null)
-                    users.Add(user);
-            }
-            return users;
         }
 
         public User? GetById(Guid id)
@@ -66,7 +48,8 @@ namespace MTCG.DAL.Repositories
                     $"SELECT username FROM users WHERE LOWER(username)=@username;");
                 cmd.Parameters.AddWithValue("username", entity.Username.ToLower());
 
-                if (_db.SelectSingle(cmd) != null)
+                User? selected = ParseFromRow(_db.SelectSingle(cmd), _log);
+                if (selected != null && selected.Username == entity.Username)
                     throw new DuplicateEntryException(entity.Username);
 
                 // Insert user
@@ -144,13 +127,15 @@ namespace MTCG.DAL.Repositories
         {
             try
             {
-                return new User(
+                User? user = new(
                 Guid.Parse(row?["id"]?.ToString() ?? ""),
                 row?["username"]?.ToString() ?? "",
                 row?["hash"]?.ToString() ?? "",
                 int.Parse(row?["coins"]?.ToString() ?? ""),
                 ushort.Parse(row?["elo"]?.ToString() ?? ""),
                 int.Parse(row?["played_games"]?.ToString() ?? ""));
+
+                return user;
             }
             catch (Exception ex)
             {

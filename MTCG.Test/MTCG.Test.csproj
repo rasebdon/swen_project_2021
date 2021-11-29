@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IntegrationTests\Repositories\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MTCG.BL\MTCG.BL.csproj" />
     <ProjectReference Include="..\MTCG.DAL\MTCG.DAL.csproj" />
     <ProjectReference Include="..\MTCG.Models\MTCG.Models.csproj" />

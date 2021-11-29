@@ -1,6 +1,5 @@
 ﻿using MTCG.Models;
 using Npgsql;
-using System.Collections;
 using System.Collections.Specialized;
 
 namespace MTCG.DAL.Repositories
@@ -20,12 +19,6 @@ namespace MTCG.DAL.Repositories
         {
             throw new NotImplementedException();
         }
-
-        public IEnumerable GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
         public List<CardInstance>? GetById(Guid userId)
         {
             try
@@ -45,7 +38,7 @@ namespace MTCG.DAL.Repositories
                 for (int i = 0; i < rows.Length; i++)
                 {
                     OrderedDictionary row = rows[i];
-                    CardInstance? instance = CardInstanceRepository.ParseFromRow(row);
+                    CardInstance? instance = CardInstanceRepository.ParseFromRow(row, _log);
 
                     if (instance != null)
                         stack.Add(instance);

@@ -1,6 +1,5 @@
 ﻿using MTCG.Models;
 using Npgsql;
-using System.Collections;
 using System.Collections.Specialized;
 
 namespace MTCG.DAL.Repositories
@@ -24,19 +23,6 @@ namespace MTCG.DAL.Repositories
             NpgsqlCommand cmd = new("DELETE FROM cards WHERE id=@id");
             cmd.Parameters.AddWithValue("id", entity.ID);
             return _db.ExecuteNonQuery(cmd) == 1;
-        }
-
-        public IEnumerable GetAll()
-        {
-            OrderedDictionary[] rows = _db.Select(new NpgsqlCommand("SELECT * FROM cards;"));
-            List<Card> cards = new();
-            foreach (var row in rows)
-            {
-                Card? card;
-                if ((card = ParseFromRow(row, _log)) != null)
-                    cards.Add(card);
-            }
-            return cards;
         }
 
         public Card? GetById(Guid id)

@@ -17,7 +17,7 @@ namespace MTCG.BL
         public ConcurrentQueue<HttpRequest> HttpRequests { get; }
 
         private bool _disposed = true;
-        
+
         private readonly List<RequestWorker> _requestWorkers;
         private readonly List<ResponseWorker> _responseWorkers;
         private readonly List<BattleWorker> _battleWorkers;
@@ -48,7 +48,7 @@ namespace MTCG.BL
             UserRepository userRepository = new(_database, _log);
             CardRepository cardRepository = new(_database, _log);
             StackRepository stackRepository = new(_database, _log);
-            DeckRepository deckRepository = new(_database, stackRepository, _log);
+            DeckRepository deckRepository = new(_database, _log);
 
             // Construct services
             AuthenticationService authenticationService = new();
@@ -79,7 +79,7 @@ namespace MTCG.BL
 
         public void Start(int threads = 0)
         {
-            if(_disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             _log.WriteLine("Starting server...");
@@ -125,7 +125,7 @@ namespace MTCG.BL
 
         public void Dispose()
         {
-            if(_disposed) throw new ObjectDisposedException(GetType().FullName);
+            if (_disposed) throw new ObjectDisposedException(GetType().FullName);
 
             _disposed = true;
 

@@ -4,7 +4,6 @@ using MTCG.DAL.Repositories;
 using MTCG.Models;
 using Newtonsoft.Json;
 using System.Net.Mime;
-using System.Reflection;
 
 namespace MTCG.BL.EndpointController
 {

@@ -5,7 +5,6 @@ using MTCG.DAL;
 using MTCG.DAL.Repositories;
 using MTCG.Models;
 using System.Net.Mime;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace MTCG.BL.EndpointController

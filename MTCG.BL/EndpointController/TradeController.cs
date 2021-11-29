@@ -1,7 +1,4 @@
-﻿using MTCG.Models;
-using Npgsql;
-
-namespace MTCG.BL.EndpointController
+﻿namespace MTCG.BL.EndpointController
 {
     public class TradeController : Controller
     {
