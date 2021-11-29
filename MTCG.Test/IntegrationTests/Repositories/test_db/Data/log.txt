@@ -700,3 +700,135 @@
 2021-11-29 10:57:12.851 CET [11360] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
 2021-11-29 10:57:12.867 CET [11360] LOG:  all server processes terminated; reinitializing
 ^C2021-11-29 10:57:15.757 CET [21124] LOG:  database system was interrupted; last known up at 2021-11-29 10:47:46 CET
+2021-11-29 13:23:08.470 CET [6380] LOG:  listening on IPv6 address "::1", port 15000
+2021-11-29 13:23:08.470 CET [6380] LOG:  listening on IPv4 address "127.0.0.1", port 15000
+2021-11-29 13:23:09.339 CET [21760] LOG:  database system was interrupted; last known up at 2021-11-29 10:47:46 CET
+2021-11-29 13:23:21.222 CET [21708] FATAL:  the database system is starting up
+2021-11-29 13:23:21.471 CET [22204] FATAL:  the database system is starting up
+2021-11-29 13:23:21.598 CET [22252] FATAL:  the database system is starting up
+2021-11-29 13:23:21.710 CET [3620] FATAL:  the database system is starting up
+2021-11-29 13:23:21.847 CET [19764] FATAL:  the database system is starting up
+2021-11-29 13:23:21.952 CET [21508] FATAL:  the database system is starting up
+2021-11-29 13:23:23.517 CET [21760] LOG:  database system was not properly shut down; automatic recovery in progress
+2021-11-29 13:23:23.834 CET [21760] LOG:  redo starts at 0/1745230
+2021-11-29 13:23:23.835 CET [21760] LOG:  invalid record length at 0/1745268: wanted 24, got 0
+2021-11-29 13:23:23.835 CET [21760] LOG:  redo done at 0/1745230
+2021-11-29 13:23:24.822 CET [6380] LOG:  database system is ready to accept connections
+2021-11-29 13:23:40.041 CET [22584] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-11-29 13:23:40.041 CET [22584] DETAIL:  Key (username)=(test) already exists.
+2021-11-29 13:23:40.041 CET [22584] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, admin, played_games) VALUES ($1, $2, $3, $4, $5, false, $6)
+2021-11-29 13:23:40.663 CET [22584] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:30:49.750 CET [22272] ERROR:  column "card_type" of relation "cards" does not exist at character 51
+2021-11-29 13:30:49.750 CET [22272] STATEMENT:  INSERT INTO cards (id, name, description, damage, card_type, element, race, rarity) 
+	                VALUES ('679922dd-c177-41be-8859-10f091b8ea64', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:30:49.805 CET [22272] ERROR:  column "card_type" of relation "cards" does not exist at character 51
+2021-11-29 13:30:49.805 CET [22272] STATEMENT:  INSERT INTO cards (id, name, description, damage, card_type, element, race, rarity) 
+	                VALUES ('c26b9c98-ead5-4385-8516-4c9a8981749b', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:30:50.442 CET [22272] ERROR:  column "card_type" of relation "cards" does not exist at character 51
+2021-11-29 13:30:50.442 CET [22272] STATEMENT:  INSERT INTO cards (id, name, description, damage, card_type, element, race, rarity) 
+	                VALUES ('d35efbc6-f88b-4a9c-8529-5a4e202a3909', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:30:50.443 CET [22272] ERROR:  column "card_type" of relation "cards" does not exist at character 51
+2021-11-29 13:30:50.443 CET [22272] STATEMENT:  INSERT INTO cards (id, name, description, damage, card_type, element, race, rarity) 
+	                VALUES ('f4186686-9e1b-4176-be09-d2cf58c04ed0', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:30:50.468 CET [22272] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:32:30.237 CET [1804] ERROR:  column "spell" does not exist at character 198
+2021-11-29 13:32:30.237 CET [1804] STATEMENT:  INSERT INTO cards (id, name, description, damage, type, element, race, rarity) 
+	                VALUES ('badec24a-2976-4f33-ae01-8d0a6108d354', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:32:30.307 CET [1804] ERROR:  column "spell" does not exist at character 198
+2021-11-29 13:32:30.307 CET [1804] STATEMENT:  INSERT INTO cards (id, name, description, damage, type, element, race, rarity) 
+	                VALUES ('72211332-f1fe-42ec-9955-76247409ebd8', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:32:31.906 CET [1804] ERROR:  column "spell" does not exist at character 198
+2021-11-29 13:32:31.906 CET [1804] STATEMENT:  INSERT INTO cards (id, name, description, damage, type, element, race, rarity) 
+	                VALUES ('58fe0937-9fb4-425f-86f0-e5f496aab95f', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:32:31.908 CET [1804] ERROR:  column "spell" does not exist at character 198
+2021-11-29 13:32:31.908 CET [1804] STATEMENT:  INSERT INTO cards (id, name, description, damage, type, element, race, rarity) 
+	                VALUES ('620bd62b-f50e-46cc-b178-1929d6aeb6ce', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:32:31.934 CET [1804] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:33:07.056 CET [21848] ERROR:  column "spell" does not exist at character 198
+2021-11-29 13:33:07.056 CET [21848] STATEMENT:  INSERT INTO cards (id, name, description, damage, type, element, race, rarity) 
+	                VALUES ('10aea0a1-8793-4ab1-8449-e26eb076469b', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:33:07.109 CET [21848] ERROR:  column "spell" does not exist at character 198
+2021-11-29 13:33:07.109 CET [21848] STATEMENT:  INSERT INTO cards (id, name, description, damage, type, element, race, rarity) 
+	                VALUES ('8e94669e-6da6-4525-89d5-3c93cc263dd5', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:33:07.677 CET [21848] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-11-29 13:33:07.677 CET [21848] DETAIL:  Key (id)=(89a7669f-1dfa-4098-8f9b-ec80babe8ea7) already exists.
+2021-11-29 13:33:07.677 CET [21848] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-11-29 13:33:07.765 CET [21848] ERROR:  column "spell" does not exist at character 198
+2021-11-29 13:33:07.765 CET [21848] STATEMENT:  INSERT INTO cards (id, name, description, damage, type, element, race, rarity) 
+	                VALUES ('d467ec7f-4a1e-4736-9862-a24039643ff9', 'Spell Name', 'Description!!!', 5,
+	                Spell, Fire, None, Rare)
+2021-11-29 13:33:07.818 CET [21848] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:33:51.395 CET [19716] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:33:56.299 CET [1580] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-11-29 13:33:56.299 CET [1580] DETAIL:  Key (id)=(182a89b9-968b-47b3-ace2-c7f356970485) already exists.
+2021-11-29 13:33:56.299 CET [1580] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-11-29 13:33:56.655 CET [1580] ERROR:  syntax error at or near "FROM" at character 8
+2021-11-29 13:33:56.655 CET [1580] STATEMENT:  UPDATE FROM cards 
+	                    SET(name=$1, description=$2, type=$3, damage=$4, 
+	                    element=$5, rarity=$6, race=$7)
+	                    WHERE id=$8
+2021-11-29 13:33:56.814 CET [1580] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:34:30.985 CET [15196] ERROR:  syntax error at or near "FROM" at character 8
+2021-11-29 13:34:30.985 CET [15196] STATEMENT:  UPDATE FROM cards 
+	                    SET(name=$1, description=$2, type=$3, damage=$4, 
+	                    element=$5, rarity=$6, race=$7)
+	                    WHERE id=$8
+2021-11-29 13:34:38.660 CET [15196] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:35:09.416 CET [18216] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-11-29 13:35:09.416 CET [18216] DETAIL:  Key (id)=(18c3a9f8-d711-4204-8d98-109949f4fc98) already exists.
+2021-11-29 13:35:09.416 CET [18216] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-11-29 13:35:09.581 CET [18216] ERROR:  syntax error at or near "=" at character 44
+2021-11-29 13:35:09.581 CET [18216] STATEMENT:  UPDATE cards 
+	                    SET(name=$1, description=$2, type=$3, damage=$4, 
+	                    element=$5, rarity=$6, race=$7)
+	                    WHERE id=$8
+2021-11-29 13:35:09.739 CET [18216] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:35:27.268 CET [1976] ERROR:  syntax error at or near "=" at character 44
+2021-11-29 13:35:27.268 CET [1976] STATEMENT:  UPDATE cards 
+	                    SET(name=$1, description=$2, type=$3, damage=$4, 
+	                    element=$5, rarity=$6, race=$7)
+	                    WHERE id=$8
+2021-11-29 13:35:32.290 CET [1976] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:35:41.041 CET [18412] ERROR:  syntax error at or near "=" at character 44
+2021-11-29 13:35:41.041 CET [18412] STATEMENT:  UPDATE cards 
+	                    SET(name=$1, description=$2, type=$3, damage=$4, 
+	                    element=$5, rarity=$6, race=$7)
+	                    WHERE id=$8
+2021-11-29 13:35:57.939 CET [18412] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:36:42.602 CET [23576] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:36:47.747 CET [23608] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-11-29 13:36:47.747 CET [23608] DETAIL:  Key (id)=(d66d8cf6-e272-40bb-be78-578cc29ba968) already exists.
+2021-11-29 13:36:47.747 CET [23608] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-11-29 13:36:48.640 CET [18892] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-11-29 13:36:48.640 CET [18892] DETAIL:  Key (username)=(test) already exists.
+2021-11-29 13:36:48.640 CET [18892] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, admin, played_games) VALUES ($1, $2, $3, $4, $5, false, $6)
+2021-11-29 13:36:48.987 CET [18892] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:36:48.987 CET [23608] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 13:36:59.849 CET [6380] LOG:  server process (PID 23144) was terminated by exception 0xC000013A
+2021-11-29 13:36:59.849 CET [6380] DETAIL:  Failed process was running: DELETE FROM cards WHERE name='Spell Name'
+	;
+2021-11-29 13:36:59.849 CET [6380] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-11-29 13:36:59.850 CET [6380] LOG:  terminating any other active server processes
+2021-11-29 13:36:59.851 CET [21652] WARNING:  terminating connection because of crash of another server process
+2021-11-29 13:36:59.851 CET [21652] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2021-11-29 13:36:59.851 CET [21652] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2021-11-29 13:36:59.976 CET [6380] LOG:  all server processes terminated; reinitializing
+2021-11-29 13:37:00.122 CET [23844] LOG:  database system was interrupted; last known up at 2021-11-29 13:33:26 CET
+2021-11-29 13:37:06.575 CET [6380] LOG:  startup process (PID 23844) was terminated by exception 0xC000013A
+2021-11-29 13:37:06.575 CET [6380] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-11-29 13:37:06.575 CET [6380] LOG:  aborting startup due to startup process failure
+^C

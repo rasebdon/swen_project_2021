@@ -112,7 +112,7 @@ namespace MTCG.Test.UnitTests.Repositories
             row.Add("description", _card.Description);
             row.Add("damage", _card.Damage);
             row.Add("rarity", _card.Rarity);
-            row.Add("card_type", _card.CardType);
+            row.Add("type", _card.CardType);
             row.Add("race", _card.Race);
             row.Add("element", _card.Element);
 

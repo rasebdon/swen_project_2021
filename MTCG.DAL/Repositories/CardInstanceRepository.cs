@@ -177,7 +177,7 @@ namespace MTCG.DAL.Repositories
                     row?["name"]?.ToString() ?? "",
                     row?["description"]?.ToString() ?? "",
                     int.Parse(row?["damage"]?.ToString() ?? ""),
-                    Enum.Parse<CardType>(row?["card_type"]?.ToString() ?? ""),
+                    Enum.Parse<CardType>(row?["type"]?.ToString() ?? ""),
                     Enum.Parse<Element>(row?["element"]?.ToString() ?? ""),
                     Enum.Parse<Race>(row?["race"]?.ToString() ?? ""),
                     Enum.Parse<Rarity>(row?["rarity"]?.ToString() ?? ""));

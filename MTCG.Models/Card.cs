@@ -52,27 +52,27 @@ namespace MTCG.Models
         /// <summary>
         /// The unique name of the card
         /// </summary>
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
         /// The damage of the card
         /// </summary>
-        public int Damage { get; }
+        public int Damage { get; set; }
 
         /// <summary>
         /// The type of the card should be set in 
         /// the derived constructors
         /// </summary>
-        public CardType CardType { get; }
+        public CardType CardType { get; set; }
         /// <summary>
         /// The element of the card
         /// </summary>
-        public Element Element { get; }
-        public Race Race { get; }
+        public Element Element { get; set; }
+        public Race Race { get; set; }
 
-        public Rarity Rarity { get; }
+        public Rarity Rarity { get; set; }
 
-        public string Description { get; }
+        public string Description { get; set; }
 
         [JsonConstructor]
         public Card(

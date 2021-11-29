@@ -130,7 +130,7 @@ namespace MTCG.Test.UnitTests.Repositories
                 cardRows[i].Add("description", _deck.Cards[i].Description);
                 cardRows[i].Add("damage", _deck.Cards[i].Damage);
                 cardRows[i].Add("rarity", _deck.Cards[i].Rarity);
-                cardRows[i].Add("card_type", _deck.Cards[i].CardType);
+                cardRows[i].Add("type", _deck.Cards[i].CardType);
                 cardRows[i].Add("race", _deck.Cards[i].Race);
                 cardRows[i].Add("element", _deck.Cards[i].Element);
             }

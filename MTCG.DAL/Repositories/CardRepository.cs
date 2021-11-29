@@ -65,9 +65,9 @@ namespace MTCG.DAL.Repositories
             try
             {
                 string sql =
-                    @"UPDATE FROM cards 
-                    SET(name=@name, description=@description, type=@type, damage=@damage, 
-                    element=@element, rarity=@rarity, race=@race)
+                    @"UPDATE cards 
+                    SET name=@name, description=@description, type=@type, damage=@damage, 
+                    element=@element, rarity=@rarity, race=@race
                     WHERE id=@id;";
                 NpgsqlCommand cmd = new(sql);
                 cmd.Parameters.AddWithValue("id", entityOld.ID);
@@ -98,7 +98,7 @@ namespace MTCG.DAL.Repositories
                 row?["name"]?.ToString() ?? "",
                 row?["description"]?.ToString() ?? "",
                 int.Parse(row?["damage"]?.ToString() ?? ""),
-                Enum.Parse<CardType>(row?["card_type"]?.ToString() ?? ""),
+                Enum.Parse<CardType>(row?["type"]?.ToString() ?? ""),
                 Enum.Parse<Element>(row?["element"]?.ToString() ?? ""),
                 Enum.Parse<Race>(row?["race"]?.ToString() ?? ""),
                 Enum.Parse<Rarity>(row?["rarity"]?.ToString() ?? ""));
