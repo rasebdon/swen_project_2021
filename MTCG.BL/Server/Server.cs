@@ -47,18 +47,23 @@ namespace MTCG.BL
             // Construct repositories
             UserRepository userRepository = new(_database, _log);
             CardRepository cardRepository = new(_database, _log);
-            StackRepository stackRepository = new(_database, _log);
             DeckRepository deckRepository = new(_database, _log);
+            StackRepository stackRepository = new(_database, _log);
+            PackageRepository packageRepository = new(_database, _log);
+            CardInstanceRepository cardInstanceRepository = new(_database, _log);
 
             // Construct services
             AuthenticationService authenticationService = new();
 
             // Construct controllers
-            UserController userController = new(userRepository, _log);
+            UserController userController = new(authenticationService, userRepository, _log);
             SessionController sessionController = new(authenticationService, userRepository, _log);
             CardController cardController = new(authenticationService, cardRepository, stackRepository, _log);
             DeckController deckController = new(authenticationService, deckRepository, stackRepository, _log);
             BattleController battleController = new(authenticationService, deckRepository, _log);
+            PackageController packageController = new(authenticationService, userRepository,
+                packageRepository, cardInstanceRepository, _log);
+            //TradeController tradeController = new(authenticationService, tradeRepository, _log);
 
             // Bind controllers
             RouteEngine.AddController(userController);
@@ -66,6 +71,7 @@ namespace MTCG.BL
             RouteEngine.AddController(cardController);
             RouteEngine.AddController(deckController);
             RouteEngine.AddController(battleController);
+            RouteEngine.AddController(packageController);
 
             // Setup worker
             var worker = new BattleWorker(this, userRepository, battleController, _log, 0);
@@ -120,7 +126,17 @@ namespace MTCG.BL
             _log.WriteLine("Http server started successfully!", OutputFormat.Success);
             _log.WriteLine($"Http server now listening on port {_port} with {threads} request + response woker!");
 
-            while (!_disposed) { }
+            while (!_disposed) 
+            {
+                if(Console.ReadLine() == "r")
+                {
+                    _log.WriteLine("Pending requests:");
+                    foreach (var r in HttpRequests)
+                    {
+                        _log.WriteLine(r.ToString());
+                    }
+                }
+            }
         }
 
         public void Dispose()

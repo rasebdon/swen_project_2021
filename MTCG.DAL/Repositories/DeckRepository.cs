@@ -15,10 +15,10 @@ namespace MTCG.DAL.Repositories
             _log = log;
         }
 
-        public bool Delete(Deck deck)
+        public bool Delete(Guid id)
         {
             NpgsqlCommand cmd = new("DELETE FROM decks WHERE id=@id;");
-            cmd.Parameters.AddWithValue("id", deck.ID);
+            cmd.Parameters.AddWithValue("id", id);
             return _db.ExecuteNonQuery(cmd) == 1;
         }
 
@@ -142,7 +142,7 @@ namespace MTCG.DAL.Repositories
             catch (Exception ex)
             {
                 _log.WriteLine(ex.ToString());
-                Delete(deck);
+                Delete(deck.ID);
 
                 if (oldMainDeckId != Guid.Empty)
                 {
@@ -214,7 +214,7 @@ namespace MTCG.DAL.Repositories
             {
                 _log.WriteLine(e.ToString());
                 // Revert changes
-                Delete(oldDeck);
+                Delete(oldDeck.ID);
                 Insert(oldDeck);
                 return false;
             }

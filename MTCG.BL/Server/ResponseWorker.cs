@@ -19,6 +19,7 @@ namespace MTCG.BL
                     {
                         try
                         {
+                            _log.WriteLine($"ResponseWorker{_id} : Processing http request id:{request.Id}");
                             _server.RouteEngine.RouteRequest(request);
                         }
                         catch (Exception ex)

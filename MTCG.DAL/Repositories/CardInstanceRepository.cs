@@ -37,13 +37,13 @@ namespace MTCG.DAL.Repositories
             }
         }
 
-        public bool Delete(CardInstance card)
+        public bool Delete(Guid id)
         {
             try
             {
                 string sql = "DELETE FROM card_instances WHERE id = @id;";
                 var cmd = new Npgsql.NpgsqlCommand(sql);
-                cmd.Parameters.AddWithValue("id", card.ID);
+                cmd.Parameters.AddWithValue("id", id);
                 return _db.ExecuteNonQuery(cmd) == 1;
             }
             catch (Exception ex)
@@ -57,7 +57,9 @@ namespace MTCG.DAL.Repositories
         {
             try
             {
-                NpgsqlCommand cmd = new("SELECT * FROM card_instances WHERE id=@id;");
+                NpgsqlCommand cmd = new(@"SELECT card_instances.*, cards.type, cards.name, cards.description,
+                cards.damage, cards.element, cards.rarity, cards.race  FROM card_instances, cards
+                WHERE card_id=cards.id AND card_instances.id=@id;");
                 cmd.Parameters.AddWithValue("id", id);
                 return ParseFromRow(_db.SelectSingle(cmd), _log);
             }
@@ -153,7 +155,7 @@ namespace MTCG.DAL.Repositories
         {
             try
             {
-                string sql = "UPDATE card_instances SET (card_id) VALUES (@card_id) WHERE id=@id;";
+                string sql = "UPDATE card_instances SET card_id=@card_id WHERE id=@id;";
                 NpgsqlCommand cmd = new(sql);
                 cmd.Parameters.AddWithValue("id", entityOld.ID);
                 cmd.Parameters.AddWithValue("card_id", entityNew.CardID);

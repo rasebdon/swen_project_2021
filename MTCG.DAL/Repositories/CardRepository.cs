@@ -15,13 +15,10 @@ namespace MTCG.DAL.Repositories
             _log = log;
         }
 
-        public bool Delete(Card entity)
+        public bool Delete(Guid id)
         {
-            if (entity == null)
-                return false;
-
             NpgsqlCommand cmd = new("DELETE FROM cards WHERE id=@id");
-            cmd.Parameters.AddWithValue("id", entity.ID);
+            cmd.Parameters.AddWithValue("id", id);
             return _db.ExecuteNonQuery(cmd) == 1;
         }
 

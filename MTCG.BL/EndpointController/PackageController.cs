@@ -115,7 +115,7 @@ namespace MTCG.BL.EndpointController
                 {
                     try
                     {
-                        _cardInstanceRepository.Delete(card);
+                        _cardInstanceRepository.Delete(card.ID);
                     }
                     catch (Exception) { }
                 }
@@ -172,7 +172,7 @@ namespace MTCG.BL.EndpointController
             }
             catch (Exception ex)
             {
-                if (package != null) _packageRepository.Delete(package);
+                if (package != null) _packageRepository.Delete(package.ID);
                 _log.WriteLine(ex.ToString(), OutputFormat.Error);
 
                 return new HttpResponse(HttpStatusCode.InternalServerError);

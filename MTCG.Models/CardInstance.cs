@@ -10,7 +10,7 @@
         /// <summary>
         /// The id of the card that this card is the instance of
         /// </summary>
-        public Guid CardID { get; }
+        public Guid CardID { get; set; }
 
         /// <summary>
         /// Creates an instance of a card

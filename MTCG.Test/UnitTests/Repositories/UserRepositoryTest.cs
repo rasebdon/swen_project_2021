@@ -43,25 +43,24 @@ namespace MTCG.Test.UnitTests.Repositories
         public void DeleteTest()
         {
             // Act
-            bool delete = _repository.Delete(_user);
+            bool delete = _repository.Delete(_user.ID);
 
             // Assert
             Assert.IsFalse(delete); // No rows are affected in mocking
-            Assert.AreEqual(2, _mockDb.Invocations.Count);
+            Assert.AreEqual(1, _mockDb.Invocations.Count);
             Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[0].Method); // Delete by id call
-            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[1].Method); // Delete by username call
         }
 
 
         [Test]
-        public void TryDeleteWithNullObject()
+        public void TryDeleteWithGuidEmpty()
         {
             // Act
-            bool delete = _repository.Delete(null);
+            bool delete = _repository.Delete(Guid.Empty);
 
             // Assert
             Assert.IsFalse(delete); // No rows are affected in mocking
-            Assert.AreEqual(0, _mockDb.Invocations.Count);
+            Assert.AreEqual(1, _mockDb.Invocations.Count);
         }
 
 

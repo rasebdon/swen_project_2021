@@ -50,23 +50,28 @@ namespace MTCG.BL.EndpointController
                 if (user == null)
                     return new HttpResponse(HttpStatusCode.Forbidden);
 
-                if (_authentication.LoggedInUsers.Contains(user))
-                    throw new AlreadyLoggedInException(user);
+                string token = $"{user.Username}-mtcgToken";
+
+                //if (_authentication.LoggedInUsers.TryGetValue(token, out _))
+                //    throw new AlreadyLoggedInException(user);
 
                 bool authenticated = Crypter.CheckPassword(credentials.Password, user.Hash);
                 if (!authenticated)
                     throw new InvalidCredentialsException(credentials.Username);
 
-                // Generate auth token and remove hash
+                // Remove hash
                 user.Hash = "";
-                user.SessionToken = $"{user.Username}-mtcgToken";
 
                 // Add user to the session
-                _authentication.LoggedInUsers.Add(user);
+                if(!_authentication.LoggedInUsers.TryAdd(token, user))
+                {
+                    if (!_authentication.LoggedInUsers.TryGetValue(token, out _))
+                        return new HttpResponse(HttpStatusCode.InternalServerError);
+                }
 
                 return new HttpResponse(
-                    $"{{\"SessionToken\": \"{user.SessionToken}\"}}",
-                    HttpStatusCode.OK,
+                    $"{{\"SessionToken\": \"{token}\"}}",
+                    HttpStatusCode.Created,
                     MediaTypeNames.Application.Json);
             }
             catch (InvalidCredentialsException)

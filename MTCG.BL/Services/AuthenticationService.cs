@@ -1,11 +1,12 @@
 ﻿using MTCG.BL.Http;
 using MTCG.Models;
+using System.Collections.Concurrent;
 
 namespace MTCG.BL.Services
 {
     public class AuthenticationService : Service
     {
-        public List<User> LoggedInUsers { get; }
+        public ConcurrentDictionary<string, User> LoggedInUsers { get; }
 
         public AuthenticationService()
         {
@@ -19,7 +20,12 @@ namespace MTCG.BL.Services
         /// <returns>The user related to the auth token / null if no user was found</returns>
         public User? Authenticate(HttpAuthorization? auth)
         {
-            return auth == null ? null : LoggedInUsers.Find(u => u.SessionToken == auth.Token);
+            if(auth != null)
+            {
+                LoggedInUsers.TryGetValue(auth.Token, out User? user);
+                return user;
+            }
+            return null;
         }
     }
 }

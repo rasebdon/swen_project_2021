@@ -98,34 +98,33 @@ namespace MTCG.DAL
         /// <returns>All rows of the result or null if no results where found</returns>
         public OrderedDictionary[] Select(DbCommand cmd)
         {
-            if (_disposed) throw new ObjectDisposedException(GetType().FullName);
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
 
-            // Execute query
             cmd.Connection = this._connection;
 
             List<OrderedDictionary> rows = new();
 
             lock (_connectionLock)
             {
-                DbDataReader rdr = cmd.ExecuteReaderAsync().Result;
+                // Execute query
+                DbDataReader rdr = cmd.ExecuteReader();
 
-                if (!rdr.HasRows)
+                if (rdr.HasRows)
                 {
-                    rdr.Close();
-                    return Array.Empty<OrderedDictionary>();
-                }
-
-                // Run reader over results
-                while (rdr.Read())
-                {
-                    // Parse data into dictionaries
-                    OrderedDictionary row = new();
-                    for (int i = 0; i < rdr.FieldCount; i++)
+                    // Run reader over results
+                    while (rdr.Read())
                     {
-                        row.Add(rdr.GetName(i), rdr[i]);
+                        // Parse data into dictionaries
+                        OrderedDictionary row = new();
+                        for (int i = 0; i < rdr.FieldCount; i++)
+                        {
+                            row.Add(rdr.GetName(i), rdr[i]);
+                        }
+                        rows.Add(row);
                     }
-                    rows.Add(row);
                 }
+
                 // Close reader and return results
                 rdr.Close();
             }

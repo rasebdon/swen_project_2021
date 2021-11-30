@@ -2,22 +2,22 @@
 {
     public class LogConsoleWrapper : ILog
     {
-        public void Write(string msg)
+        public void Write(string? msg)
         {
             Console.Write(msg);
         }
 
-        public void Write(string msg, OutputFormat format)
+        public void Write(string? msg, OutputFormat format)
         {
             Console.Write(msg);
         }
 
-        public void WriteLine(string msg)
+        public void WriteLine(string? msg)
         {
             Console.WriteLine(msg);
         }
 
-        public void WriteLine(string msg, OutputFormat format)
+        public void WriteLine(string? msg, OutputFormat format)
         {
             Console.WriteLine(msg);
         }

@@ -74,7 +74,7 @@ namespace MTCG.Test.UnitTests.Repositories
         public void DeleteTest()
         {
             // Act
-            bool delete = _repository.Delete(_deck);
+            bool delete = _repository.Delete(_deck.ID);
 
             // Assert
             Assert.IsFalse(delete); // No rows are affected in mocking

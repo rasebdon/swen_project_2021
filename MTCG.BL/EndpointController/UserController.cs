@@ -4,8 +4,10 @@ using MTCG.BL.Requests;
 using MTCG.DAL;
 using MTCG.DAL.Repositories;
 using MTCG.Models;
+using MTCG.BL.Services;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace MTCG.BL.EndpointController
 {
@@ -13,10 +15,12 @@ namespace MTCG.BL.EndpointController
     public class UserController : Controller, IHttpPost, IHttpGet
     {
         private UserRepository _userRepository;
+        private AuthenticationService _authenticationService;
         private ILog _log;
 
-        public UserController(UserRepository userRepository, ILog log)
+        public UserController(AuthenticationService authService, UserRepository userRepository, ILog log)
         {
+            _authenticationService = authService;
             _userRepository = userRepository;
             _log = log;
         }
@@ -67,22 +71,29 @@ namespace MTCG.BL.EndpointController
             {
                 success = _userRepository.Insert(user);
             }
-            catch (DuplicateEntryException e)
-            {
-                _log.WriteLine(e.ToString(), OutputFormat.Error);
-                return new HttpResponse(HttpStatusCode.Conflict);
-            }
             catch (Exception e)
             {
                 _log.WriteLine(e.ToString(), OutputFormat.Error);
-                return new HttpResponse(HttpStatusCode.BadRequest);
+                return new HttpResponse(HttpStatusCode.InternalServerError);
             }
 
             // Remove hash for answer
             user.Hash = "";
 
-            if (success) return new HttpResponse(user.ToJson(), HttpStatusCode.Created, MediaTypeNames.Application.Json);
-            else return new HttpResponse(HttpStatusCode.InternalServerError);
+            if (success)
+                return new HttpResponse(user.ToJson(), HttpStatusCode.Created, MediaTypeNames.Application.Json);
+            else
+                return new HttpResponse(HttpStatusCode.BadRequest);
+        }
+
+        [HttpGet]
+        public HttpResponse GetWithBearerToken(HttpRequest request)
+        {
+            User? user = _authenticationService.Authenticate(request.Authorization);
+            if (user == null)
+                return new HttpResponse(HttpStatusCode.Forbidden);
+            else
+                return new HttpResponse(JsonConvert.SerializeObject(user), HttpStatusCode.OK, MediaTypeNames.Application.Json);
         }
 
         [HttpGet]
@@ -90,15 +101,10 @@ namespace MTCG.BL.EndpointController
         public HttpResponse Get(HttpRequest request)
         {
             User? user;
-
-            //HttpEndpointArgumentAttribute? argAttr = MethodBase.GetCurrentMethod()?
-            //    .GetCustomAttribute<HttpEndpointArgumentAttribute>();
-            //if (argAttr == null || argAttr.Argument == null || argAttr.Argument == "")
-            //    return new HttpResponse(HttpStatusCode.InternalServerError);
-
-            //// Get query resource
-            //string arg = argAttr.Argument;
             string? arg = request.Argument;
+
+            if (arg == null)
+                return new HttpResponse(HttpStatusCode.BadRequest);
 
             // Check if it is guid
             if (Guid.TryParse(arg, out Guid id))
@@ -113,10 +119,45 @@ namespace MTCG.BL.EndpointController
             if (user != null)
             {
                 user.Hash = "";
-                user.SessionToken = "";
                 return new HttpResponse(user.ToJson(), HttpStatusCode.OK, MediaTypeNames.Application.Json);
             }
             else return new HttpResponse(HttpStatusCode.BadRequest);
+        }
+    
+        [HttpDelete]
+        [HttpEndpointArgument]
+        public HttpResponse Delete(HttpRequest request)
+        {
+            User? user = _authenticationService.Authenticate(request.Authorization);
+            string? arg = request.Argument;
+
+            if (user != null && arg != null && Guid.TryParse(arg, out Guid id))
+            {
+                if(id == user.ID)
+                {
+                    bool success = _userRepository.Delete(id);
+
+                    if(success)
+                    {
+                        if(request.Authorization != null)
+                            _authenticationService.LoggedInUsers.TryRemove(request.Authorization.Token, out _);
+
+                        return new HttpResponse(HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        return new HttpResponse(HttpStatusCode.InternalServerError);
+                    }
+                }
+                else
+                {
+                    return new HttpResponse(HttpStatusCode.Forbidden);
+                }
+            }
+            else
+            {
+                return new HttpResponse(HttpStatusCode.BadRequest);
+            }
         }
     }
 }

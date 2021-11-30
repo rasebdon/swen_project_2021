@@ -6,7 +6,7 @@
         {
             get
             {
-                return new DatabaseConfiguration("localhost", "mtcg", "mtcgadmin", "p1s2w3r4");
+                return new DatabaseConfiguration("localhost", "production", "production", "1234");
             }
         }
         public string ConnectionString

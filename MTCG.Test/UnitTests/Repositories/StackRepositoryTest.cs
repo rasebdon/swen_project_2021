@@ -34,14 +34,14 @@ namespace MTCG.Test.UnitTests.Repositories
         public void InsertNotImplementedTest()
         {
             // Act & Assert
-            Assert.Throws<NotImplementedException>(() => _repository.Delete(_stack));
+            Assert.Throws<NotImplementedException>(() => _repository.Delete(Guid.Empty));
         }
 
         [Test]
         public void DeleteNotImplementedTest()
         {
             // Act & Assert
-            Assert.Throws<NotImplementedException>(() => _repository.Delete(_stack));
+            Assert.Throws<NotImplementedException>(() => _repository.Delete(Guid.Empty));
         }
 
         [Test]

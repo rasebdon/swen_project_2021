@@ -18,7 +18,9 @@ namespace MTCG.BL
                 {
                     if ((request = _server.HttpClient.GetHttpRequest()) != null)
                     {
-                        _log.WriteLine($"RequestWorker{_id} : Recieved an http request!");
+                        _log.WriteLine($"RequestWorker{_id} : Recieved an http request id:{request.Id}" +
+                            $"\n\r{request.HttpMethod} : {request.Url.LocalPath}");
+
                         _server.HttpRequests.Enqueue(request);
                     }
                     else

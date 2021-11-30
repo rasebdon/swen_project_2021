@@ -45,15 +45,16 @@ namespace MTCG.DAL.Repositories
             {
                 // Check if username is available (check in lower case)
                 var cmd = new NpgsqlCommand(
-                    $"SELECT username FROM users WHERE LOWER(username)=@username;");
+                    $"SELECT * FROM users WHERE LOWER(username)=@username;");
                 cmd.Parameters.AddWithValue("username", entity.Username.ToLower());
 
                 User? selected = ParseFromRow(_db.SelectSingle(cmd), _log);
-                if (selected != null && selected.Username == entity.Username)
+                if (selected != null)
                     throw new DuplicateEntryException(entity.Username);
 
                 // Insert user
-                string sql = $"INSERT INTO users (id, username, hash, coins, elo, admin, played_games) VALUES (@id, @username, @hash, @coins, @elo, false, @played_games);";
+                string sql = $"INSERT INTO users (id, username, hash, coins, elo, admin, played_games)" +
+                    $"VALUES (@id, @username, @hash, @coins, @elo, false, @played_games);";
                 cmd = new NpgsqlCommand(sql);
                 cmd.Parameters.AddWithValue("id", entity.ID);
                 cmd.Parameters.AddWithValue("username", entity.Username);
@@ -103,24 +104,11 @@ namespace MTCG.DAL.Repositories
             }
         }
 
-        public bool Delete(User entity)
+        public bool Delete(Guid id)
         {
-            if (entity != null)
-            {
-                // Try delete by id
-                NpgsqlCommand cmd = new("DELETE FROM users WHERE id=@id;");
-                cmd.Parameters.AddWithValue("id", entity.ID);
-
-                if (_db.ExecuteNonQuery(cmd) != 1)
-                {
-                    cmd = new("DELETE FROM users WHERE username=@username;");
-                    cmd.Parameters.AddWithValue("username", entity.Username);
-
-                    return _db.ExecuteNonQuery(cmd) == 1;
-                }
-                else return true;
-            }
-            return false;
+            NpgsqlCommand cmd = new("DELETE FROM users WHERE id=@id;");
+            cmd.Parameters.AddWithValue("id", id);
+            return _db.ExecuteNonQuery(cmd) == 1;
         }
 
         public static User? ParseFromRow(OrderedDictionary? row, ILog log)

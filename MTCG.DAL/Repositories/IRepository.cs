@@ -5,6 +5,6 @@
         T? GetById(Guid id);
         bool Insert(T entity);
         bool Update(T entityOld, T entityNew);
-        bool Delete(T entity);
+        bool Delete(Guid id);
     }
 }

@@ -18,7 +18,6 @@
 
         public int PlayedGames { get; set; }
 
-        public string SessionToken { get; set; }
         public bool IsAdmin { get; set; }
 
         /// <summary>
@@ -36,7 +35,6 @@
             ELO = elo;
             PlayedGames = playedGames;
             IsAdmin = false;
-            SessionToken = string.Empty;
         }
 
         public override bool Equals(object? obj)
@@ -48,13 +46,12 @@
                    Coins == user.Coins &&
                    ELO == user.ELO &&
                    PlayedGames == user.PlayedGames &&
-                   SessionToken == user.SessionToken &&
                    IsAdmin == user.IsAdmin;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(ID, Username, Hash, Coins, ELO, PlayedGames, SessionToken, IsAdmin);
+            return HashCode.Combine(ID, Username, Hash, Coins, ELO, PlayedGames, IsAdmin);
         }
 
     }

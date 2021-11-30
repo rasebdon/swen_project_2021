@@ -52,7 +52,7 @@ namespace MTCG.Test.UnitTests.Repositories
         public void DeleteTest()
         {
             // Act
-            bool delete = _repository.Delete(_card);
+            bool delete = _repository.Delete(_card.ID);
 
             // Assert
             Assert.IsFalse(delete); // No rows are affected in mocking
@@ -62,14 +62,14 @@ namespace MTCG.Test.UnitTests.Repositories
 
 
         [Test]
-        public void TryDeleteWithNullObject()
+        public void TryDeleteWithEmptyGuid()
         {
             // Act
-            bool delete = _repository.Delete(null);
+            bool delete = _repository.Delete(Guid.Empty);
 
             // Assert
             Assert.IsFalse(delete); // No rows are affected in mocking
-            Assert.AreEqual(0, _mockDb.Invocations.Count);
+            Assert.AreEqual(1, _mockDb.Invocations.Count);
         }
 
 

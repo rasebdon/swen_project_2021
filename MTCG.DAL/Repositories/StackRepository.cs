@@ -15,10 +15,11 @@ namespace MTCG.DAL.Repositories
             _log = log;
         }
 
-        public bool Delete(List<CardInstance> entity)
+        public bool Delete(Guid id)
         {
             throw new NotImplementedException();
         }
+
         public List<CardInstance>? GetById(Guid userId)
         {
             try

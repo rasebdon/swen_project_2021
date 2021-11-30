@@ -13,6 +13,9 @@ namespace MTCG.BL.Http
 
     public class HttpRequest
     {
+        private static uint _id = 0;
+
+        public uint Id { get; }
         public HttpMethod HttpMethod { get; }
         public string RequestBody { get; }
         public string? Argument { get; set; }
@@ -27,6 +30,7 @@ namespace MTCG.BL.Http
 
         public HttpRequest(Uri url, HttpMethod method, string contentType, string requestBody, Socket requester, string httpVersion, HttpAuthorization? authorization)
         {
+            Id = _id++;
             HttpVersion = httpVersion;
             HasEntityBody = requestBody.Length > 0;
             HttpMethod = method;
@@ -50,7 +54,7 @@ namespace MTCG.BL.Http
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    // Console.WriteLine(ex.ToString());
                 }
             }
         }

@@ -15,10 +15,10 @@ namespace MTCG.DAL.Repositories
             _log = log;
         }
 
-        public bool Delete(Package entity)
+        public bool Delete(Guid id)
         {
             NpgsqlCommand cmd = new("DELETE FROM packages WHERE id=@id;");
-            cmd.Parameters.AddWithValue("id", entity.ID);
+            cmd.Parameters.AddWithValue("id", id);
             return _db.ExecuteNonQuery(cmd) == 1;
         }
 
@@ -103,7 +103,7 @@ namespace MTCG.DAL.Repositories
             {
                 _log.WriteLine(ex.ToString());
                 // Revert changes
-                Delete(package);
+                Delete(package.ID);
                 return false;
             }
         }

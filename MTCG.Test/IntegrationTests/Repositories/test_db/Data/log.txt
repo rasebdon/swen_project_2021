@@ -831,4 +831,158 @@
 2021-11-29 13:37:06.575 CET [6380] LOG:  startup process (PID 23844) was terminated by exception 0xC000013A
 2021-11-29 13:37:06.575 CET [6380] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
 2021-11-29 13:37:06.575 CET [6380] LOG:  aborting startup due to startup process failure
+^C2021-11-29 22:03:35.804 CET [10740] LOG:  listening on IPv6 address "::1", port 15000
+2021-11-29 22:03:35.805 CET [10740] LOG:  listening on IPv4 address "127.0.0.1", port 15000
+2021-11-29 22:03:36.620 CET [3616] LOG:  database system was interrupted; last known up at 2021-11-29 13:33:26 CET
+2021-11-29 22:03:46.338 CET [3616] LOG:  database system was not properly shut down; automatic recovery in progress
+2021-11-29 22:03:46.729 CET [3616] LOG:  redo starts at 0/1747C00
+2021-11-29 22:03:46.754 CET [3616] LOG:  invalid record length at 0/174C220: wanted 24, got 0
+2021-11-29 22:03:46.754 CET [3616] LOG:  redo done at 0/174C1E8
+2021-11-29 22:03:46.754 CET [3616] LOG:  last completed transaction was at log time 2021-11-29 13:36:48.778099+01
+2021-11-29 22:03:48.187 CET [10740] LOG:  database system is ready to accept connections
+2021-11-29 22:05:02.001 CET [21544] ERROR:  insert or update on table "card_instances" violates foreign key constraint "fk_card_instances_card_id"
+2021-11-29 22:05:02.001 CET [21544] DETAIL:  Key (card_id)=(cc858c03-c7d7-4d9e-a0db-4c034b4072a2) is not present in table "cards".
+2021-11-29 22:05:02.001 CET [21544] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-11-29 22:05:02.608 CET [21544] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 22:06:46.721 CET [20424] FATAL:  role "production" does not exist
+2021-11-29 22:07:19.520 CET [996] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 22:07:51.192 CET [172] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 22:08:18.532 CET [20220] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 22:09:09.816 CET [11164] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 22:10:25.997 CET [14948] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 22:11:01.664 CET [14152] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 22:11:26.019 CET [15720] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-29 22:12:05.409 CET [10740] LOG:  server process (PID 23076) was terminated by exception 0xC000013A
+2021-11-29 22:12:05.409 CET [10740] DETAIL:  Failed process was running: SELECT * FROM cards;
+2021-11-29 22:12:05.409 CET [10740] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-11-29 22:12:05.409 CET [10740] LOG:  terminating any other active server processes
+2021-11-29 22:12:05.410 CET [19396] WARNING:  terminating connection because of crash of another server process
+2021-11-29 22:12:05.410 CET [19396] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2021-11-29 22:12:05.410 CET [19396] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2021-11-29 22:12:06.601 CET [10740] LOG:  all server processes terminated; reinitializing
+2021-11-29 22:12:07.135 CET [17956] LOG:  database system was interrupted; last known up at 2021-11-29 22:08:50 CET
+2021-11-29 22:12:09.055 CET [10740] LOG:  startup process (PID 17956) was terminated by exception 0xC000013A
+2021-11-29 22:12:09.055 CET [10740] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-11-29 22:12:09.055 CET [10740] LOG:  aborting startup due to startup process failure
+^C2021-11-30 11:46:42.060 CET [24968] LOG:  listening on IPv6 address "::1", port 15000
+2021-11-30 11:46:42.060 CET [24968] LOG:  listening on IPv4 address "127.0.0.1", port 15000
+2021-11-30 11:46:42.794 CET [7088] LOG:  database system was interrupted; last known up at 2021-11-29 22:08:50 CET
+2021-11-30 11:46:50.355 CET [7088] LOG:  database system was not properly shut down; automatic recovery in progress
+2021-11-30 11:46:51.494 CET [7088] LOG:  redo starts at 0/174DC10
+2021-11-30 11:46:51.507 CET [7088] LOG:  invalid record length at 0/174FB38: wanted 24, got 0
+2021-11-30 11:46:51.507 CET [7088] LOG:  redo done at 0/174FB00
+2021-11-30 11:46:51.507 CET [7088] LOG:  last completed transaction was at log time 2021-11-29 22:11:25.900704+01
+2021-11-30 11:46:52.825 CET [24968] LOG:  database system is ready to accept connections
+2021-11-30 11:58:52.085 CET [28120] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 11:59:15.769 CET [14480] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-11-30 11:59:15.769 CET [14480] DETAIL:  Key (id)=(0b79b94c-9521-4834-a412-6418e7365af6) already exists.
+2021-11-30 11:59:15.769 CET [14480] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-11-30 11:59:16.000 CET [14480] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 11:59:32.536 CET [28612] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-11-30 11:59:32.536 CET [28612] DETAIL:  Key (id)=(8293caa0-5f46-4274-ade3-d2fe92f4afd2) already exists.
+2021-11-30 11:59:32.536 CET [28612] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-11-30 11:59:32.647 CET [28612] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:07:52.336 CET [10636] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-11-30 12:07:52.336 CET [10636] DETAIL:  Key (id)=(18cf8aba-eea8-45b7-a213-3dd1fcb690e8) already exists.
+2021-11-30 12:07:52.336 CET [10636] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-11-30 12:07:52.842 CET [9760] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-11-30 12:07:52.842 CET [9760] DETAIL:  Key (id)=(9366339a-a59f-43d5-b43a-051e536f50cf) already exists.
+2021-11-30 12:07:52.842 CET [9760] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-11-30 12:07:53.544 CET [18528] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-11-30 12:07:53.544 CET [18528] DETAIL:  Key (username)=(test) already exists.
+2021-11-30 12:07:53.544 CET [18528] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, admin, played_games) VALUES ($1, $2, $3, $4, $5, false, $6)
+2021-11-30 12:07:54.037 CET [18528] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:07:54.037 CET [10636] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:07:54.037 CET [9760] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:08:58.845 CET [28344] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-11-30 12:08:58.845 CET [28344] DETAIL:  Key (id)=(e0269aee-6d56-4fbe-89b9-904a4ca23be8) already exists.
+2021-11-30 12:08:58.845 CET [28344] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-11-30 12:08:59.390 CET [28088] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-11-30 12:08:59.390 CET [28088] DETAIL:  Key (id)=(69c7f220-11b3-4304-90e3-4c8a43a3926a) already exists.
+2021-11-30 12:08:59.390 CET [28088] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-11-30 12:09:00.027 CET [23784] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-11-30 12:09:00.027 CET [23784] DETAIL:  Key (username)=(test) already exists.
+2021-11-30 12:09:00.027 CET [23784] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, admin, played_games) VALUES ($1, $2, $3, $4, $5, false, $6)
+2021-11-30 12:09:00.398 CET [28344] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:09:00.398 CET [28088] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:09:00.398 CET [23784] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:12:53.121 CET [1344] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:13:44.851 CET [28108] ERROR:  syntax error at or near "VALUES" at character 37
+2021-11-30 12:13:44.851 CET [28108] STATEMENT:  UPDATE card_instances SET (card_id) VALUES ($1) WHERE id=$2
+2021-11-30 12:13:44.928 CET [28108] ERROR:  syntax error at or near "fb74f1" at character 76
+2021-11-30 12:13:44.928 CET [28108] STATEMENT:  DELETE FROM cards WHERE id='1f2ae169-f050-4d01-ac0c-6272ff10468a' AND id=23fb74f1-0501-466d-965e-b9c7a654b6f3
+2021-11-30 12:13:44.995 CET [28108] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:14:19.974 CET [18380] ERROR:  syntax error at or near "1" at character 24
+2021-11-30 12:14:19.974 CET [18380] STATEMENT:  DELETE FROM cards WHRE 1=1;
+2021-11-30 12:14:38.712 CET [11328] ERROR:  syntax error at or near "VALUES" at character 37
+2021-11-30 12:14:38.712 CET [11328] STATEMENT:  UPDATE card_instances SET (card_id) VALUES ($1) WHERE id=$2
+2021-11-30 12:14:38.881 CET [11328] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:16:10.668 CET [25796] ERROR:  syntax error at or near "VALUES" at character 37
+2021-11-30 12:16:10.668 CET [25796] STATEMENT:  UPDATE card_instances SET (card_id) VALUES ($1) WHERE id=$2
+2021-11-30 12:16:10.803 CET [25796] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:16:30.480 CET [27988] ERROR:  syntax error at or near "VALUES" at character 37
+2021-11-30 12:16:30.480 CET [27988] STATEMENT:  UPDATE card_instances SET (card_id) VALUES ($1) WHERE id=$2
+2021-11-30 12:16:30.648 CET [27988] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:18:06.737 CET [13096] ERROR:  syntax error at or near "VALUES" at character 37
+2021-11-30 12:18:06.737 CET [13096] STATEMENT:  UPDATE card_instances SET (card_id) VALUES ($1) WHERE id=$2
+2021-11-30 12:18:18.714 CET [13096] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:18:55.888 CET [10624] ERROR:  syntax error at or near "VALUES" at character 37
+2021-11-30 12:18:55.888 CET [10624] STATEMENT:  UPDATE card_instances SET (card_id) VALUES ($1) WHERE id=$2
+2021-11-30 12:18:56.039 CET [10624] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:19:38.655 CET [2012] ERROR:  syntax error at or near "VALUES" at character 37
+2021-11-30 12:19:38.655 CET [2012] STATEMENT:  UPDATE card_instances SET (card_id) VALUES ($1) WHERE id=$2
+2021-11-30 12:19:51.127 CET [2012] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:20:15.475 CET [20124] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:23:27.658 CET [2936] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:24:43.442 CET [19976] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:29:25.032 CET [1048] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-11-30 12:29:25.032 CET [1048] DETAIL:  Key (id)=(035d8c1e-32c9-4cd9-bd9c-c4f1d3889f76) already exists.
+2021-11-30 12:29:25.032 CET [1048] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-11-30 12:29:25.271 CET [1048] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:31:01.288 CET [18148] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-11-30 12:31:01.288 CET [18148] DETAIL:  Key (id)=(e5a9dfbb-2e30-42cd-8fa9-38706e528966) already exists.
+2021-11-30 12:31:01.288 CET [18148] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-11-30 12:31:01.476 CET [18148] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-11-30 12:31:01.476 CET [18148] DETAIL:  Key (id)=(67c98d98-6c47-44cc-a19d-ea25a0262772) already exists.
+2021-11-30 12:31:01.476 CET [18148] STATEMENT:  INSERT INTO card_instances (id, card_id) 
+	                VALUES ('67c98d98-6c47-44cc-a19d-ea25a0262772', '371def50-7945-4455-8410-6db2875f79e9')
+2021-11-30 12:31:01.795 CET [18148] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:31:16.667 CET [17428] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:31:45.867 CET [8448] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:32:07.123 CET [12084] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:32:43.806 CET [18796] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:33:39.751 CET [19536] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:34:01.477 CET [28900] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-11-30 12:34:01.477 CET [28900] DETAIL:  Key (id)=(76bd59d9-939b-4e21-a542-0ccbc66eae07) already exists.
+2021-11-30 12:34:01.477 CET [28900] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-11-30 12:34:01.607 CET [28900] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:34:09.802 CET [3832] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-11-30 12:34:09.802 CET [3832] DETAIL:  Key (id)=(310f7e01-01e9-4402-9a67-b395843ca509) already exists.
+2021-11-30 12:34:09.802 CET [3832] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-11-30 12:34:10.554 CET [15264] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-11-30 12:34:10.554 CET [15264] DETAIL:  Key (id)=(09bcc163-6407-44d9-a845-cd6582728228) already exists.
+2021-11-30 12:34:10.554 CET [15264] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-11-30 12:34:11.436 CET [14060] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-11-30 12:34:11.436 CET [14060] DETAIL:  Key (username)=(test) already exists.
+2021-11-30 12:34:11.436 CET [14060] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, admin, played_games) VALUES ($1, $2, $3, $4, $5, false, $6)
+2021-11-30 12:34:11.776 CET [15264] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:34:11.776 CET [3832] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:34:11.776 CET [14060] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-11-30 12:34:25.862 CET [24968] LOG:  server process (PID 18380) was terminated by exception 0xC000013A
+2021-11-30 12:34:25.862 CET [24968] DETAIL:  Failed process was running: DELETE FROM card_instances;
+2021-11-30 12:34:25.862 CET [24968] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-11-30 12:34:25.862 CET [24968] LOG:  terminating any other active server processes
+2021-11-30 12:34:25.864 CET [27084] WARNING:  terminating connection because of crash of another server process
+2021-11-30 12:34:25.864 CET [27084] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2021-11-30 12:34:25.864 CET [27084] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2021-11-30 12:34:25.882 CET [24968] LOG:  statistics collector process (PID 25520) was terminated by exception 0xC000013A
+2021-11-30 12:34:25.882 CET [24968] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-11-30 12:34:25.882 CET [24968] LOG:  all server processes terminated; reinitializing
+2021-11-30 12:34:26.058 CET [27644] LOG:  database system was interrupted; last known up at 2021-11-30 12:31:55 CET
+2021-11-30 12:34:30.343 CET [24968] LOG:  startup process (PID 27644) was terminated by exception 0xC000013A
+2021-11-30 12:34:30.343 CET [24968] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-11-30 12:34:30.343 CET [24968] LOG:  aborting startup due to startup process failure
 ^C

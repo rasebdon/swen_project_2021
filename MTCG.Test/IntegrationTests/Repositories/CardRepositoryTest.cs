@@ -100,7 +100,7 @@ namespace MTCG.Test.IntegrationTests.Repositories
 
             // Act
             _db.ExecuteNonQuery(cmd);
-            bool delete = _repository.Delete(_card);
+            bool delete = _repository.Delete(_card.ID);
 
             // Check if row is not in db anymore
             cmd = new("SELECT * FROM cards;");

@@ -4,29 +4,29 @@ namespace MTCG.BL
 {
     public class ServerLog : ILog
     {
-        public void Write(string msg)
+        public void Write(string? msg)
         {
             Console.Write(GetFormattedOutput(msg, OutputFormat.Standard));
         }
 
-        public void Write(string msg, OutputFormat format)
+        public void Write(string? msg, OutputFormat format)
         {
             Console.Write(GetFormattedOutput(msg, format));
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        public void WriteLine(string msg)
+        public void WriteLine(string? msg)
         {
             Console.WriteLine(GetFormattedOutput(msg, OutputFormat.Standard));
         }
 
-        public void WriteLine(string msg, OutputFormat format)
+        public void WriteLine(string? msg, OutputFormat format)
         {
             Console.WriteLine(GetFormattedOutput(msg, format));
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        private static string GetFormattedOutput(string msg, OutputFormat format)
+        private static string GetFormattedOutput(string? msg, OutputFormat format)
         {
             string tag;
             switch (format)
