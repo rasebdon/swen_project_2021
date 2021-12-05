@@ -20,7 +20,7 @@ namespace MTCG.BL.Services
         /// <returns>The user related to the auth token / null if no user was found</returns>
         public User? Authenticate(HttpAuthorization? auth)
         {
-            if(auth != null)
+            if (auth != null)
             {
                 LoggedInUsers.TryGetValue(auth.Token, out User? user);
                 return user;

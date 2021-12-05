@@ -9,6 +9,7 @@ namespace MTCG.DAL
         OrderedDictionary SelectSingle(DbCommand cmd);
         OrderedDictionary[] Select(DbCommand cmd);
         int ExecuteNonQuery(DbCommand cmd);
+        bool ExecuteNonQueryTransaction(IEnumerable<TransactionObject> objects);
         void Dispose();
     }
 }

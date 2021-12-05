@@ -81,20 +81,7 @@ namespace MTCG.DAL.Repositories
                 cmd.Parameters.AddWithValue("user_id", user.ID);
                 cmd.Parameters.AddWithValue("card_instance_id", card.ID);
 
-                if (_db.ExecuteNonQuery(cmd) != 1)
-                {
-                    // Revert changes
-                    cmd = new(
-                        @"DELETE FROM user_cards WHERE 
-                        user_id=@user_id AND card_instance_id=@card_instance_id");
-                    cmd.Parameters.AddWithValue("user_id", user.ID);
-                    cmd.Parameters.AddWithValue("card_instance_id", card.ID);
-
-                    _db.ExecuteNonQuery(cmd);
-
-                    return false;
-                }
-                return true;
+                return _db.ExecuteNonQueryTransaction(new TransactionObject[] { new TransactionObject(cmd, 1) });
             }
             catch (Exception ex)
             {
@@ -102,47 +89,28 @@ namespace MTCG.DAL.Repositories
                 return false;
             }
         }
+
         public bool AddCardInstancesToUser(User user, List<CardInstance> cards)
         {
             try
             {
-                string sql =
-                @"INSERT INTO user_cards (user_id, card_instance_id) 
-                VALUES (@user_id, @card_instance_id);";
-                NpgsqlCommand cmd = new(sql);
-                cmd.Parameters.Add("user_id", NpgsqlTypes.NpgsqlDbType.Uuid);
-                cmd.Parameters.Add("card_instance_id", NpgsqlTypes.NpgsqlDbType.Uuid);
-
+                List<TransactionObject> transaction = new();
                 List<CardInstance> addedCards = new();
 
-                foreach (CardInstance card in cards)
+                foreach (CardInstance cardInstance in cards)
                 {
-                    cmd.Parameters["user_id"].Value = user.ID;
-                    cmd.Parameters["card_instance_id"].Value = card.ID;
+                    string sql =
+                        @"INSERT INTO user_cards (user_id, card_instance_id) 
+                        VALUES (@user_id, @card_instance_id);";
+                    NpgsqlCommand cmd = new(sql);
+                    cmd.Parameters.AddWithValue("user_id", user.ID);
+                    cmd.Parameters.AddWithValue("card_instance_id", cardInstance.ID);
+                    transaction.Add(new(cmd, 1));
 
-                    // Check if transaction was successful
-                    if (_db.ExecuteNonQuery(cmd) != 1)
-                    {
-                        // Revert changes
-                        cmd = new(
-                            @"DELETE FROM user_cards WHERE 
-                            user_id=@user_id AND card_instance_id=@card_instance_id");
-                        cmd.Parameters.Add("user_id", NpgsqlTypes.NpgsqlDbType.Uuid);
-                        cmd.Parameters.Add("card_instance_id", NpgsqlTypes.NpgsqlDbType.Uuid);
-
-                        foreach (CardInstance c in addedCards)
-                        {
-                            cmd.Parameters["user_id"].Value = user.ID;
-                            cmd.Parameters["card_instance_id"].Value = c.ID;
-
-                            _db.ExecuteNonQuery(cmd);
-                        }
-                        return false;
-                    }
-                    addedCards.Add(card);
+                    addedCards.Add(cardInstance);
                 }
 
-                return true;
+                return _db.ExecuteNonQueryTransaction(transaction);
             }
             catch (Exception ex)
             {
@@ -151,18 +119,41 @@ namespace MTCG.DAL.Repositories
             }
         }
 
-        public bool Update(CardInstance entityOld, CardInstance entityNew)
+        public bool Insert(List<CardInstance> cards)
+        {
+            try
+            {
+                List<TransactionObject> transaction = new();
+
+                foreach (CardInstance cardInstance in cards)
+                {
+                    var cmd = new NpgsqlCommand(
+                    "INSERT INTO card_instances (id, card_id) VALUES (@id, @cardID);");
+                    cmd.Parameters.AddWithValue("id", cardInstance.ID);
+                    cmd.Parameters.AddWithValue("cardID", cardInstance.CardID);
+                    transaction.Add(new(cmd, 1));
+                }
+                return _db.ExecuteNonQueryTransaction(transaction);
+            }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return false;
+            }
+        }
+
+        public bool Update(CardInstance entity)
         {
             try
             {
                 string sql = "UPDATE card_instances SET card_id=@card_id WHERE id=@id;";
                 NpgsqlCommand cmd = new(sql);
-                cmd.Parameters.AddWithValue("id", entityOld.ID);
-                cmd.Parameters.AddWithValue("card_id", entityNew.CardID);
+                cmd.Parameters.AddWithValue("id", entity.ID);
+                cmd.Parameters.AddWithValue("card_id", entity.CardID);
 
                 return _db.ExecuteNonQuery(cmd) == 1;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _log.WriteLine(ex.ToString());
                 return false;

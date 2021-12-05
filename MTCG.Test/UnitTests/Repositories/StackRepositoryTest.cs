@@ -48,7 +48,7 @@ namespace MTCG.Test.UnitTests.Repositories
         public void UpdateNotImplementedTest()
         {
             // Act & Assert
-            Assert.Throws<NotImplementedException>(() => _repository.Update(_stack, _stack));
+            Assert.Throws<NotImplementedException>(() => _repository.Update(_stack));
         }
 
         [Test]

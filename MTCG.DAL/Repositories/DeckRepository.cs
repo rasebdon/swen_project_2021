@@ -34,8 +34,12 @@ namespace MTCG.DAL.Repositories
 
                 // Get card infos extension 
                 cmd = new(
-                    @"SELECT card_instances.* FROM deck_cards, card_instances 
-                WHERE deck_cards.deck_id=@deckId AND card_instances.id=deck_cards.card_instance_id");
+                    @"SELECT card_instances.*, cards.type, cards.name, cards.description,
+                    cards.damage, cards.element, cards.rarity, cards.race FROM card_instances, cards, decks, deck_cards
+                    WHERE card_instances.card_id=cards.id
+                    AND deck_cards.deck_id=decks.id
+                    AND deck_cards.card_instance_id=card_instances.id
+                    AND decks.id=@deckId;");
                 cmd.Parameters.AddWithValue("deckId", deckid);
                 OrderedDictionary[] cards = _db.Select(cmd);
 
@@ -66,7 +70,8 @@ namespace MTCG.DAL.Repositories
                 foreach (OrderedDictionary row in deckInformations)
                 {
                     Deck? deck = GetById(Guid.Parse(row["id"]?.ToString() ?? ""));
-                    if (deck != null) decks.Add(deck);
+                    if (deck != null)
+                        decks.Add(deck);
                 }
 
                 return decks;
@@ -80,8 +85,7 @@ namespace MTCG.DAL.Repositories
 
         public bool Insert(Deck deck)
         {
-            NpgsqlCommand cmd;
-            Guid oldMainDeckId = Guid.Empty;
+            List<TransactionObject> commands = new();
 
             try
             {
@@ -95,83 +99,78 @@ namespace MTCG.DAL.Repositories
                 else
                 {
                     // Get old main deck
-                    cmd = new("SELECT * FROM decks, user_decks WHERE user_id=@user_id AND main_deck=true;");
+                    NpgsqlCommand cmd = new("SELECT * FROM decks, user_decks WHERE user_id=@user_id AND main_deck=true;");
                     cmd.Parameters.AddWithValue("user_id", deck.UserID);
-                    oldMainDeckId = Guid.Parse(_db.SelectSingle(cmd)?["id"]?.ToString() ?? "");
 
-                    // Uncheck old main deck
-                    cmd = new("UPDATE user_decks SET main_deck=False WHERE main_deck=True AND user_id=@user_id;");
-                    cmd.Parameters.AddWithValue("user_id", deck.UserID);
-                    _db.ExecuteNonQuery(cmd);
+                    if (Guid.TryParse(_db.SelectSingle(cmd)?["id"]?.ToString() ?? "", out Guid oldMainDeckId))
+                    {
+                        // Uncheck old main deck
+                        NpgsqlCommand cmd1 = new("UPDATE user_decks SET main_deck=False WHERE main_deck=True AND user_id=@user_id;");
+                        cmd1.Parameters.AddWithValue("user_id", deck.UserID);
+                        commands.Add(new(cmd1, 1));
+                    }
 
                     // Set this deck as new main deck
                     mainDeck = true;
                 }
 
-                int errorno = 0;
                 // Insert deck metadata
-                cmd = new("INSERT INTO decks (id, name) VALUES (@id, @name);");
-                cmd.Parameters.AddWithValue("id", deck.ID);
-                cmd.Parameters.AddWithValue("name", deck.Name);
-                errorno += _db.ExecuteNonQuery(cmd) == 1 ? 0 : 1;
+                NpgsqlCommand cmd2 = new("INSERT INTO decks (id, name) VALUES (@id, @name);");
+                cmd2.Parameters.AddWithValue("id", deck.ID);
+                cmd2.Parameters.AddWithValue("name", deck.Name);
+                commands.Add(new(cmd2, 1));
 
                 // Insert user link
-                cmd = new("INSERT INTO user_decks (deck_id, user_id, main_deck) VALUES (@deck_id, @user_id, @main_deck);");
-                cmd.Parameters.AddWithValue("deck_id", deck.ID);
-                cmd.Parameters.AddWithValue("user_id", deck.UserID);
-                cmd.Parameters.AddWithValue("main_deck", mainDeck);
-                errorno += _db.ExecuteNonQuery(cmd) == 1 ? 0 : 1;
+                NpgsqlCommand cmd3 = new("INSERT INTO user_decks (deck_id, user_id, main_deck) VALUES (@deck_id, @user_id, @main_deck);");
+                cmd3.Parameters.AddWithValue("deck_id", deck.ID);
+                cmd3.Parameters.AddWithValue("user_id", deck.UserID);
+                cmd3.Parameters.AddWithValue("main_deck", mainDeck);
+                commands.Add(new(cmd3, 1));
 
                 // Insert card links
-                cmd = new("INSERT INTO deck_cards (deck_id, card_instance_id) VALUES (@deck_id, @card_instance_id);");
-                cmd.Parameters.AddWithValue("deck_id", deck.ID);
-
                 for (int i = 0; i < deck.Cards.Count; i++)
                 {
+                    NpgsqlCommand cmd = new("INSERT INTO deck_cards (deck_id, card_instance_id) VALUES (@deck_id, @card_instance_id);");
+                    cmd.Parameters.AddWithValue("deck_id", deck.ID);
                     cmd.Parameters.AddWithValue("card_instance_id", deck.Cards[i].ID);
-                    errorno += _db.ExecuteNonQuery(cmd) == 1 ? 0 : 1;
-                    cmd.Parameters.Remove("card_instance_id");
+                    commands.Add(new(cmd, 1));
                 }
 
-                if (errorno != 0)
-                {
-                    throw new Exception($"There was an error inserting the new deck with id {deck.ID}");
-                }
-                return true;
+                return _db.ExecuteNonQueryTransaction(commands);
             }
             catch (Exception ex)
             {
                 _log.WriteLine(ex.ToString());
-                Delete(deck.ID);
-
-                if (oldMainDeckId != Guid.Empty)
-                {
-                    // Set old deck to main deck
-                    cmd = new("UPDATE user_decks SET main_deck=True WHERE id=@id;");
-                    cmd.Parameters.AddWithValue("id", oldMainDeckId);
-                    _db.ExecuteNonQuery(cmd);
-                }
                 return false;
             }
         }
 
-        public bool Update(Deck oldDeck, Deck newDeck)
+        public bool Update(Deck deck)
         {
             try
             {
-                NpgsqlCommand cmd;
+                List<TransactionObject> commands = new();
+
                 bool mainDeck;
-                if (!newDeck.MainDeck)
+
+                if (!deck.MainDeck)
                 {
                     // Check if it is the first deck of the user => make it the main deck
-                    mainDeck = GetUserDecks(newDeck.UserID).Count == 0;
+                    mainDeck = GetUserDecks(deck.UserID).Count == 0;
                 }
                 else
                 {
-                    // Uncheck old main deck
-                    cmd = new("UPDATE user_decks SET main_deck=False WHERE main_deck=True AND user_id=@user_id");
-                    cmd.Parameters.AddWithValue("user_id", newDeck.UserID);
-                    _db.ExecuteNonQuery(cmd);
+                    // Get old main deck
+                    NpgsqlCommand cmdS = new("SELECT * FROM decks, user_decks WHERE user_id=@user_id AND main_deck=true;");
+                    cmdS.Parameters.AddWithValue("user_id", deck.UserID);
+
+                    if (Guid.TryParse(_db.SelectSingle(cmdS)?["id"]?.ToString() ?? "", out Guid oldMainDeckId))
+                    {
+                        // Uncheck old main deck
+                        NpgsqlCommand cmd = new("UPDATE user_decks SET main_deck=False WHERE main_deck=True AND user_id=@user_id;");
+                        cmd.Parameters.AddWithValue("user_id", deck.UserID);
+                        commands.Add(new(cmd, 1));
+                    }
 
                     // Set this deck as new main deck
                     mainDeck = true;
@@ -180,45 +179,40 @@ namespace MTCG.DAL.Repositories
                 // Update main deck
                 if (mainDeck)
                 {
-                    cmd = new("UPDATE user_decks SET main_deck=True WHERE user_id=@user_id AND deck_id=@deck_id");
-                    cmd.Parameters.AddWithValue("user_id", newDeck.UserID);
-                    cmd.Parameters.AddWithValue("deck_id", oldDeck.ID);
-                    _db.ExecuteNonQuery(cmd);
+                    NpgsqlCommand cmd = new("UPDATE user_decks SET main_deck=True WHERE user_id=@user_id AND deck_id=@deck_id");
+                    cmd.Parameters.AddWithValue("user_id", deck.UserID);
+                    cmd.Parameters.AddWithValue("deck_id", deck.ID);
+                    commands.Add(new(cmd, 1));
                 }
 
                 // Update deck information
-                if (oldDeck.Name != newDeck.Name)
-                {
-                    cmd = new("UPDATE decks SET name=@name;");
-                    cmd.Parameters.AddWithValue("name", newDeck.Name);
-                    _db.ExecuteNonQuery(cmd);
-                }
+                NpgsqlCommand cmd1 = new("UPDATE decks SET name=@name WHERE id=@deck_id;");
+                cmd1.Parameters.AddWithValue("name", deck.Name);
+                cmd1.Parameters.AddWithValue("deck_id", deck.ID);
+                commands.Add(new(cmd1, 1));
 
                 // Update cards
                 // Unlink old cards
-                cmd = new("DELETE FROM deck_cards WHERE deck_id=@deck_id;");
-                cmd.Parameters.AddWithValue("deck_id", oldDeck.ID);
-                _db.ExecuteNonQuery(cmd);
+                NpgsqlCommand cmd2 = new("DELETE FROM deck_cards WHERE deck_id=@deck_id;");
+                cmd2.Parameters.AddWithValue("deck_id", deck.ID);
+                commands.Add(new(cmd2, Deck.DeckSize));
 
                 // Link new cards
-                cmd = new("INSERT INTO deck_cards (deck_id, card_instance_id) VALUES (@deck_id, @card_instance_id);");
-                cmd.Parameters.AddWithValue("deck_id", oldDeck.ID);
-                for (int i = 0; i < newDeck.Cards.Count; i++)
+                for (int i = 0; i < deck.Cards.Count; i++)
                 {
-                    cmd.Parameters.AddWithValue("card_instance_id", newDeck.Cards[i].ID);
-                    _db.ExecuteNonQuery(cmd);
-                    cmd.Parameters.Remove("card_instance_id");
+                    NpgsqlCommand cmd = new("INSERT INTO deck_cards (deck_id, card_instance_id) VALUES (@deck_id, @card_instance_id);");
+                    cmd.Parameters.AddWithValue("deck_id", deck.ID);
+                    cmd.Parameters.AddWithValue("card_instance_id", deck.Cards[i].ID);
+                    commands.Add(new(cmd, 1));
                 }
+
+                return _db.ExecuteNonQueryTransaction(commands);
             }
             catch (Exception e)
             {
                 _log.WriteLine(e.ToString());
-                // Revert changes
-                Delete(oldDeck.ID);
-                Insert(oldDeck);
                 return false;
             }
-            return true;
         }
 
         public static Deck? ParseFromRow(OrderedDictionary deckInfo, OrderedDictionary[] cardRows, ILog _log)

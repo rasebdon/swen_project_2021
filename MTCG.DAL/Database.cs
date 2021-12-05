@@ -17,6 +17,7 @@ namespace MTCG.DAL
         private readonly ILog _log;
         private readonly DbConnection _connection; // TODO : Connection pooling
         private readonly object _connectionLock = new();
+        private readonly object _transactionLock = new();
 
         public Database() : this(DatabaseConfiguration.DefaultConfiguration, new LogConsoleWrapper()) { }
         public Database(DatabaseConfiguration config, ILog log)
@@ -156,6 +157,40 @@ namespace MTCG.DAL
         {
             _disposed = true;
             lock (_connectionLock) _connection.Dispose();
+        }
+
+        public bool ExecuteNonQueryTransaction(IEnumerable<TransactionObject> objects)
+        {
+            bool success = true;
+
+             lock (_transactionLock)
+             {
+                DbTransaction transaction = _connection.BeginTransaction();
+                try
+                {
+                    foreach (TransactionObject obj in objects)
+                    {
+                        obj.Command.Transaction = transaction;
+                        obj.Command.Connection = _connection;
+
+                        if (obj.Command.ExecuteNonQuery() != obj.ExpectedAffectedRows)
+                        {
+                            throw new Exception("ExpectedAffectedRows does not match!");
+                        }
+                    }
+
+                    if (success)
+                        transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    _log.WriteLine(ex.ToString());
+                    transaction.Rollback();
+                    success = false;
+                }
+            }
+
+            return success;
         }
     }
 }

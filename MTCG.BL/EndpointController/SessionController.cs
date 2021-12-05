@@ -63,7 +63,7 @@ namespace MTCG.BL.EndpointController
                 user.Hash = "";
 
                 // Add user to the session
-                if(!_authentication.LoggedInUsers.TryAdd(token, user))
+                if (!_authentication.LoggedInUsers.TryAdd(token, user))
                 {
                     if (!_authentication.LoggedInUsers.TryGetValue(token, out _))
                         return new HttpResponse(HttpStatusCode.InternalServerError);

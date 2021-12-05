@@ -167,7 +167,7 @@ curl -X GET http://localhost:10001/deck?format=plain --header "Authorization: Ba
 echo.
 echo.
 
-REM --------------------------------------------------
+REM -------------------------------------------------- TODO EDIT USER DATA
 echo 14) edit user data
 echo.
 curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Basic kienboec-mtcgToken"
@@ -196,7 +196,7 @@ curl -X GET http://localhost:10001/users/someGuy  --header "Authorization: Basic
 echo.
 echo.
 
-REM --------------------------------------------------
+REM -------------------------------------------------- TODO : STATS ENDPOINT
 echo 15) stats
 curl -X GET http://localhost:10001/stats --header "Authorization: Basic kienboec-mtcgToken"
 echo.
@@ -204,13 +204,13 @@ curl -X GET http://localhost:10001/stats --header "Authorization: Basic altenhof
 echo.
 echo.
 
-REM --------------------------------------------------
+REM -------------------------------------------------- TODO : SCOREBOARD ENDPOINT
 echo 16) scoreboard
 curl -X GET http://localhost:10001/score --header "Authorization: Basic kienboec-mtcgToken"
 echo.
 echo.
 
-REM --------------------------------------------------
+REM -------------------------------------------------- TODO : BATTLE ENDPOINT
 echo 17) battle
 start /b "kienboec battle" curl -X POST http://localhost:10001/battles --header "Authorization: Basic kienboec-mtcgToken"
 start /b "altenhof battle" curl -X POST http://localhost:10001/battles --header "Authorization: Basic altenhof-mtcgToken"
@@ -232,7 +232,7 @@ curl -X GET http://localhost:10001/score --header "Authorization: Basic kienboec
 echo.
 echo.
 
-REM --------------------------------------------------
+REM -------------------------------------------------- TODO : TRADE ENDPOINT
 echo 20) trade
 echo check trading deals
 curl -X GET http://localhost:10001/tradings --header "Authorization: Basic kienboec-mtcgToken"

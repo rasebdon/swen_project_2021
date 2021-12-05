@@ -77,7 +77,7 @@ namespace MTCG.Test.UnitTests.Repositories
         public void UpdateTest()
         {
             // Act
-            bool update = _repository.Update(_card, _card);
+            bool update = _repository.Update(_card);
 
             // Assert
             Assert.IsFalse(update);
@@ -90,13 +90,9 @@ namespace MTCG.Test.UnitTests.Repositories
         public void TryUpdateWithNull()
         {
             // Act
-            bool update1 = _repository.Update(_card, null);
-            bool update2 = _repository.Update(null, _card);
-            bool update3 = _repository.Update(null, null);
+            bool update = _repository.Update(null);
 
-            Assert.IsFalse(update1);
-            Assert.IsFalse(update2);
-            Assert.IsFalse(update3);
+            Assert.IsFalse(update);
             Assert.AreEqual(0, _mockDb.Invocations.Count);
         }
 

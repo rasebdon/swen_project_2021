@@ -1,4 +1,5 @@
 ﻿using MTCG.BL.EndpointController;
+using MTCG.Models;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -44,10 +45,12 @@ namespace MTCG.BL.Http
 
         private readonly Dictionary<HttpComposedEndpointInfo, HttpComposedEndpointMethod> _httpEndpoints = new();
         private readonly HttpClient _client;
+        private readonly ILog _log;
 
-        public RouteEngine(HttpClient client)
+        public RouteEngine(HttpClient client, ILog log)
         {
             _client = client;
+            _log = log;
         }
 
         public void AddController(Controller controller)
@@ -83,6 +86,8 @@ namespace MTCG.BL.Http
                         _httpEndpoints.Add(
                             new($"^{endpoint}$", attribute.HttpMethod),
                             new(method, controller));
+
+                        _log.WriteLine($"{attribute.HttpMethod,-6} { endpoint }");
                     }
                 }
             }

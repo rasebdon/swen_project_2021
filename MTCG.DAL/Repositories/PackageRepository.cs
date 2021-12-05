@@ -70,6 +70,8 @@ namespace MTCG.DAL.Repositories
         {
             try
             {
+                List<TransactionObject> transaction = new();
+
                 // Insert package data
                 NpgsqlCommand cmd = new(
                     @"INSERT INTO packages (id, name, description, cost) 
@@ -78,37 +80,26 @@ namespace MTCG.DAL.Repositories
                 cmd.Parameters.AddWithValue("name", package.Name);
                 cmd.Parameters.AddWithValue("description", package.Description);
                 cmd.Parameters.AddWithValue("cost", (int)package.Cost);
-
-                if (_db.ExecuteNonQuery(cmd) != 1)
-                    throw new Exception("Fatal error inserting package!");
+                transaction.Add(new(cmd, 1));
 
                 // Insert card link
-                cmd = new("INSERT INTO package_cards (package_id, card_id) VALUES (@package_id, @card_id);");
-                cmd.Parameters.Add(new NpgsqlParameter("package_id", NpgsqlTypes.NpgsqlDbType.Uuid));
-                cmd.Parameters.Add(new NpgsqlParameter("card_id", NpgsqlTypes.NpgsqlDbType.Uuid));
-
-                for (int i = 0; i < package.Cards.Count; i++)
+                foreach (Card card in package.Cards)
                 {
-                    cmd.Parameters["package_id"].Value = package.ID;
-                    cmd.Parameters["card_id"].Value = package.Cards[i].ID;
-
-                    if (_db.ExecuteNonQuery(cmd) != 1)
-                    {
-                        throw new Exception("Fatal error linking package with cards!");
-                    }
+                    NpgsqlCommand cmds = new("INSERT INTO package_cards (package_id, card_id) VALUES (@package_id, @card_id);");
+                    cmds.Parameters.AddWithValue("package_id", package.ID);
+                    cmds.Parameters.AddWithValue("card_id", card.ID);
+                    transaction.Add(new(cmds, 1));
                 }
-                return true;
+                return _db.ExecuteNonQueryTransaction(transaction);
             }
             catch (Exception ex)
             {
                 _log.WriteLine(ex.ToString());
-                // Revert changes
-                Delete(package.ID);
                 return false;
             }
         }
 
-        public bool Update(Package entityOld, Package entityNew)
+        public bool Update(Package entity)
         {
             throw new NotImplementedException();
         }

@@ -184,8 +184,8 @@ namespace MTCG.BL.EndpointController
 
             u1.PlayedGames++;
             u2.PlayedGames++;
-            _userRepository.Update(u1, u1);
-            _userRepository.Update(u2, u2);
+            _userRepository.Update(u1);
+            _userRepository.Update(u2);
 
             return new BattleResult(u1.ID, u2.ID, log.ToString(), true);
         }
@@ -203,8 +203,8 @@ namespace MTCG.BL.EndpointController
             loser.PlayedGames++;
 
             // Update stats in database
-            _userRepository.Update(winner, winner);
-            _userRepository.Update(loser, loser);
+            _userRepository.Update(winner);
+            _userRepository.Update(loser);
 
             return new BattleResult(winner.ID, loser.ID, log.ToString(), false);
         }

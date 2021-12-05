@@ -1,4 +1,6 @@
-﻿namespace MTCG.Models
+﻿using Newtonsoft.Json;
+
+namespace MTCG.Models
 {
     /// <summary>
     /// The instance of an abstract representation of a card
@@ -22,6 +24,7 @@
             CardID = card.ID;
         }
 
+        [JsonConstructor]
         public CardInstance(Guid id, Guid cardId, string name, string description, int damage, CardType cardType, Element element, Race race, Rarity rarity) : base(id, name, description, damage, cardType, element, race, rarity)
         {
             CardID = cardId;

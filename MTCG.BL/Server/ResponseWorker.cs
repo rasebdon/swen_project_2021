@@ -13,7 +13,11 @@ namespace MTCG.BL
         {
             while (_running)
             {
-                if (_server.HttpRequests.TryDequeue(out HttpRequest? request))
+                if(_server.HttpRequests.Count == 0)
+                {
+                    Thread.Sleep(100);
+                }
+                else if (_server.HttpRequests.TryDequeue(out HttpRequest? request))
                 {
                     if (request != null)
                     {

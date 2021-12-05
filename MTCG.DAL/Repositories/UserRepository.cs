@@ -80,7 +80,7 @@ namespace MTCG.DAL.Repositories
         /// <param name="entityNew"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public bool Update(User entityOld, User entityNew)
+        public bool Update(User entity)
         {
             try
             {
@@ -88,11 +88,11 @@ namespace MTCG.DAL.Repositories
                     @"UPDATE users SET coins=@coins, elo=@elo, admin=@admin, played_games=@played_games
                 WHERE id=@id;";
                 NpgsqlCommand cmd = new(sql);
-                cmd.Parameters.AddWithValue("id", entityOld.ID);
-                cmd.Parameters.AddWithValue("coins", entityNew.Coins);
-                cmd.Parameters.AddWithValue("elo", (int)entityNew.ELO);
-                cmd.Parameters.AddWithValue("admin", entityNew.IsAdmin);
-                cmd.Parameters.AddWithValue("played_games", entityNew.PlayedGames);
+                cmd.Parameters.AddWithValue("id", entity.ID);
+                cmd.Parameters.AddWithValue("coins", entity.Coins);
+                cmd.Parameters.AddWithValue("elo", (int)entity.ELO);
+                cmd.Parameters.AddWithValue("admin", entity.IsAdmin);
+                cmd.Parameters.AddWithValue("played_games", entity.PlayedGames);
 
                 // Return if the database command affected exactly one row (updated)
                 return _db.ExecuteNonQuery(cmd) == 1;
@@ -116,12 +116,12 @@ namespace MTCG.DAL.Repositories
             try
             {
                 User? user = new(
-                Guid.Parse(row?["id"]?.ToString() ?? ""),
-                row?["username"]?.ToString() ?? "",
-                row?["hash"]?.ToString() ?? "",
-                int.Parse(row?["coins"]?.ToString() ?? ""),
-                ushort.Parse(row?["elo"]?.ToString() ?? ""),
-                int.Parse(row?["played_games"]?.ToString() ?? ""));
+                    Guid.Parse(row?["id"]?.ToString() ?? ""),
+                    row?["username"]?.ToString() ?? "",
+                    row?["hash"]?.ToString() ?? "",
+                    int.Parse(row?["coins"]?.ToString() ?? ""),
+                    ushort.Parse(row?["elo"]?.ToString() ?? ""),
+                    int.Parse(row?["played_games"]?.ToString() ?? ""));
 
                 return user;
             }

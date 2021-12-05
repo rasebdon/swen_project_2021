@@ -33,17 +33,6 @@ namespace MTCG.BL.Http
         public HttpRequest GetRequest()
         {
             var conn = Accept();
-            //List<byte> received = new();
-
-            //int offset = 0;
-            //int receiveBytes = 0;
-            //while ((receiveBytes += conn.Receive(_buffer, offset, ReceiveBufferSize, SocketFlags.None)) > 0)
-            //{
-            //    // Copy bytes
-            //    for (int i = 0; i < receiveBytes; received.Add(_buffer[i++])) ;
-            //    offset += receiveBytes;
-            //}
-
             byte[] received = new byte[ReceiveBufferSize];
             conn.Receive(received, 0, received.Length, SocketFlags.None);
 

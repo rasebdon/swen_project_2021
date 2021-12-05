@@ -9,7 +9,7 @@ namespace MTCG.Models
         /// <summary>
         /// The unique object id
         /// </summary>
-        public Guid ID { get; protected set; }
+        public Guid ID { get; set; }
 
         /// <summary>
         /// Base constructor for DataObjects

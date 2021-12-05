@@ -57,7 +57,7 @@ namespace MTCG.DAL.Repositories
             }
         }
 
-        public bool Update(Card entityOld, Card entityNew)
+        public bool Update(Card entity)
         {
             try
             {
@@ -67,14 +67,14 @@ namespace MTCG.DAL.Repositories
                     element=@element, rarity=@rarity, race=@race
                     WHERE id=@id;";
                 NpgsqlCommand cmd = new(sql);
-                cmd.Parameters.AddWithValue("id", entityOld.ID);
-                cmd.Parameters.AddWithValue("name", entityNew.Name);
-                cmd.Parameters.AddWithValue("description", entityNew.Description);
-                cmd.Parameters.AddWithValue("type", (int)entityNew.CardType);
-                cmd.Parameters.AddWithValue("damage", entityNew.Damage);
-                cmd.Parameters.AddWithValue("element", (int)entityNew.Element);
-                cmd.Parameters.AddWithValue("rarity", (int)entityNew.Rarity);
-                cmd.Parameters.AddWithValue("race", (int)entityNew.CardType);
+                cmd.Parameters.AddWithValue("id", entity.ID);
+                cmd.Parameters.AddWithValue("name", entity.Name);
+                cmd.Parameters.AddWithValue("description", entity.Description);
+                cmd.Parameters.AddWithValue("type", (int)entity.CardType);
+                cmd.Parameters.AddWithValue("damage", entity.Damage);
+                cmd.Parameters.AddWithValue("element", (int)entity.Element);
+                cmd.Parameters.AddWithValue("rarity", (int)entity.Rarity);
+                cmd.Parameters.AddWithValue("race", (int)entity.CardType);
 
                 return _db.ExecuteNonQuery(cmd) == 1;
             }

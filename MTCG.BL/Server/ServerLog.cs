@@ -37,7 +37,7 @@ namespace MTCG.BL
                     break;
                 case OutputFormat.Error:
                     Console.ForegroundColor = ConsoleColor.Red;
-                    tag = "[Error]";
+                    tag = "[Error]  ";
                     break;
                 case OutputFormat.Success:
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -46,7 +46,7 @@ namespace MTCG.BL
                 case OutputFormat.Standard:
                 default:
                     Console.ForegroundColor = ConsoleColor.White;
-                    tag = "[Server]";
+                    tag = "[Server] ";
                     break;
             }
             return $"[{DateTime.Now:hh:mm:ss}] {tag} {msg}";

@@ -9,13 +9,13 @@ namespace MTCG.Models
         public string Name { get; }
         public string Description { get; }
         public ushort Cost { get; }
-        public List<Card> Cards { get; }
+        public IEnumerable<Card> Cards { get; }
 
         [JsonConstructor]
-        public Package(Guid id, string name, string description, ushort cost, List<Card> cards) : base(id)
+        public Package(Guid id, string name, string description, ushort cost, IEnumerable<Card> cards) : base(id)
         {
             // Check for package card count
-            if (cards == null || cards.Count == 0)
+            if (cards == null || cards.Count() == 0)
                 throw new ArgumentException();
 
             Name = name;
@@ -34,7 +34,7 @@ namespace MTCG.Models
         {
             if (obj is Package package)
             {
-                if (package.Cards.Count != Cards.Count)
+                if (package.Cards.Count() != Cards.Count())
                     return false;
 
                 foreach (Card card in Cards)

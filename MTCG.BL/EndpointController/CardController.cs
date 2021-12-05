@@ -55,96 +55,35 @@ namespace MTCG.BL.EndpointController
             }
         }
 
-        ///// <summary>
-        ///// Get a list of cards that are related to the given card instances
-        ///// </summary>
-        ///// <param name="cards"></param>
-        ///// <returns></returns>
-        //public List<Card> GetCards(List<CardInstance> cardInstances)
-        //{
-        //    List<Card> cards = new();
-        //    NpgsqlCommand cmd = new("SELECT * FROM cards WHERE id=@card_id;");
+        [HttpPost]
+        public HttpResponse CreateCard(HttpRequest request)
+        {
+            try
+            {
+                if(request.Authorization?.Token != "admin-mtcgToken")
+                    return new HttpResponse(HttpStatusCode.Forbidden);
 
-        //    for (int i = 0; i < cardInstances.Count; i++)
-        //    {
-        //        cmd.Parameters.AddWithValue("card_id", cardInstances[i].CardID);
-        //        var row = Database.Instance.SelectSingle(cmd);
-        //        cmd.Parameters.Clear();
+                // Try to add new card to game
+                Card? card = JsonConvert.DeserializeObject<Card>(request.RequestBody);
 
-        //        cards.Add(Card.ParseFromDatabase(row));
-        //    }
-        //    return cards;
-        //}
-        // Serialization
-        //public string GetDetailedCardsJson(List<CardInstance> cards)
-        //{
-        //    CharStream s = new();
-        //    s.Write("{ \"Cards\": [");
-
-        //    for (int i = 0; i < cards.Count; i++)
-        //    {
-        //        s.Write(GetDetailedCardJson(cards[i]));
-        //        if (i < cards.Count - 1)
-        //            s.Write(",");
-        //    }
-
-        //    s.Write("]}");
-
-        //    return s.ToString();
-        //}
-        //public string GetDetailedCardJson(CardInstance cardInstance)
-        //{
-        //    CharStream s = new();
-        //    s.Write($"{{\"CardInstanceID\":\"{cardInstance.ID}\",");
-
-        //    Card card = Select(cardInstance.CardID);
-
-        //    s.Write($"\"CardID\":\"{card.ID}\",");
-        //    s.Write($"\"Name\":\"{card.Name}\",");
-        //    s.Write($"\"Description\":\"{card.Description}\",");
-        //    s.Write($"\"CardType\":\"{card.CardType}\",");
-        //    s.Write($"\"Damage\":\"{card.Damage}\",");
-        //    s.Write($"\"Element\":\"{card.Element}\",");
-        //    s.Write($"\"Rarity\":\"{card.Rarity}\"{ (card.CardType == CardType.Monster ? "," : "") }");
-        //    if(card.CardType == CardType.Monster)
-        //        s.Write($"\"Race\":\"{(card as MonsterCard).Race}\",");
-        //    s.Write("}");
-        //    return s.ToString();
-        //}
-        //public string GetDetailedDeckJson(Deck deck)
-        //{
-        //    CharStream s = new();
-        //    s.Write("{");
-        //    s.Write($"\"ID\":\"{deck.ID}\",");
-        //    s.Write($"\"Name\":\"{deck.Name}\",");
-        //    s.Write($"\"UserID\":\"{deck.UserID}\",");
-        //    s.Write($"\"Cards\": [");
-
-        //    for (int i = 0; i < deck.Cards.Count; i++)
-        //    {
-        //        s.Write(GetDetailedCardJson(deck.Cards[i]));
-        //        if (i < deck.Cards.Count - 1)
-        //            s.Write(",");
-        //    }
-
-        //    s.Write("]}");
-        //    return s.ToString();
-        //}
-        //public string GetDetailedDecksJson(List<Deck> decks)
-        //{
-        //    CharStream s = new();
-        //    s.Write("{ \"Decks\": [");
-
-        //    for (int i = 0; i < decks.Count; i++)
-        //    {
-        //        s.Write(GetDetailedDeckJson(decks[i]));
-        //        if (i < decks.Count - 1)
-        //            s.Write(",");
-        //    }
-
-        //    s.Write("]}");
-
-        //    return s.ToString();
-        //}
+                if(card != null)
+                {
+                    card.ID = Guid.NewGuid();
+                    if(_cardRepository.Insert(card))
+                    {
+                        return new HttpResponse(
+                            JsonConvert.SerializeObject(card, Formatting.Indented),
+                            HttpStatusCode.Created,
+                            MediaTypeNames.Application.Json);
+                    }
+                }
+                return new HttpResponse(HttpStatusCode.BadRequest);
+            }
+            catch(Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return new HttpResponse(HttpStatusCode.InternalServerError);
+            }
+        }
     }
 }

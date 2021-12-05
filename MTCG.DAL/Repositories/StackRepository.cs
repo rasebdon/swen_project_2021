@@ -58,7 +58,7 @@ namespace MTCG.DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public bool Update(List<CardInstance> entityOld, List<CardInstance> entityNew)
+        public bool Update(List<CardInstance> entity)
         {
             throw new NotImplementedException();
         }

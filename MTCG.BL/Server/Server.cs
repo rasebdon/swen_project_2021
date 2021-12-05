@@ -39,10 +39,10 @@ namespace MTCG.BL
 
             // Setup http server
             HttpClient = new(ip, port);
-            RouteEngine = new(HttpClient);
+            RouteEngine = new(HttpClient, _log);
 
             // Setup database
-            _database = new Database();
+            _database = new Database(DatabaseConfiguration.DefaultConfiguration, _log);
 
             // Construct repositories
             UserRepository userRepository = new(_database, _log);
@@ -66,6 +66,7 @@ namespace MTCG.BL
             //TradeController tradeController = new(authenticationService, tradeRepository, _log);
 
             // Bind controllers
+            _log.WriteLine($"Loaded Enpoints:", OutputFormat.Success);
             RouteEngine.AddController(userController);
             RouteEngine.AddController(sessionController);
             RouteEngine.AddController(cardController);
@@ -90,19 +91,15 @@ namespace MTCG.BL
 
             _log.WriteLine("Starting server...");
 
-            try
+            if(!_database.OpenConnection())
             {
-                // Initialize database connection
-                _database.OpenConnection();
-            }
-            catch (Exception ex)
-            {
-                _log.WriteLine("Fatal error occured while connecting to the database", OutputFormat.Error);
-                _log.WriteLine(ex.ToString(), OutputFormat.Error);
+                _log.WriteLine("Could not connect to Database! Stopping Server...", OutputFormat.Error);
                 return;
             }
 
             // Start Woker
+            _log.WriteLine("Starting request and response workers...");
+
             try
             {
                 for (int i = 0; i < threads; i++)
@@ -122,13 +119,12 @@ namespace MTCG.BL
                 _log.WriteLine(ex.ToString(), OutputFormat.Error);
                 return;
             }
-
             _log.WriteLine("Http server started successfully!", OutputFormat.Success);
-            _log.WriteLine($"Http server now listening on port {_port} with {threads} request + response woker!");
+            _log.WriteLine($"Listening and sending with {threads} threads on port {_port}");
 
-            while (!_disposed) 
+            while (!_disposed)
             {
-                if(Console.ReadLine() == "r")
+                if (Console.ReadLine() == "r")
                 {
                     _log.WriteLine("Pending requests:");
                     foreach (var r in HttpRequests)

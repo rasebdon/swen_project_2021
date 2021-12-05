@@ -11,7 +11,7 @@ namespace MTCG.BL.EndpointController
     /// <summary>
     /// This controller manages the package related functions
     /// </summary>
-    [HttpEndpoint("packages")]
+    [HttpEndpoint("/packages")]
     public class PackageController : Controller, IHttpPost
     {
         private readonly ILog _log;
@@ -35,22 +35,22 @@ namespace MTCG.BL.EndpointController
         }
 
         // Helper Methods
-        private List<Card>? GetCardsWithRarity(List<Card> _cards, Rarity rarity)
+        private List<Card>? GetCardsWithRarity(IEnumerable<Card> _cards, Rarity rarity)
         {
             // Get the cards with the correct rarity
-            List<Card> correctRarity = _cards.FindAll(c => c.Rarity == rarity);
+            List<Card> correctRarity = new List<Card>(_cards).FindAll(c => c.Rarity == rarity);
             if (correctRarity.Count == 0)
                 return null;
             return correctRarity;
         }
-        private Card? GetRandomCardWithRarity(List<Card> cards, Rarity rarity)
+        private Card? GetRandomCardWithRarity(IEnumerable<Card> cards, Rarity rarity)
         {
             var c = GetCardsWithRarity(cards, rarity);
             if (c == null)
                 return null;
             return c[new Random().Next(0, c.Count)];
         }
-        private CardInstance? GetRandomCardInstanceWithRarity(List<Card> cards, Rarity rarity)
+        private CardInstance? GetRandomCardInstanceWithRarity(IEnumerable<Card> cards, Rarity rarity)
         {
             var c = GetRandomCardWithRarity(cards, rarity);
             if (c == null)
@@ -58,9 +58,10 @@ namespace MTCG.BL.EndpointController
             return new CardInstance(Guid.NewGuid(), c);
         }
 
-        public List<CardInstance>? OpenPackage(Package package)
+        private List<CardInstance>? BuyPackage(User user, Package package)
         {
-            List<CardInstance> drawnCards = new();
+            // Open the package
+            List<CardInstance>? drawnCards = new();
 
             try
             {
@@ -95,54 +96,30 @@ namespace MTCG.BL.EndpointController
                 }
 
                 if (drawnCards.Count != Package.DrawnCardsAmount)
-                    throw new Exception("Fatal Error: Invalid card amount drawn");
+                    throw new Exception("Fatal Error, Invalid card amount drawn");
 
                 // Add drawn cards to database
-                for (int i = 0; i < Package.DrawnCardsAmount; i++)
-                {
-                    if (!_cardInstanceRepository.Insert(drawnCards[i]))
-                        throw new Exception("Fatal Error: Invalid card amount drawn");
-                }
+                if (!_cardInstanceRepository.Insert(drawnCards))
+                    throw new Exception("Fatal Error occured while Inserting CardInstances!");
 
             }
             catch (Exception ex)
             {
                 _log.WriteLine("An error occured while drawing cards!", OutputFormat.Error);
                 _log.WriteLine(ex.ToString(), OutputFormat.Error);
-
-                // Error occured, delete drawn cards
-                foreach (CardInstance card in drawnCards)
-                {
-                    try
-                    {
-                        _cardInstanceRepository.Delete(card.ID);
-                    }
-                    catch (Exception) { }
-                }
                 return null;
             }
 
-            return drawnCards;
-        }
+            if (drawnCards != null)
+            {
+                // Add the cards to the user
+                if (!_cardInstanceRepository.AddCardInstancesToUser(user, drawnCards))
+                    return null;
 
-        public List<CardInstance>? BuyPackage(User user, Package package)
-        {
-            if (user.Coins < package.Cost)
-                return null;
-
-            // Open the package
-            List<CardInstance>? drawnCards = OpenPackage(package);
-
-            if (drawnCards == null)
-                return null;
-
-            // Add the cards to the user
-            if (!_cardInstanceRepository.AddCardInstancesToUser(user, drawnCards))
-                return null;
-
-            // Update user money
-            user.Coins -= package.Cost;
-            _userRepository.Update(user, user);
+                // Update user money
+                user.Coins -= package.Cost;
+                _userRepository.Update(user);
+            }
 
             return drawnCards;
         }
@@ -161,8 +138,18 @@ namespace MTCG.BL.EndpointController
                 // Parse package
                 package = JsonConvert.DeserializeObject<Package>(request.RequestBody);
 
-                if (package == null)
+                try
+                {
+                    if (package == null)
+                        throw new ArgumentNullException("package", "Invalid JSON provided!");
+                }
+                catch (Exception)
+                {
                     return new HttpResponse(HttpStatusCode.BadRequest);
+                }
+                
+                // Generate new id
+                package.ID = Guid.NewGuid();
 
                 // Insert package
                 if (!_packageRepository.Insert(package))
@@ -172,7 +159,8 @@ namespace MTCG.BL.EndpointController
             }
             catch (Exception ex)
             {
-                if (package != null) _packageRepository.Delete(package.ID);
+                if (package != null)
+                    _packageRepository.Delete(package.ID);
                 _log.WriteLine(ex.ToString(), OutputFormat.Error);
 
                 return new HttpResponse(HttpStatusCode.InternalServerError);
@@ -180,7 +168,8 @@ namespace MTCG.BL.EndpointController
         }
 
         [HttpPost]
-        [HttpEndpoint("transactions/packages")]
+        [HttpEndpointArgument]
+        [HttpEndpoint("/transactions/packages")]
         public HttpResponse BuyPackagePost(HttpRequest request)
         {
             try
@@ -192,20 +181,23 @@ namespace MTCG.BL.EndpointController
                     return new HttpResponse(HttpStatusCode.Forbidden);
 
                 // Parse request body
-                BuyPackageRequestBody? data = BuyPackageRequestBody.FromJson(request.RequestBody);
+                _log.WriteLine(request.Argument);
 
-                if (data == null)
+                if (!Guid.TryParse(request?.Argument ?? "", out Guid packageId))
                     return new HttpResponse(HttpStatusCode.BadRequest);
 
                 // Get package via name
-                Package? package = _packageRepository.GetById(data.PackageId);
+                Package? package = _packageRepository.GetById(packageId);
 
                 if (package == null)
-                    throw new Exception("Error retrieving package from db!");
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                // Check if user has enough coins
+                if (user.Coins < package.Cost)
+                    return new HttpResponse(HttpStatusCode.BadRequest);
 
                 // Buy package
                 List<CardInstance>? drawnCards = new();
-
                 if ((drawnCards = BuyPackage(user, package)) == null)
                     throw new Exception("Error buying package!");
 

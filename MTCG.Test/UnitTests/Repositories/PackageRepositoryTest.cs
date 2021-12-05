@@ -49,9 +49,8 @@ namespace MTCG.Test.UnitTests.Repositories
 
             // Assert
             Assert.IsFalse(insert); // No rows are affected in mocking
-            Assert.AreEqual(2, _mockDb.Invocations.Count);
-            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[0].Method); // Try insert (fails)
-            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[1].Method); // Delete package call
+            Assert.AreEqual(1, _mockDb.Invocations.Count);
+            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQueryTransaction"), _mockDb.Invocations[0].Method); // Try insert (fails)
         }
 
         [Test]
@@ -70,7 +69,7 @@ namespace MTCG.Test.UnitTests.Repositories
         public void UpdateTest()
         {
             // Act & Assert
-            Assert.Throws<NotImplementedException>(() => _repository.Update(_package, _package));
+            Assert.Throws<NotImplementedException>(() => _repository.Update(_package));
         }
 
         [Test]
@@ -83,22 +82,23 @@ namespace MTCG.Test.UnitTests.Repositories
             packageRow.Add("description", _package.Description);
             packageRow.Add("cost", _package.Cost);
 
-            OrderedDictionary[] cardRows = new OrderedDictionary[_package.Cards.Count];
-            for (int i = 0; i < _package.Cards.Count; i++)
+            List<OrderedDictionary> cardRows = new();
+            foreach (Card card in _package.Cards)
             {
-                cardRows[i] = new OrderedDictionary();
-                cardRows[i].Add("id", _package.Cards[i].ID);
-                cardRows[i].Add("name", _package.Cards[i].Name);
-                cardRows[i].Add("description", _package.Cards[i].Description);
-                cardRows[i].Add("damage", _package.Cards[i].Damage);
-                cardRows[i].Add("rarity", _package.Cards[i].Rarity);
-                cardRows[i].Add("type", _package.Cards[i].CardType);
-                cardRows[i].Add("race", _package.Cards[i].Race);
-                cardRows[i].Add("element", _package.Cards[i].Element);
+                var row = new OrderedDictionary();
+                row.Add("id", card.ID);
+                row.Add("name", card.Name);
+                row.Add("description", card.Description);
+                row.Add("damage", card.Damage);
+                row.Add("rarity", card.Rarity);
+                row.Add("type", card.CardType);
+                row.Add("race", card.Race);
+                row.Add("element", card.Element);
+                cardRows.Add(row);
             }
 
             // Act
-            Package? package = PackageRepository.ParseFromRow(packageRow, cardRows, _log);
+            Package? package = PackageRepository.ParseFromRow(packageRow, cardRows.ToArray(), _log);
 
             // Assert
             Assert.NotNull(package);

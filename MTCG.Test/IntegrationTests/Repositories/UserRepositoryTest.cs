@@ -112,7 +112,7 @@ namespace MTCG.Test.IntegrationTests.Repositories
 
             // Act
             _user.Coins = 999999;
-            bool update = _repository.Update(_user, _user);
+            bool update = _repository.Update(_user);
 
             // Select user
             cmd = new($"SELECT * FROM users WHERE id='{_user.ID}';");

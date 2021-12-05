@@ -45,9 +45,12 @@ namespace MTCG.BL.Http
 
             // Get query args
             Query = new();
+
             List<string> vs = Url.Query.Split('&').ToList();
             foreach (var q in vs)
             {
+                if(q == "") continue;
+
                 try
                 {
                     Query.Add(q.Split('=')[0], q.Split('=')[1]);

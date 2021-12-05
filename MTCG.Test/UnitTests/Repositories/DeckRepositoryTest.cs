@@ -47,7 +47,7 @@ namespace MTCG.Test.UnitTests.Repositories
             Assert.IsFalse(insert); // No rows are affected in mocking
             Assert.AreEqual(2, _mockDb.Invocations.Count);
             Assert.AreEqual(typeof(IDatabase).GetMethod("SelectSingle"), _mockDb.Invocations[0].Method); // Try find old main deck -> throws
-            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[1].Method); // Delete maybe inserted deck call
+            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQueryTransaction"), _mockDb.Invocations[1].Method); // Delete maybe inserted deck call
         }
 
         [Test]
@@ -61,12 +61,9 @@ namespace MTCG.Test.UnitTests.Repositories
 
             // Assert
             Assert.IsFalse(insert); // No rows are affected in mocking
-            Assert.AreEqual(6, _mockDb.Invocations.Count);
+            Assert.AreEqual(2, _mockDb.Invocations.Count);
             Assert.AreEqual(typeof(IDatabase).GetMethod("Select"), _mockDb.Invocations[0].Method); // Try find old main deck
-            for (int i = 1; i < 6; i++)
-            {
-                Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQuery"), _mockDb.Invocations[i].Method);
-            }
+            Assert.AreEqual(typeof(IDatabase).GetMethod("ExecuteNonQueryTransaction"), _mockDb.Invocations[1].Method);
         }
 
 
@@ -83,31 +80,19 @@ namespace MTCG.Test.UnitTests.Repositories
         }
 
         [Test]
-        public void UpdateMainDeckTest()
+        [TestCase(true, TestName = "UpdateMainDeckUnitTest")]
+        [TestCase(false, TestName = "UpdateNormalDeckUnitTest")]
+        public void UpdateDeckUnitTest(bool mainDeck)
         {
             // Arrange
-            _deck.MainDeck = true;
+            _deck.MainDeck = mainDeck;
 
             // Act
-            bool update = _repository.Update(_deck, _deck);
+            bool update = _repository.Update(_deck);
 
             // Assert
-            Assert.IsTrue(update);
-            Assert.AreEqual(5, _mockDb.Invocations.Count);
-        }
-
-        [Test]
-        public void UpdateNormalDeckTest()
-        {
-            // Arrange
-            _deck.MainDeck = false;
-
-            // Act
-            bool update = _repository.Update(_deck, _deck);
-
-            // Assert
-            Assert.IsTrue(update);
-            Assert.AreEqual(5, _mockDb.Invocations.Count);
+            Assert.IsFalse(update);
+            Assert.AreEqual(2, _mockDb.Invocations.Count);
         }
 
         [Test]

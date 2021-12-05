@@ -118,7 +118,7 @@ namespace MTCG.Test.IntegrationTests.Repositories
             // Act
             // Update card instance
             _cardInstance.CardID = card2.ID;
-            bool update = _repository.Update(_cardInstance, _cardInstance);
+            bool update = _repository.Update(_cardInstance);
 
             // Select card
             CardInstance? updated = CardInstanceRepository.ParseFromRow(
@@ -144,11 +144,36 @@ namespace MTCG.Test.IntegrationTests.Repositories
             Assert.AreEqual(_cardInstance, selected);
         }
 
+        [Test]
+        public void AddCardInstanceToUserTest()
+        {
+            // Arrange
+            // Create user
+            User user = new(Guid.NewGuid(), "rasebdon", "hash", 20, 5, 25);
+            // Insert user
+            _db.ExecuteNonQuery(new NpgsqlCommand(
+                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin) 
+                VALUES ('{user.ID}', '{user.Username}', '{user.Hash}', {user.Coins},
+                {user.ELO}, {user.PlayedGames}, {user.IsAdmin});"));
+
+            // Insert card
+            bool linked = _repository.AddCardInstanceToUser(user, _cardInstance);
+
+            // Select link
+            OrderedDictionary link = _db.SelectSingle(
+                new NpgsqlCommand($"SELECT * FROM user_cards WHERE card_instance_id='{ _cardInstance.ID }';"));
+
+            Assert.IsTrue(linked);
+            Assert.AreEqual(2, link.Count);
+            Assert.AreEqual(Guid.Parse(link["user_id"]?.ToString() ?? ""), user.ID);
+            Assert.AreEqual(Guid.Parse(link["card_instance_id"]?.ToString() ?? ""), _cardInstance.ID);
+        }
+
         [TearDown]
         public void TearDown()
         {
             // Delete entry
-            NpgsqlCommand cmd = new($"DELETE FROM cards; DELETE FROM card_instances;");
+            NpgsqlCommand cmd = new($"DELETE FROM users; DELETE FROM cards; DELETE FROM card_instances;");
             _db.ExecuteNonQuery(cmd);
         }
     }

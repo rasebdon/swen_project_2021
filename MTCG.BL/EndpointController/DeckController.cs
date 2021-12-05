@@ -70,9 +70,14 @@ namespace MTCG.BL.EndpointController
                 {
                     // Create deck
                     Deck? deck = JsonConvert.DeserializeObject<Deck>(request.RequestBody);
-                    if (deck != null && Validate(deck) && _deckRepository.Insert(deck))
+
+                    if (deck != null && Validate(deck))
                     {
-                        return new HttpResponse(HttpStatusCode.Created);
+                        // Generate new guid
+                        deck.ID = Guid.NewGuid();
+
+                        if (_deckRepository.Insert(deck))
+                            return new HttpResponse(HttpStatusCode.Created);
                     }
                     return new HttpResponse(HttpStatusCode.BadRequest);
                 }
@@ -118,7 +123,7 @@ namespace MTCG.BL.EndpointController
                                     return new HttpResponse(HttpStatusCode.Forbidden);
 
                                 // Update deck
-                                if (_deckRepository.Update(deckToUpdate, newDeck))
+                                if (_deckRepository.Update(newDeck))
                                     return new HttpResponse(HttpStatusCode.Created);
                             }
                         }

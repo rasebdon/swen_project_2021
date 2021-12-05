@@ -1,13 +1,12 @@
 ﻿using CryptSharp;
 using MTCG.BL.Http;
 using MTCG.BL.Requests;
-using MTCG.DAL;
+using MTCG.BL.Services;
 using MTCG.DAL.Repositories;
 using MTCG.Models;
-using MTCG.BL.Services;
+using Newtonsoft.Json;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 
 namespace MTCG.BL.EndpointController
 {
@@ -34,7 +33,7 @@ namespace MTCG.BL.EndpointController
                 if (userOld != null && userNew != null)
                 {
                     userNew.IsAdmin = true;
-                    _userRepository.Update(userOld, userNew);
+                    _userRepository.Update(userNew);
                     return true;
                 }
                 return false;
@@ -123,7 +122,7 @@ namespace MTCG.BL.EndpointController
             }
             else return new HttpResponse(HttpStatusCode.BadRequest);
         }
-    
+
         [HttpDelete]
         [HttpEndpointArgument]
         public HttpResponse Delete(HttpRequest request)
@@ -133,13 +132,13 @@ namespace MTCG.BL.EndpointController
 
             if (user != null && arg != null && Guid.TryParse(arg, out Guid id))
             {
-                if(id == user.ID)
+                if (id == user.ID)
                 {
                     bool success = _userRepository.Delete(id);
 
-                    if(success)
+                    if (success)
                     {
-                        if(request.Authorization != null)
+                        if (request.Authorization != null)
                             _authenticationService.LoggedInUsers.TryRemove(request.Authorization.Token, out _);
 
                         return new HttpResponse(HttpStatusCode.OK);

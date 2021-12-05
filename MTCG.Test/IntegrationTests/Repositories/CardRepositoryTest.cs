@@ -123,10 +123,10 @@ namespace MTCG.Test.IntegrationTests.Repositories
             // Act
             // Insert card
             _db.ExecuteNonQuery(cmd);
-            
+
             // Update card
             _card.Damage = 999999;
-            bool update = _repository.Update(_card, _card);
+            bool update = _repository.Update(_card);
 
             // Select card
             cmd = new($"SELECT * FROM cards WHERE id='{_card.ID}';");
