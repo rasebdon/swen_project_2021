@@ -15,6 +15,34 @@ namespace MTCG.DAL.Repositories
             _log = log;
         }
 
+        public IEnumerable<Deck> GetAll()
+        {
+            // Get decks
+            OrderedDictionary[] deckRows = _db.Select(
+                new NpgsqlCommand("SELECT * FROM decks, user_decks WHERE deck_id=id;"));
+
+            List<Deck> decks = new();
+
+            foreach (var row in deckRows)
+            {
+                // Get card infos extension 
+                NpgsqlCommand cmd = new(
+                    @$"SELECT card_instances.*, cards.type, cards.name, cards.description,
+                    cards.damage, cards.element, cards.rarity, cards.race FROM card_instances, cards, decks, deck_cards
+                    WHERE card_instances.card_id=cards.id
+                    AND deck_cards.deck_id=decks.id
+                    AND deck_cards.card_instance_id=card_instances.id
+                    AND decks.id={row["deck_id"]};");
+                OrderedDictionary[] cards = _db.Select(cmd);
+
+                Deck? deck = ParseFromRow(row, cards, _log);
+                if (deck != null)
+                    decks.Add(deck);
+            }
+
+            return decks;
+        }
+
         public bool Delete(Guid id)
         {
             NpgsqlCommand cmd = new("DELETE FROM decks WHERE id=@id;");

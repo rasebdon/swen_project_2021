@@ -64,7 +64,7 @@ namespace MTCG.BL.EndpointController
             string hash = Crypter.Blowfish.Crypt(credentials.Password);
 
             // Insert into db
-            User user = new(Guid.NewGuid(), credentials.Username, hash, 20, 100, 0);
+            User user = new(Guid.NewGuid(), credentials.Username, hash, 20, 100, 0, "Im playing MTCG!", ":-)", 0);
             bool success;
             try
             {
@@ -94,6 +94,60 @@ namespace MTCG.BL.EndpointController
             else
                 return new HttpResponse(JsonConvert.SerializeObject(user), HttpStatusCode.OK, MediaTypeNames.Application.Json);
         }
+
+        [HttpGet]
+        [HttpEndpoint("/stats")]
+        public HttpResponse GetStats(HttpRequest request)
+        {
+            User? user = _authenticationService.Authenticate(request.Authorization);
+            if (user == null)
+                return new HttpResponse(HttpStatusCode.Forbidden);
+
+            string stats = $"{{\n'Wins': {user.Wins},\n'PlayedGames': {user.PlayedGames},\n'ELO': {user.ELO}\n}}";
+            
+            return new HttpResponse(stats, HttpStatusCode.OK, MediaTypeNames.Application.Json);
+        }
+
+        [HttpPut]
+        public HttpResponse UpdateWithBearerToken(HttpRequest request)
+        {
+            try
+            {
+                User? user = _authenticationService.Authenticate(request.Authorization);
+
+                if (user == null)
+                    return new HttpResponse(HttpStatusCode.Forbidden);
+                
+                User? updatedUser = JsonConvert.DeserializeObject<User>(request.RequestBody);
+
+                if (updatedUser == null)
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                // Assign new vars
+                user.Username = updatedUser.Username;
+
+                // Check for new password
+                if (updatedUser.Hash != "")
+                {
+                    // Create password hash
+                    user.Hash = Crypter.Blowfish.Crypt(updatedUser.Hash);
+                }
+
+                // Update
+                if (!_userRepository.Update(user))
+                    return new HttpResponse(HttpStatusCode.InternalServerError);
+
+                user.Hash = "";
+
+                return new HttpResponse(JsonConvert.SerializeObject(user), HttpStatusCode.OK, MediaTypeNames.Application.Json);
+            }
+            catch(Exception ex)
+            {
+                _log.WriteLine(ex.ToString(), OutputFormat.Error);
+                return new HttpResponse(HttpStatusCode.InternalServerError);
+            }
+        }
+
 
         [HttpGet]
         [HttpEndpointArgument]

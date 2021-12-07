@@ -15,6 +15,23 @@ namespace MTCG.DAL.Repositories
             _log = log;
         }
 
+        public IEnumerable<User> GetAll()
+        {
+            List<User> users = new();
+
+            // Communicate with database
+            OrderedDictionary[] rows = _db.Select(new NpgsqlCommand("SELECT * FROM users;"));
+
+            foreach (var row in rows)
+            {
+                User? u = ParseFromRow(row, _log);
+                if(u != null)
+                    users.Add(u);
+            }
+
+            return users;
+        }
+
         public User? GetById(Guid id)
         {
             // Create safe query
@@ -53,8 +70,8 @@ namespace MTCG.DAL.Repositories
                     throw new DuplicateEntryException(entity.Username);
 
                 // Insert user
-                string sql = $"INSERT INTO users (id, username, hash, coins, elo, admin, played_games)" +
-                    $"VALUES (@id, @username, @hash, @coins, @elo, false, @played_games);";
+                string sql = $"INSERT INTO users (id, username, hash, coins, elo, admin, played_games, bio, image)" +
+                    $"VALUES (@id, @username, @hash, @coins, @elo, false, @played_games, @bio, @image);";
                 cmd = new NpgsqlCommand(sql);
                 cmd.Parameters.AddWithValue("id", entity.ID);
                 cmd.Parameters.AddWithValue("username", entity.Username);
@@ -62,6 +79,9 @@ namespace MTCG.DAL.Repositories
                 cmd.Parameters.AddWithValue("coins", entity.Coins);
                 cmd.Parameters.AddWithValue("elo", (int)entity.ELO);
                 cmd.Parameters.AddWithValue("played_games", entity.PlayedGames);
+                cmd.Parameters.AddWithValue("bio", entity.Bio ?? "");
+                cmd.Parameters.AddWithValue("image", entity.Image ?? "");
+                cmd.Parameters.AddWithValue("wins", entity.Wins);
 
                 // Return if the database command affected exactly one row (inserted)
                 return _db.ExecuteNonQuery(cmd) == 1;
@@ -85,14 +105,18 @@ namespace MTCG.DAL.Repositories
             try
             {
                 string sql =
-                    @"UPDATE users SET coins=@coins, elo=@elo, admin=@admin, played_games=@played_games
-                WHERE id=@id;";
+                    @"UPDATE users SET coins=@coins, elo=@elo, admin=@admin, played_games=@played_games,
+                    bio=@bio, image=@image
+                    WHERE id=@id;";
                 NpgsqlCommand cmd = new(sql);
                 cmd.Parameters.AddWithValue("id", entity.ID);
                 cmd.Parameters.AddWithValue("coins", entity.Coins);
                 cmd.Parameters.AddWithValue("elo", (int)entity.ELO);
                 cmd.Parameters.AddWithValue("admin", entity.IsAdmin);
                 cmd.Parameters.AddWithValue("played_games", entity.PlayedGames);
+                cmd.Parameters.AddWithValue("bio", entity.Bio ?? "");
+                cmd.Parameters.AddWithValue("image", entity.Image ?? "");
+                cmd.Parameters.AddWithValue("wins", entity.Wins);
 
                 // Return if the database command affected exactly one row (updated)
                 return _db.ExecuteNonQuery(cmd) == 1;
@@ -121,7 +145,10 @@ namespace MTCG.DAL.Repositories
                     row?["hash"]?.ToString() ?? "",
                     int.Parse(row?["coins"]?.ToString() ?? ""),
                     ushort.Parse(row?["elo"]?.ToString() ?? ""),
-                    int.Parse(row?["played_games"]?.ToString() ?? ""));
+                    int.Parse(row?["played_games"]?.ToString() ?? ""),
+                    row?["bio"]?.ToString(),
+                    row?["image"]?.ToString(),
+                    int.Parse(row?["wins"]?.ToString() ?? ""));
 
                 return user;
             }

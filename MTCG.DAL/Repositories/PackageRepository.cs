@@ -15,6 +15,30 @@ namespace MTCG.DAL.Repositories
             _log = log;
         }
 
+        public IEnumerable<Package> GetAll()
+        {
+            // Get packages
+            OrderedDictionary[] rows = _db.Select(
+                new NpgsqlCommand("SELECT * FROM packages;"));
+
+            List<Package> packages = new();
+
+            foreach (var row in rows)
+            {
+                // Get card infos extension 
+                NpgsqlCommand cmd = new(
+                    @$"SELECT * FROM package_cards, cards
+                    WHERE package_id={row["id"]} AND cards.id=package_cards.card_id;");
+                OrderedDictionary[] cards = _db.Select(cmd);
+
+                Package? package = ParseFromRow(row, cards, _log);
+                if (package != null)
+                    packages.Add(package);
+            }
+
+            return packages;
+        }
+
         public bool Delete(Guid id)
         {
             NpgsqlCommand cmd = new("DELETE FROM packages WHERE id=@id;");

@@ -196,7 +196,7 @@ curl -X GET http://localhost:10001/users/someGuy  --header "Authorization: Basic
 echo.
 echo.
 
-REM -------------------------------------------------- TODO : STATS ENDPOINT
+REM --------------------------------------------------
 echo 15) stats
 curl -X GET http://localhost:10001/stats --header "Authorization: Basic kienboec-mtcgToken"
 echo.
@@ -204,7 +204,7 @@ curl -X GET http://localhost:10001/stats --header "Authorization: Basic altenhof
 echo.
 echo.
 
-REM -------------------------------------------------- TODO : SCOREBOARD ENDPOINT
+REM --------------------------------------------------
 echo 16) scoreboard
 curl -X GET http://localhost:10001/score --header "Authorization: Basic kienboec-mtcgToken"
 echo.

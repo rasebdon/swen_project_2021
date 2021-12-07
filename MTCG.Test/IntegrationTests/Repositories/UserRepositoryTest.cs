@@ -20,7 +20,7 @@ namespace MTCG.Test.IntegrationTests.Repositories
         public void SetUp()
         {
             // Arrange
-            _user = new User(Guid.NewGuid(), "test", "hash", 50, 50, 50);
+            _user = new User(Guid.NewGuid(), "test", "hash", 50, 50, 50, "Im playing MTCG!", ":-)", 0);
             _log = new TestLog();
 
             if (_db == null)
@@ -48,10 +48,6 @@ namespace MTCG.Test.IntegrationTests.Repositories
             OrderedDictionary[] rows = _db.Select(cmd);
             User? inserted = UserRepository.ParseFromRow(rows[0], _log);
 
-            // Delete entry
-            cmd = new($"DELETE FROM users WHERE id='{_user.ID}';");
-            _db.ExecuteNonQuery(cmd);
-
             // Assert
             Assert.IsNotNull(inserted);
             Assert.IsTrue(insert);              // Check if insert was successful
@@ -63,18 +59,16 @@ namespace MTCG.Test.IntegrationTests.Repositories
         public void TryInsertDuplicate()
         {
             // Arrange
+            // Insert user
             NpgsqlCommand cmd = new(
-                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin) 
-                VALUES ('{_user.ID}', '{_user.Username}', '{_user.Hash}', {_user.Coins}, {_user.ELO}, {_user.PlayedGames}, {_user.IsAdmin});");
+                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+                VALUES ('{_user.ID}', '{_user.Username}', '{_user.Hash}', {_user.Coins}, {_user.ELO},
+                {_user.PlayedGames}, {_user.IsAdmin}, '{_user.Bio}', '{_user.Image}');");
+            _db.ExecuteNonQuery(cmd);
 
             // Act
-            _db.ExecuteNonQuery(cmd);
             // Test insert
             bool insert = _repository.Insert(_user);
-
-            // Delete entry
-            cmd = new($"DELETE FROM users WHERE id='{_user.ID}';");
-            _db.ExecuteNonQuery(cmd);
 
             Assert.IsFalse(insert);
         }
@@ -82,13 +76,14 @@ namespace MTCG.Test.IntegrationTests.Repositories
         [Test]
         public void DeleteTest()
         {
-            // Arrange
+            // Insert user
             NpgsqlCommand cmd = new(
-                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin) 
-                VALUES ('{_user.ID}', '{_user.Username}', '{_user.Hash}', {_user.Coins}, {_user.ELO}, {_user.PlayedGames}, {_user.IsAdmin});");
+                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+                VALUES ('{_user.ID}', '{_user.Username}', '{_user.Hash}', {_user.Coins}, {_user.ELO},
+                {_user.PlayedGames}, {_user.IsAdmin}, '{_user.Bio}', '{_user.Image}');");
+            _db.ExecuteNonQuery(cmd);
 
             // Act
-            _db.ExecuteNonQuery(cmd);
             bool delete = _repository.Delete(_user.ID);
 
             // Check if row is not in db anymore
@@ -106,8 +101,9 @@ namespace MTCG.Test.IntegrationTests.Repositories
             // Arrange
             // Insert user
             NpgsqlCommand cmd = new(
-                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin) 
-                VALUES ('{_user.ID}', '{_user.Username}', '{_user.Hash}', {_user.Coins}, {_user.ELO}, {_user.PlayedGames}, {_user.IsAdmin});");
+                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+                VALUES ('{_user.ID}', '{_user.Username}', '{_user.Hash}', {_user.Coins}, {_user.ELO},
+                {_user.PlayedGames}, {_user.IsAdmin}, '{_user.Bio}', '{_user.Image}');");
             _db.ExecuteNonQuery(cmd);
 
             // Act
@@ -117,10 +113,6 @@ namespace MTCG.Test.IntegrationTests.Repositories
             // Select user
             cmd = new($"SELECT * FROM users WHERE id='{_user.ID}';");
             User? updated = UserRepository.ParseFromRow(_db.Select(cmd)[0], _log);
-
-            // Delete entry
-            cmd = new($"DELETE FROM users WHERE id='{_user.ID}';");
-            _db.ExecuteNonQuery(cmd);
 
             // Assert
             Assert.IsNotNull(updated);
@@ -134,17 +126,14 @@ namespace MTCG.Test.IntegrationTests.Repositories
             // Arrange
             // Insert user
             NpgsqlCommand cmd = new(
-                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin) 
-                VALUES ('{_user.ID}', '{_user.Username}', '{_user.Hash}', {_user.Coins}, {_user.ELO}, {_user.PlayedGames}, {_user.IsAdmin});");
+                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+                VALUES ('{_user.ID}', '{_user.Username}', '{_user.Hash}', {_user.Coins}, {_user.ELO},
+                {_user.PlayedGames}, {_user.IsAdmin}, '{_user.Bio}', '{_user.Image}');");
             _db.ExecuteNonQuery(cmd);
 
             // Act
             // Select user
             User? selected = _repository.GetById(_user.ID);
-
-            // Delete entry
-            cmd = new($"DELETE FROM users WHERE id='{_user.ID}';");
-            _db.ExecuteNonQuery(cmd);
 
             // Assert
             Assert.NotNull(selected);
@@ -157,21 +146,25 @@ namespace MTCG.Test.IntegrationTests.Repositories
             // Arrange
             // Insert user
             NpgsqlCommand cmd = new(
-                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin) 
-                VALUES ('{_user.ID}', '{_user.Username}', '{_user.Hash}', {_user.Coins}, {_user.ELO}, {_user.PlayedGames}, {_user.IsAdmin});");
+                @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+                VALUES ('{_user.ID}', '{_user.Username}', '{_user.Hash}', {_user.Coins}, {_user.ELO},
+                {_user.PlayedGames}, {_user.IsAdmin}, '{ _user.Bio}', '{_user.Image}');");
             _db.ExecuteNonQuery(cmd);
 
             // Act
             // Select user
             User? selected = _repository.GetByUsername(_user.Username);
 
-            // Delete entry
-            cmd = new($"DELETE FROM users WHERE id='{_user.ID}';");
-            _db.ExecuteNonQuery(cmd);
-
             // Assert
             Assert.NotNull(selected);
             Assert.AreEqual(_user, selected);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            // Delete entry
+            _db.ExecuteNonQuery(new NpgsqlCommand($"DELETE FROM users;"));
         }
     }
 }

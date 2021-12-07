@@ -15,6 +15,23 @@ namespace MTCG.DAL.Repositories
             _log = log;
         }
 
+        public IEnumerable<Card> GetAll()
+        {
+            OrderedDictionary[] rows = _db.Select(
+                new NpgsqlCommand("SELECT * FROM cards;"));
+
+            List<Card> list = new();
+
+            foreach (var row in rows)
+            {
+                Card? card = ParseFromRow(row, _log);
+                if (card != null)
+                    list.Add(card);
+            }
+
+            return list;
+        }
+
         public bool Delete(Guid id)
         {
             NpgsqlCommand cmd = new("DELETE FROM cards WHERE id=@id");

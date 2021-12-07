@@ -149,7 +149,7 @@ namespace MTCG.Test.IntegrationTests.Repositories
         {
             // Arrange
             // Create user
-            User user = new(Guid.NewGuid(), "rasebdon", "hash", 20, 5, 25);
+            User user = new(Guid.NewGuid(), "rasebdon", "hash", 20, 5, 25, "My bio", ":-D", 0);
             // Insert user
             _db.ExecuteNonQuery(new NpgsqlCommand(
                 @$"INSERT INTO users (id, username, hash, coins, elo, played_games, admin) 

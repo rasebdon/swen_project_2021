@@ -1325,3 +1325,256 @@
 2021-12-03 14:14:48.715 CET [5656] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
 2021-12-03 14:14:48.898 CET [11976] LOG:  all server processes terminated; reinitializing
 ^C2021-12-03 14:14:49.200 CET [6156] LOG:  database system was interrupted; last known up at 2021-12-03 13:42:54 CET
+2021-12-07 13:48:16.828 CET [27360] LOG:  listening on IPv6 address "::1", port 15000
+2021-12-07 13:48:16.828 CET [27360] LOG:  listening on IPv4 address "127.0.0.1", port 15000
+2021-12-07 13:48:17.754 CET [23772] LOG:  database system was interrupted; last known up at 2021-12-03 13:42:54 CET
+2021-12-07 13:48:26.774 CET [23772] LOG:  database system was not properly shut down; automatic recovery in progress
+2021-12-07 13:48:27.169 CET [23772] LOG:  redo starts at 0/1961C68
+2021-12-07 13:48:27.170 CET [23772] LOG:  invalid record length at 0/1961D48: wanted 24, got 0
+2021-12-07 13:48:27.170 CET [23772] LOG:  redo done at 0/1961D10
+2021-12-07 13:48:28.028 CET [27360] LOG:  database system is ready to accept connections
+2021-12-07 13:49:54.208 CET [13144] ERROR:  relation "users" does not exist
+2021-12-07 13:49:54.208 CET [13144] STATEMENT:  ALTER TABLE users ADD COLUMN bio VARCHAR, ADD COLUMN image VARCHAR;
+2021-12-07 13:49:57.259 CET [13144] ERROR:  relation "users" does not exist
+2021-12-07 13:49:57.259 CET [13144] STATEMENT:  ALTER TABLE users ADD COLUMN bio VARCHAR, ADD COLUMN image VARCHAR;
+2021-12-07 13:50:05.201 CET [22152] FATAL:  role "mockdb" does not exist
+2021-12-07 13:50:23.087 CET [27360] LOG:  received fast shutdown request
+2021-12-07 13:50:23.467 CET [27360] LOG:  aborting any active transactions
+2021-12-07 13:50:23.472 CET [27360] LOG:  worker process: logical replication launcher (PID 26568) exited with exit code 1
+2021-12-07 13:50:23.472 CET [27208] LOG:  shutting down
+2021-12-07 13:50:24.350 CET [27360] LOG:  database system is shut down
+2021-12-07 14:01:39.784 CET [13536] LOG:  listening on IPv6 address "::1", port 15000
+2021-12-07 14:01:39.785 CET [13536] LOG:  listening on IPv4 address "127.0.0.1", port 15000
+2021-12-07 14:01:40.687 CET [14324] LOG:  database system was shut down at 2021-12-07 13:50:24 CET
+2021-12-07 14:01:41.242 CET [13536] LOG:  database system is ready to accept connections
+2021-12-07 14:05:18.734 CET [4368] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-12-07 14:05:18.734 CET [4368] DETAIL:  Key (id)=(ea78b597-ba4c-4ef8-b505-6c77a0cb8c8b) already exists.
+2021-12-07 14:05:18.734 CET [4368] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-12-07 14:05:19.642 CET [26064] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-12-07 14:05:19.642 CET [26064] DETAIL:  Key (id)=(cbde260c-9b89-4694-94c9-ccf4056d7d1c) already exists.
+2021-12-07 14:05:19.642 CET [26064] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-12-07 14:05:29.035 CET [9128] ERROR:  syntax error at or near "bio" at character 83
+2021-12-07 14:05:29.035 CET [9128] STATEMENT:  UPDATE users SET coins=$1, elo=$2, admin=$3, played_games=$4
+	                    bio=$5, image=$6
+	                    WHERE id=$7
+2021-12-07 14:05:29.251 CET [4368] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:05:29.251 CET [18332] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:05:29.252 CET [21828] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:05:29.252 CET [18480] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:05:29.252 CET [26064] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:05:29.252 CET [9128] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:07:17.390 CET [9576] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:08:43.924 CET [29756] ERROR:  syntax error at or near "playing" at character 206
+2021-12-07 14:08:43.924 CET [29756] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('b457317d-689c-4275-8935-5d1cc6c2f540', 'test', 'hash', 50, 50,
+	                50, False, Im playing MTCG!, :-));
+2021-12-07 14:08:43.992 CET [29756] ERROR:  syntax error at or near "playing" at character 206
+2021-12-07 14:08:43.992 CET [29756] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('4830f2b6-6135-43ba-a2aa-6cea19cc1033', 'test', 'hash', 50, 50,
+	                50, False, Im playing MTCG!, :-));
+2021-12-07 14:08:43.994 CET [29756] ERROR:  syntax error at or near "playing" at character 206
+2021-12-07 14:08:43.994 CET [29756] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('3f7d0188-9e62-4896-b45c-c6fa9731cd80', 'test', 'hash', 50, 50,
+	                50, False, Im playing MTCG!, :-));
+2021-12-07 14:08:44.531 CET [29756] ERROR:  syntax error at or near "playing" at character 206
+2021-12-07 14:08:44.531 CET [29756] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('f790b6e2-ee97-4255-95dd-9fe99e9d664d', 'test', 'hash', 50, 50,
+	                50, False, Im playing MTCG!, :-));
+2021-12-07 14:08:44.533 CET [29756] ERROR:  syntax error at or near "playing" at character 206
+2021-12-07 14:08:44.533 CET [29756] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('29bfc687-66b6-4c37-9411-a8b013fccaa2', 'test', 'hash', 50, 50,
+	                50, False, Im playing MTCG!, :-));
+2021-12-07 14:08:44.594 CET [29756] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:09:23.614 CET [1144] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:09:23.614 CET [1144] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:09:23.614 CET [1144] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('1b331864-df2a-4a59-95ba-ba2799b13041', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:09:23.737 CET [1144] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:09:23.737 CET [1144] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:09:23.737 CET [1144] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('ac847fe1-aa91-4bc8-b560-1a5775e23a41', 'test', 'hash', 50, 50,
+	                50, False, ' Im playing MTCG! ', ' :-) ')
+2021-12-07 14:09:23.738 CET [1144] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:09:23.738 CET [1144] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:09:23.738 CET [1144] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('cfee50ae-4fe7-439c-ba8b-c4b89342573f', 'test', 'hash', 50, 50,
+	                50, False, ' Im playing MTCG! ', ' :-) ')
+2021-12-07 14:09:23.856 CET [1144] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:09:23.856 CET [1144] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:09:23.856 CET [1144] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('def6d8f3-28ae-4ddb-b65c-f590728834a6', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:09:23.858 CET [1144] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:09:23.858 CET [1144] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:09:23.858 CET [1144] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('3b77247f-b1a6-4e6a-b7f6-4bc9ecd0c892', 'test', 'hash', 50, 50,
+	                50, False, ' Im playing MTCG! ', ' :-) ')
+2021-12-07 14:09:23.911 CET [1144] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:09:51.329 CET [22504] ERROR:  relation "users" does not exist at character 13
+2021-12-07 14:09:51.329 CET [22504] STATEMENT:  DELETE FROM users;
+2021-12-07 14:10:12.523 CET [7036] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-12-07 14:10:12.523 CET [7036] DETAIL:  Key (id)=(c57945db-7740-43aa-8f17-d0a9a25406eb) already exists.
+2021-12-07 14:10:12.523 CET [7036] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-12-07 14:10:14.414 CET [500] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-12-07 14:10:14.414 CET [500] DETAIL:  Key (id)=(7887e1e0-9c44-43cf-a9f0-77bbed76cbf8) already exists.
+2021-12-07 14:10:14.414 CET [500] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-12-07 14:10:25.408 CET [27748] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:10:25.408 CET [27748] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:10:25.408 CET [27748] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('4401fb75-345a-4f11-8542-fce9292281d9', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:10:25.480 CET [27748] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:10:25.480 CET [27748] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:10:25.480 CET [27748] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('e8faa931-37b1-406e-bb13-0ad3ab9143b7', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:10:25.481 CET [27748] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:10:25.481 CET [27748] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:10:25.481 CET [27748] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('29af1f1e-83b9-481b-985f-6a33c351b0d7', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:10:25.571 CET [27748] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:10:25.571 CET [27748] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:10:25.571 CET [27748] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('519e7282-8952-487d-97af-b8540b234a2e', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:10:25.573 CET [27748] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:10:25.573 CET [27748] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:10:25.573 CET [27748] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('acc539c1-990b-476f-a710-82e9559f644a', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:10:25.892 CET [7036] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:10:25.892 CET [27748] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:10:25.892 CET [3480] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:10:25.892 CET [500] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:10:25.892 CET [29640] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:10:25.892 CET [16584] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:13:00.394 CET [17940] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:13:00.394 CET [17940] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:13:00.394 CET [17940] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('075e0a26-4e15-44b4-8c3c-636137777ad0', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:13:01.280 CET [17940] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:13:01.280 CET [17940] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:13:01.280 CET [17940] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('8bd64ee3-2870-493b-aec9-9e6a1b671099', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:13:01.370 CET [17940] ERROR:  syntax error at or near "bio" at character 83
+2021-12-07 14:13:01.370 CET [17940] STATEMENT:  UPDATE users SET coins=$1, elo=$2, admin=$3, played_games=$4
+	                    bio=$5, image=$6
+	                    WHERE id=$7
+2021-12-07 14:13:01.476 CET [17940] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:14:50.803 CET [14708] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:14:50.803 CET [14708] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:14:50.803 CET [14708] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('71abbf58-0835-4d24-9b62-1000b5d0d895', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:14:51.093 CET [14708] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:16:44.126 CET [28860] ERROR:  syntax error at or near "bio" at character 83
+2021-12-07 14:16:44.126 CET [28860] STATEMENT:  UPDATE users SET coins=$1, elo=$2, admin=$3, played_games=$4
+	                    bio=$5, image=$6
+	                    WHERE id=$7
+2021-12-07 14:16:44.264 CET [28860] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:17:20.756 CET [23468] ERROR:  syntax error at or near "bio" at character 83
+2021-12-07 14:17:20.756 CET [23468] STATEMENT:  UPDATE users SET coins=$1, elo=$2, admin=$3, played_games=$4
+	                    bio=$5, image=$6
+	                    WHERE id=$7
+2021-12-07 14:17:20.996 CET [23468] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:17:40.740 CET [11364] ERROR:  syntax error at or near "bio" at character 83
+2021-12-07 14:17:40.740 CET [11364] STATEMENT:  UPDATE users SET coins=$1, elo=$2, admin=$3, played_games=$4
+	                    bio=$5, image=$6
+	                    WHERE id=$7
+2021-12-07 14:17:47.347 CET [11364] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:17:57.996 CET [21596] ERROR:  duplicate key value violates unique constraint "unqiue_username"
+2021-12-07 14:17:57.996 CET [21596] DETAIL:  Key (username)=(test) already exists.
+2021-12-07 14:17:57.996 CET [21596] STATEMENT:  INSERT INTO users (id, username, hash, coins, elo, played_games, admin, bio, image) 
+	                VALUES ('9792e567-f109-4b73-9033-a8d87ba0e3b6', 'test', 'hash', 50, 50,
+	                50, False, 'Im playing MTCG!', ':-)')
+2021-12-07 14:17:58.772 CET [21596] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:18:45.424 CET [18752] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:18:50.979 CET [22424] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-12-07 14:18:50.979 CET [22424] DETAIL:  Key (id)=(3fc07b39-f79e-4223-9ffd-43b2d19f3108) already exists.
+2021-12-07 14:18:50.979 CET [22424] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-12-07 14:18:51.713 CET [27616] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-12-07 14:18:51.713 CET [27616] DETAIL:  Key (id)=(162dfa50-8e1c-4d4a-8ee2-71350794d59c) already exists.
+2021-12-07 14:18:51.713 CET [27616] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-12-07 14:19:01.063 CET [22424] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:19:01.063 CET [13316] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:19:01.063 CET [1884] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:19:01.063 CET [16264] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:19:01.063 CET [27616] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:19:01.063 CET [24928] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 14:33:36.096 CET [13536] LOG:  server process (PID 280) was terminated by exception 0xC000013A
+2021-12-07 14:33:36.096 CET [13536] DETAIL:  Failed process was running: DELETE FROM users;
+2021-12-07 14:33:36.096 CET [13536] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-12-07 14:33:36.096 CET [13536] LOG:  terminating any other active server processes
+2021-12-07 14:33:36.097 CET [12024] WARNING:  terminating connection because of crash of another server process
+2021-12-07 14:33:36.097 CET [12024] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2021-12-07 14:33:36.097 CET [12024] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2021-12-07 14:33:36.308 CET [13536] LOG:  all server processes terminated; reinitializing
+2021-12-07 14:33:36.496 CET [30424] LOG:  database system was interrupted; last known up at 2021-12-07 14:21:46 CET
+2021-12-07 14:33:39.167 CET [13536] LOG:  startup process (PID 30424) was terminated by exception 0xC000013A
+2021-12-07 14:33:39.167 CET [13536] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-12-07 14:33:39.167 CET [13536] LOG:  aborting startup due to startup process failure
+^C2021-12-07 17:43:34.373 CET [13588] LOG:  listening on IPv6 address "::1", port 15000
+2021-12-07 17:43:34.373 CET [13588] LOG:  listening on IPv4 address "127.0.0.1", port 15000
+2021-12-07 17:43:35.307 CET [10376] LOG:  database system was interrupted; last known up at 2021-12-07 14:21:46 CET
+2021-12-07 17:43:44.979 CET [10376] LOG:  database system was not properly shut down; automatic recovery in progress
+2021-12-07 17:43:45.617 CET [10376] LOG:  redo starts at 0/19E1340
+2021-12-07 17:43:45.619 CET [10376] LOG:  invalid record length at 0/19E1420: wanted 24, got 0
+2021-12-07 17:43:45.619 CET [10376] LOG:  redo done at 0/19E13E8
+2021-12-07 17:43:47.223 CET [13588] LOG:  database system is ready to accept connections
+2021-12-07 17:45:48.978 CET [26084] ERROR:  relation "users" does not exist
+2021-12-07 17:45:48.978 CET [26084] STATEMENT:  ALTER TABLE users ADD COLUMN wins INTEGER DEFAULT 0 NOT NULL;
+2021-12-07 17:46:09.298 CET [13588] LOG:  server process (PID 31356) was terminated by exception 0xC000013A
+2021-12-07 17:46:09.298 CET [13588] DETAIL:  Failed process was running: ALTER TABLE users ADD COLUMN wins INTEGER DEFAULT 0 NOT NULL;
+2021-12-07 17:46:09.298 CET [13588] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-12-07 17:46:09.298 CET [13588] LOG:  terminating any other active server processes
+2021-12-07 17:46:09.299 CET [24916] WARNING:  terminating connection because of crash of another server process
+2021-12-07 17:46:09.299 CET [24916] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2021-12-07 17:46:09.299 CET [24916] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2021-12-07 17:46:09.426 CET [13588] LOG:  all server processes terminated; reinitializing
+2021-12-07 17:46:09.643 CET [7916] LOG:  database system was interrupted; last known up at 2021-12-07 17:43:46 CET
+2021-12-07 17:46:15.080 CET [13588] LOG:  startup process (PID 7916) was terminated by exception 0xC000013A
+2021-12-07 17:46:15.080 CET [13588] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-12-07 17:46:15.080 CET [13588] LOG:  aborting startup due to startup process failure
+^C2021-12-07 17:47:33.089 CET [22032] LOG:  listening on IPv6 address "::1", port 15000
+2021-12-07 17:47:33.089 CET [22032] LOG:  listening on IPv4 address "127.0.0.1", port 15000
+2021-12-07 17:47:33.826 CET [28056] LOG:  database system was interrupted; last known up at 2021-12-07 17:43:46 CET
+2021-12-07 17:47:41.706 CET [28056] LOG:  database system was not properly shut down; automatic recovery in progress
+2021-12-07 17:47:43.327 CET [28056] LOG:  redo starts at 0/19E1490
+2021-12-07 17:47:43.782 CET [28056] LOG:  invalid record length at 0/1A12A68: wanted 24, got 0
+2021-12-07 17:47:43.782 CET [28056] LOG:  redo done at 0/1A11D28
+2021-12-07 17:47:43.784 CET [28056] LOG:  last completed transaction was at log time 2021-12-07 17:45:58.588191+01
+2021-12-07 17:47:46.808 CET [22032] LOG:  database system is ready to accept connections
+2021-12-07 17:51:06.634 CET [1404] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-12-07 17:51:06.634 CET [1404] DETAIL:  Key (id)=(dfc7c584-7950-425e-bbb3-2fa7fd8d66b9) already exists.
+2021-12-07 17:51:06.634 CET [1404] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-12-07 17:51:07.742 CET [26528] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-12-07 17:51:07.742 CET [26528] DETAIL:  Key (id)=(b3427c76-5d93-4a06-b816-d89bf19ecc5d) already exists.
+2021-12-07 17:51:07.742 CET [26528] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-12-07 17:51:20.031 CET [11384] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 17:51:20.031 CET [1404] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 17:51:20.031 CET [21400] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 17:51:20.031 CET [9476] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 17:51:20.031 CET [26528] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 17:51:20.031 CET [12984] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-07 18:01:25.236 CET [22032] LOG:  server process (PID 23664) was terminated by exception 0xC000013A
+2021-12-07 18:01:25.236 CET [22032] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-12-07 18:01:25.236 CET [22032] LOG:  terminating any other active server processes
+2021-12-07 18:01:25.237 CET [23984] WARNING:  terminating connection because of crash of another server process
+2021-12-07 18:01:25.237 CET [23984] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2021-12-07 18:01:25.237 CET [23984] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2021-12-07 18:01:25.258 CET [22032] LOG:  statistics collector process (PID 17988) was terminated by exception 0xC000013A
+2021-12-07 18:01:25.258 CET [22032] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-12-07 18:01:25.258 CET [22032] LOG:  all server processes terminated; reinitializing
+2021-12-07 18:01:25.432 CET [18724] LOG:  database system was interrupted; last known up at 2021-12-07 17:52:55 CET
+2021-12-07 18:01:25.931 CET [22032] LOG:  startup process (PID 18724) was terminated by exception 0xC000013A
+2021-12-07 18:01:25.931 CET [22032] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-12-07 18:01:25.932 CET [22032] LOG:  aborting startup due to startup process failure
+^C

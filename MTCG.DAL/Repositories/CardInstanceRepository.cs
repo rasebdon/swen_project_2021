@@ -15,6 +15,25 @@ namespace MTCG.DAL.Repositories
             _log = log;
         }
 
+        public IEnumerable<CardInstance> GetAll()
+        {
+            OrderedDictionary[] rows = _db.Select(
+                new NpgsqlCommand(@"SELECT card_instances.*, cards.type, cards.name, cards.description,
+                cards.damage, cards.element, cards.rarity, cards.race  FROM card_instances, cards
+                WHERE card_id=cards.id"));
+
+            List<CardInstance> list = new();
+
+            foreach (var row in rows)
+            {
+                CardInstance? cardInstance = ParseFromRow(row, _log);
+                if(cardInstance != null)
+                    list.Add(cardInstance);
+            }
+
+            return list;
+        }
+
         /// <summary>
         /// Inserts a card instance into the database
         /// </summary>

@@ -20,7 +20,7 @@ namespace MTCG.Test.UnitTests.Repositories
         public void SetUp()
         {
             // Arrange
-            _user = new User(Guid.NewGuid(), "test", "hash", 50, 50, 50);
+            _user = new User(Guid.NewGuid(), "test", "hash", 50, 50, 50, "Im playing MTCG!", ":-)", 0);
             _mockDb = new Mock<IDatabase>();
             _log = new TestLog();
             _repository = new UserRepository(_mockDb.Object, _log);
@@ -99,6 +99,9 @@ namespace MTCG.Test.UnitTests.Repositories
             row.Add("played_games", _user.PlayedGames);
             row.Add("is_admin", _user.IsAdmin);
             row.Add("coins", _user.Coins);
+            row.Add("bio", _user.Bio);
+            row.Add("image", _user.Image);
+            row.Add("wins", _user.Wins);
 
             // Act
             User? user = UserRepository.ParseFromRow(row, _log);

@@ -56,6 +56,7 @@ namespace MTCG.BL
             AuthenticationService authenticationService = new();
 
             // Construct controllers
+            ScoreController scoreController = new(userRepository, _log);
             UserController userController = new(authenticationService, userRepository, _log);
             SessionController sessionController = new(authenticationService, userRepository, _log);
             CardController cardController = new(authenticationService, cardRepository, stackRepository, _log);
@@ -73,6 +74,7 @@ namespace MTCG.BL
             RouteEngine.AddController(deckController);
             RouteEngine.AddController(battleController);
             RouteEngine.AddController(packageController);
+            RouteEngine.AddController(scoreController);
 
             // Setup worker
             var worker = new BattleWorker(this, userRepository, battleController, _log, 0);

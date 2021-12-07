@@ -1,11 +1,12 @@
 ﻿namespace MTCG.Models
 {
-    public class User : DataObject
+    public class User : DataObject // TODO : Bio and Image
     {
         /// <summary>
         /// The unique username of the user
         /// </summary>
-        public string Username { get; }
+        public string Username { get; set; }
+
         public string Hash { get; set; }
         /// <summary>
         /// The amount of coins the user has (display only)
@@ -17,8 +18,12 @@
         public ushort ELO { get; set; }
 
         public int PlayedGames { get; set; }
+        public int Wins { get; set; }
 
         public bool IsAdmin { get; set; }
+
+        public string? Bio { get; set; }
+        public string? Image { get; set; }
 
         /// <summary>
         /// Constructor for using in normal environment
@@ -27,7 +32,7 @@
         /// <param name="coins"></param>
         /// <param name="elo"></param>
         /// <param name="playedGames"></param>
-        public User(Guid id, string username, string hash, int coins, ushort elo, int playedGames) : base(id)
+        public User(Guid id, string username, string hash, int coins, ushort elo, int playedGames, string? bio, string? image, int wins) : base(id)
         {
             Username = username;
             Hash = hash;
@@ -35,6 +40,9 @@
             ELO = elo;
             PlayedGames = playedGames;
             IsAdmin = false;
+            Bio = bio;
+            Image = image;
+            Wins = wins;
         }
 
         public override bool Equals(object? obj)
@@ -46,13 +54,26 @@
                    Coins == user.Coins &&
                    ELO == user.ELO &&
                    PlayedGames == user.PlayedGames &&
-                   IsAdmin == user.IsAdmin;
+                   Wins == user.Wins &&
+                   IsAdmin == user.IsAdmin &&
+                   Bio == user.Bio &&
+                   Image == user.Image;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(ID, Username, Hash, Coins, ELO, PlayedGames, IsAdmin);
+            HashCode hash = new HashCode();
+            hash.Add(ID);
+            hash.Add(Username);
+            hash.Add(Hash);
+            hash.Add(Coins);
+            hash.Add(ELO);
+            hash.Add(PlayedGames);
+            hash.Add(Wins);
+            hash.Add(IsAdmin);
+            hash.Add(Bio);
+            hash.Add(Image);
+            return hash.ToHashCode();
         }
-
     }
 }
