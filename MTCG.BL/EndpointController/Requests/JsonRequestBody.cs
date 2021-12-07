@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MTCG.BL.Requests
+namespace MTCG.BL.EndpointController.Requests
 {
     public class JsonRequestBody<T>
     {

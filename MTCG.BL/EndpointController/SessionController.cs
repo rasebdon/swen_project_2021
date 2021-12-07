@@ -1,7 +1,7 @@
 ﻿using CryptSharp;
 using MTCG.BL.EndpointController.Exceptions;
+using MTCG.BL.EndpointController.Requests;
 using MTCG.BL.Http;
-using MTCG.BL.Requests;
 using MTCG.BL.Services;
 using MTCG.DAL.Repositories;
 using MTCG.Models;

@@ -1,6 +1,6 @@
-﻿namespace MTCG.BL.Requests
+﻿namespace MTCG.BL.EndpointController.Requests
 {
-    class CredentialsRequestBody : JsonRequestBody<CredentialsRequestBody>
+    public class CredentialsRequestBody : JsonRequestBody<CredentialsRequestBody>
     {
         public string Username { get; }
         public string Password { get; }

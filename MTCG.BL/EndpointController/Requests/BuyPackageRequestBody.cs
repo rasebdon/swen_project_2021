@@ -1,6 +1,6 @@
-﻿namespace MTCG.BL.Requests
+﻿namespace MTCG.BL.EndpointController.Requests
 {
-    class BuyPackageRequestBody : JsonRequestBody<BuyPackageRequestBody>
+    public class BuyPackageRequestBody : JsonRequestBody<BuyPackageRequestBody>
     {
         public Guid PackageId { get; }
         public ushort PackageAmount { get; }

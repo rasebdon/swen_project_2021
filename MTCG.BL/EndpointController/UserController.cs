@@ -1,6 +1,6 @@
 ﻿using CryptSharp;
+using MTCG.BL.EndpointController.Requests;
 using MTCG.BL.Http;
-using MTCG.BL.Requests;
 using MTCG.BL.Services;
 using MTCG.DAL.Repositories;
 using MTCG.Models;
@@ -109,34 +109,36 @@ namespace MTCG.BL.EndpointController
         }
 
         [HttpPut]
+        [HttpEndpointArgument]
         public HttpResponse UpdateWithBearerToken(HttpRequest request)
         {
             try
             {
                 User? user = _authenticationService.Authenticate(request.Authorization);
 
-                if (user == null)
-                    return new HttpResponse(HttpStatusCode.Forbidden);
-                
-                User? updatedUser = JsonConvert.DeserializeObject<User>(request.RequestBody);
+                User? argUser = _userRepository.GetByUsername(request.Argument ?? "");
 
-                if (updatedUser == null)
+                if(argUser == null)
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                if (user == null || (argUser.ID.ToString() != user.ID.ToString()))
+                    return new HttpResponse(HttpStatusCode.Forbidden);
+
+                UpdateUserRequestBody? updatedUserInfo = JsonConvert.DeserializeObject<UpdateUserRequestBody>(request.RequestBody);
+
+                if (updatedUserInfo == null)
                     return new HttpResponse(HttpStatusCode.BadRequest);
 
                 // Assign new vars
-                user.Username = updatedUser.Username;
-
-                // Check for new password
-                if (updatedUser.Hash != "")
-                {
-                    // Create password hash
-                    user.Hash = Crypter.Blowfish.Crypt(updatedUser.Hash);
-                }
+                user.Username = updatedUserInfo.Username;
+                user.Bio = updatedUserInfo.Bio;
+                user.Image = updatedUserInfo.Image;
 
                 // Update
                 if (!_userRepository.Update(user))
                     return new HttpResponse(HttpStatusCode.InternalServerError);
 
+                // Clear hash from request
                 user.Hash = "";
 
                 return new HttpResponse(JsonConvert.SerializeObject(user), HttpStatusCode.OK, MediaTypeNames.Application.Json);
