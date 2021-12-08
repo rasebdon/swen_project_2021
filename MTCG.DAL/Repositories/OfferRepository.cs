@@ -4,12 +4,12 @@ using System.Collections.Specialized;
 
 namespace MTCG.DAL.Repositories
 {
-    public class TradeRepository : IRepository<Trade>
+    public class OfferRepository : IRepository<TradeOffer>
     {
         private readonly IDatabase _db;
         private readonly ILog _log;
 
-        public TradeRepository(IDatabase db, ILog log)
+        public OfferRepository(IDatabase db, ILog log)
         {
             _db = db;
             _log = log;
@@ -19,7 +19,7 @@ namespace MTCG.DAL.Repositories
         {
             try
             {
-                NpgsqlCommand cmd = new("DELETE FROM trades WHERE id=@id;");
+                NpgsqlCommand cmd = new("DELETE FROM offers WHERE id=@id;");
                 cmd.Parameters.AddWithValue("id", id);
                 return _db.ExecuteNonQuery(cmd) == 1;
             }
@@ -30,29 +30,29 @@ namespace MTCG.DAL.Repositories
             }
         }
 
-        public IEnumerable<Trade> GetAll()
+        public IEnumerable<TradeOffer> GetAll()
         {
-            NpgsqlCommand cmd = new("SELECT * FROM trades;");
+            NpgsqlCommand cmd = new("SELECT * FROM offers;");
 
-            OrderedDictionary[] tradeRows = _db.Select(cmd);
-            List<Trade> trades = new();
+            OrderedDictionary[] offersRows = _db.Select(cmd);
+            List<TradeOffer> offers = new();
 
-            foreach (var row in tradeRows)
+            foreach (var row in offersRows)
             {
-                Trade? trade = ParseFromRow(row, _log);
+                TradeOffer? trade = ParseFromRow(row, _log);
                 
                 if (trade != null)
-                    trades.Add(trade);
+                    offers.Add(trade);
             }
 
-            return trades;
+            return offers;
         }
 
-        public Trade? GetById(Guid id)
+        public TradeOffer? GetById(Guid id)
         {
             try
             {
-                NpgsqlCommand cmd = new("SELECT * FROM trades WHERE id=@id;");
+                NpgsqlCommand cmd = new("SELECT * FROM offers WHERE id=@id;");
                 cmd.Parameters.AddWithValue("id", id);
 
                 OrderedDictionary row = _db.SelectSingle(cmd);
@@ -66,19 +66,18 @@ namespace MTCG.DAL.Repositories
             }
         }
 
-        public bool Insert(Trade trade)
+        public bool Insert(TradeOffer offer)
         {
             try
             {
                 NpgsqlCommand cmd = new(
-                    @"INSERT INTO trades (id, card_one_id, user_one_id, card_two_id, user_two_id)
-                    VALUES (@id, @c1, @u1, @c2, @u2);");
+                    @"INSERT INTO offers (id, user_id, offered_card_id, wanted_card_id)
+                    VALUES (@id, @user_id, @offered_id, @wanted_id);");
 
-                cmd.Parameters.AddWithValue("id", trade.ID);
-                cmd.Parameters.AddWithValue("c1", trade.CardOneID);
-                cmd.Parameters.AddWithValue("u1", trade.UserOneID);
-                cmd.Parameters.AddWithValue("c2", trade.CardTwoID);
-                cmd.Parameters.AddWithValue("u2", trade.UserTwoID);
+                cmd.Parameters.AddWithValue("id", offer.ID);
+                cmd.Parameters.AddWithValue("user_id", offer.UserID);
+                cmd.Parameters.AddWithValue("offered_id", offer.OfferedCardID);
+                cmd.Parameters.AddWithValue("wanted_id", offer.WantedCardID);
 
                 return _db.ExecuteNonQuery(cmd) == 1;
             }
@@ -89,19 +88,19 @@ namespace MTCG.DAL.Repositories
             }
         }
 
-        public bool Update(Trade trade)
+        public bool Update(TradeOffer offer)
         {
             try
             {
                 NpgsqlCommand cmd = new(
-                    @"UPDATE trades SET card_one_id=@c1, card_two_id=@c2, user_one_id=@u1, user_two_id=@u2
+                    @"UPDATE trades
+                    SET user_id=@user_id, offered_card_id=@offered_id, wanted_card_id=@wanted_id
                     WHERE id=@id;");
 
-                cmd.Parameters.AddWithValue("id", trade.ID);
-                cmd.Parameters.AddWithValue("c1", trade.CardOneID);
-                cmd.Parameters.AddWithValue("u1", trade.UserOneID);
-                cmd.Parameters.AddWithValue("c2", trade.CardTwoID);
-                cmd.Parameters.AddWithValue("u2", trade.UserTwoID);
+                cmd.Parameters.AddWithValue("id", offer.ID);
+                cmd.Parameters.AddWithValue("user_id", offer.UserID);
+                cmd.Parameters.AddWithValue("offered_id", offer.OfferedCardID);
+                cmd.Parameters.AddWithValue("wanted_id", offer.WantedCardID);
 
                 return _db.ExecuteNonQuery(cmd) == 1;
             }
@@ -112,18 +111,17 @@ namespace MTCG.DAL.Repositories
             }
         }
 
-        public static Trade? ParseFromRow(
+        public static TradeOffer? ParseFromRow(
             OrderedDictionary row,
             ILog log)
         {
             try
             {
-                return new Trade(
+                return new TradeOffer(
                     Guid.Parse(row["id"]?.ToString() ?? ""),
-                    Guid.Parse(row["user_one_id"]?.ToString() ?? ""),
-                    Guid.Parse(row["card_one_id"]?.ToString() ?? ""),
-                    Guid.Parse(row["user_two_id"]?.ToString() ?? ""),
-                    Guid.Parse(row["card_two_id"]?.ToString() ?? ""));
+                    Guid.Parse(row["user_id"]?.ToString() ?? ""),
+                    Guid.Parse(row["offered_card_id"]?.ToString() ?? ""),
+                    Guid.Parse(row["wanted_card_id"]?.ToString() ?? ""));
             }
             catch (Exception ex)
             {

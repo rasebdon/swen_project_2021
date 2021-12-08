@@ -6,11 +6,11 @@
         public Guid OfferedCardID { get; }
         public Guid WantedCardID { get; }
 
-        public TradeOffer(Guid id, User user, CardInstance offeredCard, Card wantedCard) : base(id)
+        public TradeOffer(Guid id, Guid user, Guid offeredCard, Guid wantedCard) : base(id)
         {
-            UserID = user.ID;
-            OfferedCardID = offeredCard.ID;
-            WantedCardID = wantedCard.ID;
+            UserID = user;
+            OfferedCardID = offeredCard;
+            WantedCardID = wantedCard;
         }
     }
 }
