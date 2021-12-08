@@ -167,7 +167,7 @@ curl -X GET http://localhost:10001/deck?format=plain --header "Authorization: Ba
 echo.
 echo.
 
-REM -------------------------------------------------- TODO EDIT USER DATA
+REM --------------------------------------------------
 echo 14) edit user data
 echo.
 curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Basic kienboec-mtcgToken"
@@ -210,7 +210,7 @@ curl -X GET http://localhost:10001/score --header "Authorization: Basic kienboec
 echo.
 echo.
 
-REM -------------------------------------------------- TODO : BATTLE ENDPOINT
+REM --------------------------------------------------
 echo 17) battle
 start /b "kienboec battle" curl -X POST http://localhost:10001/battles --header "Authorization: Basic kienboec-mtcgToken"
 start /b "altenhof battle" curl -X POST http://localhost:10001/battles --header "Authorization: Basic altenhof-mtcgToken"
@@ -250,7 +250,7 @@ curl -X DELETE http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921fa
 echo.
 echo.
 
-REM --------------------------------------------------
+REM -------------------------------------------------- TODO : TRADE ENDPOINT
 echo 21) check trading deals
 curl -X GET http://localhost:10001/tradings  --header "Authorization: Basic kienboec-mtcgToken"
 echo.

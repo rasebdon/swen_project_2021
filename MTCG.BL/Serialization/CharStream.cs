@@ -20,7 +20,7 @@ namespace MTCG.Serialization
 
         public void WriteLine(string s = "")
         {
-            Write(s + "\n");
+            Write($"{s}\r\n");
         }
     }
 }

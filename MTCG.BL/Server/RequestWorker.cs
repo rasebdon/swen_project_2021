@@ -18,7 +18,7 @@ namespace MTCG.BL
                 {
                     if ((request = _server.HttpClient.GetHttpRequest()) != null)
                     {
-                        _log.WriteLine($"RequestWorker{_id} : Recieved an http request id:{request.Id}" +
+                        _log.WriteLine($"RequestWorker {_id} : Recieved an http request id:{request.Id}" +
                             $"\n\r{request.HttpMethod} : {request.Url.LocalPath}");
 
                         _server.HttpRequests.Enqueue(request);
@@ -26,7 +26,7 @@ namespace MTCG.BL
                     else
                     {
                         // Recieved invalid request
-                        _log.WriteLine($"RequestWorker{_id} : Invalid request recieved! Continuing to the next request", OutputFormat.Warning);
+                        _log.WriteLine($"RequestWorker {_id} : Invalid request recieved! Continuing to the next request", OutputFormat.Warning);
                     }
                 }
                 catch (Exception ex)

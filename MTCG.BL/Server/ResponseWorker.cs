@@ -23,12 +23,12 @@ namespace MTCG.BL
                     {
                         try
                         {
-                            _log.WriteLine($"ResponseWorker{_id} : Processing http request id:{request.Id}");
+                            _log.WriteLine($"ResponseWorker {_id} : Processing http request id:{request.Id}");
                             _server.RouteEngine.RouteRequest(request);
                         }
                         catch (Exception ex)
                         {
-                            _log.WriteLine($"ResponseWorker{_id} : There was an error processing the http request:", OutputFormat.Error);
+                            _log.WriteLine($"ResponseWorker {_id} : There was an error processing the http request:", OutputFormat.Error);
                             _log.WriteLine(ex.ToString(), OutputFormat.Error);
                             _server.HttpClient.SendHttpResponse(new HttpResponse(HttpStatusCode.BadRequest), request);
                             continue;

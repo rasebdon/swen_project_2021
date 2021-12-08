@@ -76,10 +76,13 @@ namespace MTCG.BL
             RouteEngine.AddController(packageController);
             RouteEngine.AddController(scoreController);
 
-            // Setup worker
-            var worker = new BattleWorker(this, userRepository, battleController, _log, 0);
-            _battleWorkers.Add(worker);
-            //worker.Start();
+            for (int i = 0; i < 20; i++)
+            {
+                // Setup battle worker
+                var worker = new BattleWorker(this, userRepository, battleController, _log, 0);
+                _battleWorkers.Add(worker);
+                worker.Start();
+            }
         }
         /// <summary>
         /// Standard server on port 10001

@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 
 namespace MTCG.BL.EndpointController
 {
-    [HttpEndpoint("/battle")]
+    [HttpEndpoint("/battles")]
     public class BattleController : Controller, IHttpPost
     {
         public ConcurrentQueue<Tuple<Deck, HttpRequest>> MatchQueue { get; }
@@ -39,6 +39,9 @@ namespace MTCG.BL.EndpointController
                     if (deck != null)
                     {
                         MatchQueue.Enqueue(new Tuple<Deck, HttpRequest>(deck, request));
+
+                        _log.WriteLine($"{MatchQueue.Count} Battles in queue!");
+
                         return null; // Needs to hold connection
                     }
                 }

@@ -30,10 +30,16 @@ namespace MTCG.BL.EndpointController
         {
             while (_running)
             {
-                if (_controller.MatchQueue.Count == 2)
+                if(_controller.MatchQueue.Count < 2)
+                {
+                    Thread.Sleep(100);
+                }
+                else
                 {
                     lock (_lock)
                     {
+                        _log.WriteLine($"BattleWorker {_id} : Processing new battle!");
+
                         if (_controller.MatchQueue.TryDequeue(out Tuple<Deck, HttpRequest>? t1) &&
                            _controller.MatchQueue.TryDequeue(out Tuple<Deck, HttpRequest>? t2))
                         {
