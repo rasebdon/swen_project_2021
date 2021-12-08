@@ -2,6 +2,9 @@
 {
     public class TradeController : Controller
     {
+        // Post => With trade body (Id, CardToTrade, CardInstanceId (not public), trade requirements (min damage, element, type, specific card))
+
+
         //// TODO - Transaction try catch
         //public bool Trade(Trade trade, TradeOffer offer)
         //{

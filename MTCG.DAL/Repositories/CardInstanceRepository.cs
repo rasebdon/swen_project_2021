@@ -20,7 +20,7 @@ namespace MTCG.DAL.Repositories
             OrderedDictionary[] rows = _db.Select(
                 new NpgsqlCommand(@"SELECT card_instances.*, cards.type, cards.name, cards.description,
                 cards.damage, cards.element, cards.rarity, cards.race  FROM card_instances, cards
-                WHERE card_id=cards.id"));
+                WHERE card_id=cards.id;"));
 
             List<CardInstance> list = new();
 
