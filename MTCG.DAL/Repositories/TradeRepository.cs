@@ -66,21 +66,50 @@ namespace MTCG.DAL.Repositories
             }
         }
 
+        /// <summary>
+        /// Also switches the cards owners!
+        /// </summary>
+        /// <param name="trade"></param>
+        /// <returns></returns>
         public bool Insert(Trade trade)
         {
             try
             {
-                NpgsqlCommand cmd = new(
+                List<TransactionObject> transaction = new();
+
+                // Insert trade
+                NpgsqlCommand cmd1 = new(
                     @"INSERT INTO trades (id, card_one_id, user_one_id, card_two_id, user_two_id)
-                    VALUES (@id, @c1, @u1, @c2, @u2);");
+                    VALUES (@id, @card_one_id, @user_one_id, @card_two_id, @user_two_id);");
+                cmd1.Parameters.AddWithValue("id", trade.ID);
+                cmd1.Parameters.AddWithValue("card_one_id", trade.OfferedCardInstanceId);
+                cmd1.Parameters.AddWithValue("user_one_id", trade.OfferUserId);
+                cmd1.Parameters.AddWithValue("card_two_id", trade.WantedCardInstanceId);
+                cmd1.Parameters.AddWithValue("user_two_id", trade.AcceptUserId);
+                transaction.Add(new(cmd1, 1));
 
-                cmd.Parameters.AddWithValue("id", trade.ID);
-                cmd.Parameters.AddWithValue("c1", trade.CardOneID);
-                cmd.Parameters.AddWithValue("u1", trade.UserOneID);
-                cmd.Parameters.AddWithValue("c2", trade.CardTwoID);
-                cmd.Parameters.AddWithValue("u2", trade.UserTwoID);
+                // Delete cards from stacks
+                NpgsqlCommand cmd2 = new(
+                    @"DELETE FROM user_cards 
+                    WHERE (card_instance_id=@offered_card_id AND user_id=@offer_user_id)
+                    OR (card_instance_id=@wanted_card_id AND user_id=@accept_user_id);");
+                cmd2.Parameters.AddWithValue("offered_card_id", trade.OfferedCardInstanceId);
+                cmd2.Parameters.AddWithValue("offer_user_id", trade.OfferUserId);
+                cmd2.Parameters.AddWithValue("wanted_card_id", trade.WantedCardInstanceId);
+                cmd2.Parameters.AddWithValue("accept_user_id", trade.AcceptUserId);
+                transaction.Add(new(cmd2, 2));
 
-                return _db.ExecuteNonQuery(cmd) == 1;
+                // Second insert wanted card into offered card user stack
+                NpgsqlCommand cmd3 = new(
+                    @"INSERT INTO user_cards (user_id, card_instance_id) VALUES (@offer_user_id, @wanted_card_id);
+                      INSERT INTO user_cards (user_id, card_instance_id) VALUES (@accept_user_id, @offered_card_id);");
+                cmd3.Parameters.AddWithValue("wanted_card_id", trade.WantedCardInstanceId);
+                cmd3.Parameters.AddWithValue("offer_user_id", trade.OfferUserId);
+                cmd3.Parameters.AddWithValue("accept_user_id", trade.AcceptUserId);
+                cmd3.Parameters.AddWithValue("offered_card_id", trade.OfferedCardInstanceId);
+                transaction.Add(new(cmd3, 2));
+
+                return _db.ExecuteNonQueryTransaction(transaction);
             }
             catch (Exception ex)
             {
@@ -98,10 +127,10 @@ namespace MTCG.DAL.Repositories
                     WHERE id=@id;");
 
                 cmd.Parameters.AddWithValue("id", trade.ID);
-                cmd.Parameters.AddWithValue("c1", trade.CardOneID);
-                cmd.Parameters.AddWithValue("u1", trade.UserOneID);
-                cmd.Parameters.AddWithValue("c2", trade.CardTwoID);
-                cmd.Parameters.AddWithValue("u2", trade.UserTwoID);
+                cmd.Parameters.AddWithValue("c1", trade.OfferedCardInstanceId);
+                cmd.Parameters.AddWithValue("u1", trade.OfferUserId);
+                cmd.Parameters.AddWithValue("c2", trade.WantedCardInstanceId);
+                cmd.Parameters.AddWithValue("u2", trade.AcceptUserId);
 
                 return _db.ExecuteNonQuery(cmd) == 1;
             }

@@ -13,7 +13,7 @@
         {
             get
             {
-                return $"Host={IP};Port={Port};Database={Database};Username={Username};Password={Password};";
+                return $"Host={IP};Port={Port};Database={Database};Username={Username};Password={Password};IncludeErrorDetail=true;";
             }
         }
         public string IP { get; }

@@ -76,7 +76,7 @@ namespace MTCG.DAL.Repositories
 
                 cmd.Parameters.AddWithValue("id", offer.ID);
                 cmd.Parameters.AddWithValue("user_id", offer.UserID);
-                cmd.Parameters.AddWithValue("offered_id", offer.OfferedCardID);
+                cmd.Parameters.AddWithValue("offered_id", offer.OfferedCardInstanceId);
                 cmd.Parameters.AddWithValue("wanted_id", offer.WantedCardID);
 
                 return _db.ExecuteNonQuery(cmd) == 1;
@@ -99,7 +99,7 @@ namespace MTCG.DAL.Repositories
 
                 cmd.Parameters.AddWithValue("id", offer.ID);
                 cmd.Parameters.AddWithValue("user_id", offer.UserID);
-                cmd.Parameters.AddWithValue("offered_id", offer.OfferedCardID);
+                cmd.Parameters.AddWithValue("offered_id", offer.OfferedCardInstanceId);
                 cmd.Parameters.AddWithValue("wanted_id", offer.WantedCardID);
 
                 return _db.ExecuteNonQuery(cmd) == 1;

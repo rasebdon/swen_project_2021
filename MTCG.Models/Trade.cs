@@ -2,17 +2,18 @@
 {
     public class Trade : DataObject
     {
-        public Guid UserOneID { get; }
-        public Guid UserTwoID { get; }
-        public Guid CardOneID { get; }
-        public Guid CardTwoID { get; }
+        public Guid OfferUserId { get; }
+        public Guid AcceptUserId { get; }
+        public Guid OfferedCardInstanceId { get; }
+        public Guid WantedCardInstanceId { get; }
 
-        public Trade(Guid id, Guid u1, Guid c1, Guid u2, Guid c2) : base(id)
+        public Trade(Guid id, Guid offerUserId, Guid acceptUserId, Guid offeredCardId, Guid wantedCardId) : base(id)
         {
-            UserOneID = u1;
-            UserTwoID = u2;
-            CardOneID = c1;
-            CardTwoID = c2;
+            OfferUserId = offerUserId;
+            AcceptUserId = acceptUserId;
+            OfferedCardInstanceId = offeredCardId;
+            WantedCardInstanceId = wantedCardId;
         }
+
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace MTCG.BL.EndpointController.Requests
 {
-    public class UpdateUserRequestBody : JsonRequestBody<CredentialsRequestBody>
+    public class UpdateUserRequestBody : JsonRequestBody<UpdateUserRequestBody>
     {
         public string Username { get; }
         public string? Bio { get; }

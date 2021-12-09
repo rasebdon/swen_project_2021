@@ -49,6 +49,8 @@ namespace MTCG.BL
             CardRepository cardRepository = new(_database, _log);
             DeckRepository deckRepository = new(_database, _log);
             StackRepository stackRepository = new(_database, _log);
+            TradeRepository tradeRepository = new(_database, _log);
+            OfferRepository offerRepository = new(_database, _log);
             PackageRepository packageRepository = new(_database, _log);
             CardInstanceRepository cardInstanceRepository = new(_database, _log);
 
@@ -58,13 +60,14 @@ namespace MTCG.BL
             // Construct controllers
             ScoreController scoreController = new(userRepository, _log);
             UserController userController = new(authenticationService, userRepository, _log);
-            SessionController sessionController = new(authenticationService, userRepository, _log);
             CardController cardController = new(authenticationService, cardRepository, stackRepository, _log);
             DeckController deckController = new(authenticationService, deckRepository, stackRepository, _log);
+            TradeController tradeController = new(authenticationService, cardRepository, stackRepository,
+                tradeRepository, offerRepository, _log);
             BattleController battleController = new(authenticationService, deckRepository, _log);
+            SessionController sessionController = new(authenticationService, userRepository, _log);
             PackageController packageController = new(authenticationService, userRepository,
                 packageRepository, cardInstanceRepository, _log);
-            //TradeController tradeController = new(authenticationService, tradeRepository, _log);
 
             // Bind controllers
             _log.WriteLine($"Loaded Enpoints:", OutputFormat.Success);
@@ -75,6 +78,7 @@ namespace MTCG.BL
             RouteEngine.AddController(battleController);
             RouteEngine.AddController(packageController);
             RouteEngine.AddController(scoreController);
+            RouteEngine.AddController(tradeController);
 
             for (int i = 0; i < 20; i++)
             {

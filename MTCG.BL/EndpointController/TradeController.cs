@@ -1,79 +1,302 @@
-﻿namespace MTCG.BL.EndpointController
+﻿using MTCG.BL.EndpointController.Requests;
+using MTCG.BL.Http;
+using MTCG.BL.Services;
+using MTCG.DAL.Repositories;
+using MTCG.Models;
+using Newtonsoft.Json;
+using System.Net.Mime;
+
+namespace MTCG.BL.EndpointController
 {
+    [HttpEndpoint("/trades")]
     public class TradeController : Controller
     {
-        // Post => With trade body (Id, CardToTrade, CardInstanceId (not public), trade requirements (min damage, element, type, specific card))
+        private readonly CardRepository _cardRepository;
+        private readonly TradeRepository _tradeRepository;
+        private readonly StackRepository _stackRepository;
+        private readonly OfferRepository _offerRepository;
+        private readonly AuthenticationService _authenticationService;
+        private readonly ILog _log;
 
+        public TradeController(
+            AuthenticationService authenticationService,
+            CardRepository cardRepository,
+            StackRepository stackRepository,
+            TradeRepository tradeRepository,
+            OfferRepository offerRepository,
+            ILog log)
+        {
+            _authenticationService = authenticationService;
+            _tradeRepository = tradeRepository;
+            _offerRepository = offerRepository;
+            _stackRepository = stackRepository;
+            _cardRepository = cardRepository;
+            _log = log;
+        }
 
-        //// TODO - Transaction try catch
-        //public bool Trade(Trade trade, TradeOffer offer)
-        //{
-        //    // Check if a user wants to trade with himself
-        //    if (trade.UserOneID == trade.UserTwoID)
-        //        return false;
+        [HttpPost]
+        public HttpResponse PlaceOffer(HttpRequest request)
+        {
+            try
+            {
+                // Authenticate via Token
+                User? user = _authenticationService.Authenticate(request.Authorization);
 
-        //    // Check if users have the cards
-        //    var u1Stack = UserController.Instance.GetUserCardStack(trade.UserOneID);
-        //    var u2Stack = UserController.Instance.GetUserCardStack(trade.UserTwoID);
+                if (user == null)
+                    return new HttpResponse(HttpStatusCode.Forbidden);
 
-        //    if (u1Stack.Find(ci => ci.ID == trade.CardOneID) == null ||
-        //        u2Stack.Find(ci => ci.ID == trade.CardTwoID) == null)
-        //        throw new System.Exception("One of the users of the current trade does not own the card to be traded!");
+                // Parse request body
+                PostTradeOfferRequestBody? requestBody;
+                try
+                {
+                    requestBody = JsonConvert.DeserializeObject<PostTradeOfferRequestBody>(request.RequestBody);
 
-        //    // Check if the accepting card is the right card
-        //    if (u2Stack.Find(c => c.ID == trade.CardTwoID && c.CardID == offer.WantedCardID) == null)
-        //        throw new ArgumentException("The accepting party has selected the wrong card for this trade!");
+                    if (requestBody == null)
+                        throw new ArgumentNullException();
+                }
+                catch (Exception)
+                {
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+                }
 
-        //    // Switch card 1
-        //    NpgsqlCommand cmd = new("UPDATE user_cards SET card_instance_id=@card_instance_id WHERE user_id=@user_id;");
-        //    cmd.Parameters.AddWithValue("card_instance_id", trade.CardOneID);
-        //    cmd.Parameters.AddWithValue("user_id", trade.UserTwoID);
-        //    Database.Instance.ExecuteNonQuery(cmd);
+                // Try to find offered card in users stack
+                CardInstance? offeredCard = _stackRepository.GetById(user.ID)?.Find(c => c.ID == requestBody.OfferedCardId);
 
-        //    // Switch card 2
-        //    cmd.Parameters.Clear();
-        //    cmd.Parameters.AddWithValue("card_instance_id", trade.CardTwoID);
-        //    cmd.Parameters.AddWithValue("user_id", trade.UserOneID);
-        //    Database.Instance.ExecuteNonQuery(cmd);
+                if(offeredCard == null)
+                    return new HttpResponse(HttpStatusCode.BadRequest);
 
-        //    // Insert trade
-        //    cmd = new("INSERT INTO trades (id, card_one_id, user_one_id, card_two_id, user_two_id) VALUES (@id, @c1, @u1, @c2, @u2);");
-        //    cmd.Parameters.AddWithValue("id", trade.ID);
-        //    cmd.Parameters.AddWithValue("c1", trade.CardOneID);
-        //    cmd.Parameters.AddWithValue("u1", trade.UserOneID);
-        //    cmd.Parameters.AddWithValue("c2", trade.CardTwoID);
-        //    cmd.Parameters.AddWithValue("u2", trade.UserTwoID);
-        //    Database.Instance.ExecuteNonQuery(cmd);
+                // Find wanted card in card database
+                Card? wantedCard = _cardRepository.GetById(requestBody.WantedCardId);
 
-        //    // Delete offer
-        //    cmd = new("DELETE FROM offers WHERE id=@id;");
-        //    cmd.Parameters.AddWithValue("id", offer.ID);
-        //    Database.Instance.ExecuteNonQuery(cmd);
+                if (wantedCard == null)
+                    return new HttpResponse(HttpStatusCode.BadRequest);
 
-        //    return true;
-        //}
+                // Create trade offer and return it
+                TradeOffer offer = new(Guid.NewGuid(), user.ID, offeredCard.ID, wantedCard.ID);
 
-        //public bool CreateOffer(TradeOffer offer)
-        //{
-        //    // Check if user has the card to offer
-        //    var userStack = UserController.Instance.GetUserCardStack(offer.UserID);
+                try
+                {
+                    if (!_offerRepository.Insert(offer))
+                        throw new Exception();
+                }
+                catch(Exception ex)
+                {
+                    _log.WriteLine(ex.ToString());
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+                }
 
-        //    if (userStack.Find(c => c.ID == offer.OfferedCardID) == null)
-        //        throw new System.Exception("The user that made the offer does not own this card!");
+                return new HttpResponse(
+                    offer.ToJson(),
+                    HttpStatusCode.Created,
+                    MediaTypeNames.Application.Json);
+            }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return new HttpResponse(HttpStatusCode.InternalServerError);
+            }
+        }
 
-        //    // Find the card that is wanted (against invalid inputs)
-        //    Card c = CardController.Instance.Select(offer.WantedCardID);
+        [HttpGet]
+        public HttpResponse ListAllOffers(HttpRequest request)
+        {
+            try
+            {
+                List<TradeOffer> offers = new(_offerRepository.GetAll());
 
-        //    if (c == null)
-        //        throw new ArgumentException("The given wanted card id in the offer is not related to any card!");
+                return new HttpResponse(
+                    JsonConvert.SerializeObject(offers.ToArray(), Formatting.Indented),
+                    HttpStatusCode.OK,
+                    MediaTypeNames.Application.Json);
+            }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return new HttpResponse(HttpStatusCode.InternalServerError);
+            }
+        }
 
-        //    NpgsqlCommand cmd = new("INSERT INTO offers (id, user_id, offered_card_id, wanted_card_id) VALUES (@id, @user_id, @offered_card_id, @wanted_card_id);");
-        //    cmd.Parameters.AddWithValue("id", offer.ID);
-        //    cmd.Parameters.AddWithValue("user_id", offer.UserID);
-        //    cmd.Parameters.AddWithValue("offered_card_id", offer.OfferedCardID);
-        //    cmd.Parameters.AddWithValue("wanted_card_id", offer.WantedCardID);
+        [HttpDelete]
+        [HttpEndpointArgument]
+        public HttpResponse DeleteOffer(HttpRequest request)
+        {
+            try
+            {
+                // Authenticate via Token
+                User? user = _authenticationService.Authenticate(request.Authorization);
 
-        //    return Database.Instance.ExecuteNonQuery(cmd) == 1;
-        //}
+                if (user == null)
+                    return new HttpResponse(HttpStatusCode.Forbidden);
+
+                // Try to parse request argument
+                if (!Guid.TryParse(request.Argument, out Guid offerId))
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                // Try to find offered card in users stack
+                List<CardInstance>? stack = _stackRepository.GetById(user.ID);
+                CardInstance? offeredCard = stack?.Find(c => c.ID == offerId);
+
+                if (offeredCard == null || stack == null)
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                // Try to delete offer
+                try
+                {
+                    if (!_offerRepository.Delete(offerId))
+                        throw new Exception();
+                }
+                catch (Exception ex)
+                {
+                    _log.WriteLine(ex.ToString());
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+                }
+
+                return new HttpResponse(
+                    JsonConvert.SerializeObject(stack.ToArray()),
+                    HttpStatusCode.Created,
+                    MediaTypeNames.Application.Json);
+            }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return new HttpResponse(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPut]
+        [HttpEndpointArgument]
+        public HttpResponse UpdateOffer(HttpRequest request)
+        {
+            try
+            {
+                // Authenticate via Token
+                User? user = _authenticationService.Authenticate(request.Authorization);
+
+                if (user == null)
+                    return new HttpResponse(HttpStatusCode.Forbidden);
+
+                // Parse request body
+                PostTradeOfferRequestBody? requestBody;
+                try
+                {
+                    requestBody = JsonConvert.DeserializeObject<PostTradeOfferRequestBody>(request.RequestBody);
+
+                    if (requestBody == null)
+                        throw new ArgumentNullException();
+                }
+                catch (Exception)
+                {
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+                }
+
+                // Try to parse request argument
+                if (!Guid.TryParse(request.Argument, out Guid offerId))
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                // Try to find offered card in users stack
+                CardInstance? offeredCard = _stackRepository.GetById(user.ID)?.Find(c => c.ID == requestBody.OfferedCardId);
+
+                if (offeredCard == null)
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                // Find wanted card in card database
+                Card? wantedCard = _cardRepository.GetById(requestBody.WantedCardId);
+
+                if (wantedCard == null)
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                // Update trade offer and return it
+                TradeOffer offer = new(offerId, user.ID, offeredCard.ID, wantedCard.ID);
+                try
+                {
+                    if (!_offerRepository.Update(offer))
+                        throw new Exception();
+                }
+                catch (Exception ex)
+                {
+                    _log.WriteLine(ex.ToString());
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+                }
+
+                return new HttpResponse(
+                    offer.ToJson(),
+                    HttpStatusCode.Created,
+                    MediaTypeNames.Application.Json);
+            }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return new HttpResponse(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        [HttpEndpointArgument]
+        public HttpResponse AcceptOffer(HttpRequest request)
+        {
+            try
+            {
+                // Authenticate via Token
+                User? user = _authenticationService.Authenticate(request.Authorization);
+
+                if (user == null)
+                    return new HttpResponse(HttpStatusCode.Forbidden);
+
+                // Try to parse request argument
+                if (!Guid.TryParse(request.Argument, out Guid offerId))
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                // Try to get offer from offerId
+                TradeOffer? offer = _offerRepository.GetById(offerId);
+                // Null check and check that user cannot trade with itself
+                if(offer == null || offer.UserID == user.ID)
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                // Try to find offered card in users stack
+                List<CardInstance>? stack = _stackRepository.GetById(user.ID);
+                CardInstance? wantedCard = stack?.Find(c => c.CardID == offer.WantedCardID);
+
+                if (wantedCard == null)
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+
+                // Create trade
+                Trade trade = new(
+                    Guid.NewGuid(),
+                    offer.UserID,
+                    user.ID,
+                    offer.OfferedCardInstanceId,
+                    wantedCard.ID);
+
+                // Insert trade and delete offer
+                try
+                {
+                    // Insert trade (automatically switches cards)
+                    if (!_tradeRepository.Insert(trade))
+                        throw new Exception("Fatal error while executing trade transaction!");
+
+                    // Delete offer
+                    if (!_offerRepository.Delete(offer.ID))
+                        throw new Exception("Fatal error while deleting offer!");
+                }
+                catch (Exception ex)
+                {
+                    _log.WriteLine(ex.ToString());
+                    return new HttpResponse(HttpStatusCode.BadRequest);
+                }
+
+                stack = _stackRepository.GetById(user.ID);
+
+                // Return users updated stack
+                return new HttpResponse(
+                    JsonConvert.SerializeObject(stack?.ToArray()),
+                    HttpStatusCode.Created,
+                    MediaTypeNames.Application.Json);
+            }
+            catch (Exception ex)
+            {
+                _log.WriteLine(ex.ToString());
+                return new HttpResponse(HttpStatusCode.InternalServerError);
+            }
+        }
     }
 }
