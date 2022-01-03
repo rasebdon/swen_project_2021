@@ -44,10 +44,10 @@ namespace MTCG.BL.Http
         }
 
         private readonly Dictionary<HttpComposedEndpointInfo, HttpComposedEndpointMethod> _httpEndpoints = new();
-        private readonly HttpClient _client;
+        private readonly HttpServer _client;
         private readonly ILog _log;
 
-        public RouteEngine(HttpClient client, ILog log)
+        public RouteEngine(HttpServer client, ILog log)
         {
             _client = client;
             _log = log;

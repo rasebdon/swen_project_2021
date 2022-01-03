@@ -6,13 +6,13 @@ using MTCG.DAL.Repositories;
 using MTCG.Models;
 using System.Collections.Concurrent;
 using System.Net;
-using HttpClient = MTCG.BL.Http.HttpClient;
+using HttpServer = MTCG.BL.Http.HttpServer;
 
 namespace MTCG.BL
 {
     public class Server
     {
-        public HttpClient HttpClient { get; }
+        public HttpServer HttpClient { get; }
         public RouteEngine RouteEngine { get; }
         public ConcurrentQueue<HttpRequest> HttpRequests { get; }
 

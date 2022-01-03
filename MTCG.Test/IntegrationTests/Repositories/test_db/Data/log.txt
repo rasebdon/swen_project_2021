@@ -1577,4 +1577,70 @@
 2021-12-07 18:01:25.931 CET [22032] LOG:  startup process (PID 18724) was terminated by exception 0xC000013A
 2021-12-07 18:01:25.931 CET [22032] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
 2021-12-07 18:01:25.932 CET [22032] LOG:  aborting startup due to startup process failure
+^C2021-12-09 16:14:17.975 CET [30540] LOG:  listening on IPv6 address "::1", port 15000
+2021-12-09 16:14:17.975 CET [30540] LOG:  listening on IPv4 address "127.0.0.1", port 15000
+2021-12-09 16:14:19.234 CET [32688] LOG:  database system was interrupted; last known up at 2021-12-07 17:52:55 CET
+2021-12-09 16:14:30.778 CET [32688] LOG:  database system was not properly shut down; automatic recovery in progress
+2021-12-09 16:14:31.547 CET [32688] LOG:  redo starts at 0/1A39AA8
+2021-12-09 16:14:32.013 CET [32688] LOG:  invalid record length at 0/1A3D728: wanted 24, got 0
+2021-12-09 16:14:32.013 CET [32688] LOG:  redo done at 0/1A3D6F0
+2021-12-09 16:14:32.034 CET [32688] LOG:  last completed transaction was at log time 2021-12-07 17:52:48.184632+01
+2021-12-09 16:14:35.013 CET [30540] LOG:  database system is ready to accept connections
+2021-12-09 16:14:58.652 CET [19680] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2021-12-09 16:14:58.652 CET [19680] DETAIL:  Key (id)=(7a6d21f6-0db5-49b2-8003-daf61019b4d4) already exists.
+2021-12-09 16:14:58.652 CET [19680] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2021-12-09 16:14:59.601 CET [9636] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2021-12-09 16:14:59.601 CET [9636] DETAIL:  Key (id)=(6af4e491-7b14-49da-be20-09f266a00f46) already exists.
+2021-12-09 16:14:59.601 CET [9636] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2021-12-09 16:15:10.604 CET [27484] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-09 16:15:10.604 CET [19680] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-09 16:15:10.604 CET [29292] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-09 16:15:10.604 CET [9636] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-09 16:15:10.605 CET [32080] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-09 16:15:10.605 CET [24192] LOG:  could not receive data from client: unrecognized winsock error 10054
+2021-12-09 16:16:41.107 CET [30540] LOG:  server process (PID 31260) was terminated by exception 0xC000013A
+2021-12-09 16:16:41.107 CET [30540] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-12-09 16:16:41.107 CET [30540] LOG:  terminating any other active server processes
+2021-12-09 16:16:41.108 CET [18008] WARNING:  terminating connection because of crash of another server process
+2021-12-09 16:16:41.108 CET [18008] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2021-12-09 16:16:41.108 CET [18008] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2021-12-09 16:16:41.336 CET [30540] LOG:  all server processes terminated; reinitializing
+2021-12-09 16:16:41.492 CET [20736] LOG:  database system was interrupted; last known up at 2021-12-09 16:14:34 CET
+2021-12-09 16:16:42.232 CET [30540] LOG:  startup process (PID 20736) was terminated by exception 0xC000013A
+2021-12-09 16:16:42.232 CET [30540] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2021-12-09 16:16:42.232 CET [30540] LOG:  aborting startup due to startup process failure
+^C2022-01-02 16:57:34.056 CET [3500] LOG:  listening on IPv6 address "::1", port 15000
+2022-01-02 16:57:34.057 CET [3500] LOG:  listening on IPv4 address "127.0.0.1", port 15000
+2022-01-02 16:57:34.926 CET [21672] LOG:  database system was interrupted; last known up at 2021-12-09 16:14:34 CET
+2022-01-02 16:57:42.959 CET [21672] LOG:  database system was not properly shut down; automatic recovery in progress
+2022-01-02 16:57:43.345 CET [21672] LOG:  redo starts at 0/1A3D798
+2022-01-02 16:57:43.374 CET [21672] LOG:  invalid record length at 0/1A59DF0: wanted 24, got 0
+2022-01-02 16:57:43.374 CET [21672] LOG:  redo done at 0/1A59DB8
+2022-01-02 16:57:43.375 CET [21672] LOG:  last completed transaction was at log time 2021-12-09 16:15:10.391619+01
+2022-01-02 16:57:46.065 CET [3500] LOG:  database system is ready to accept connections
+2022-01-02 16:58:37.194 CET [26236] ERROR:  duplicate key value violates unique constraint "card_instances_pkey"
+2022-01-02 16:58:37.194 CET [26236] DETAIL:  Key (id)=(2c4d2b7c-f5e8-4f43-ae9c-fad25188baac) already exists.
+2022-01-02 16:58:37.194 CET [26236] STATEMENT:  INSERT INTO card_instances (id, card_id) VALUES ($1, $2)
+2022-01-02 16:58:38.654 CET [20160] ERROR:  duplicate key value violates unique constraint "cards_pkey"
+2022-01-02 16:58:38.654 CET [20160] DETAIL:  Key (id)=(ae701107-0047-4f9a-8bd9-f2f2f4f79075) already exists.
+2022-01-02 16:58:38.654 CET [20160] STATEMENT:  INSERT INTO cards (id, name, description, type, damage, element, rarity, race)
+	                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+2022-01-02 16:58:49.434 CET [21860] LOG:  could not receive data from client: unrecognized winsock error 10054
+2022-01-02 16:58:49.434 CET [26236] LOG:  could not receive data from client: unrecognized winsock error 10054
+2022-01-02 16:58:49.434 CET [20160] LOG:  could not receive data from client: unrecognized winsock error 10054
+2022-01-02 16:58:49.435 CET [8568] LOG:  could not receive data from client: unrecognized winsock error 10054
+2022-01-02 16:58:49.435 CET [16956] LOG:  could not receive data from client: unrecognized winsock error 10054
+2022-01-02 16:58:49.435 CET [21544] LOG:  could not receive data from client: unrecognized winsock error 10054
+2022-01-02 16:58:57.660 CET [3500] LOG:  server process (PID 12248) was terminated by exception 0xC000013A
+2022-01-02 16:58:57.660 CET [3500] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2022-01-02 16:58:57.660 CET [3500] LOG:  terminating any other active server processes
+2022-01-02 16:58:57.661 CET [5676] WARNING:  terminating connection because of crash of another server process
+2022-01-02 16:58:57.661 CET [5676] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2022-01-02 16:58:57.661 CET [5676] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2022-01-02 16:58:57.858 CET [3500] LOG:  all server processes terminated; reinitializing
+2022-01-02 16:58:58.009 CET [1064] LOG:  database system was interrupted; last known up at 2022-01-02 16:57:45 CET
+2022-01-02 16:58:58.810 CET [3500] LOG:  startup process (PID 1064) was terminated by exception 0xC000013A
+2022-01-02 16:58:58.810 CET [3500] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2022-01-02 16:58:58.810 CET [3500] LOG:  aborting startup due to startup process failure
 ^C

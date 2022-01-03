@@ -73,7 +73,6 @@ namespace MTCG.Test.UnitTests.Repositories
             Assert.AreEqual(1, _mockDb.Invocations.Count);
         }
 
-
         [Test]
         public void UpdateTest()
         {

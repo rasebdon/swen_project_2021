@@ -250,7 +250,7 @@ curl -X DELETE http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921fa
 echo.
 echo.
 
-REM -------------------------------------------------- TODO : TRADE ENDPOINT
+REM --------------------------------------------------
 echo 21) check trading deals
 curl -X GET http://localhost:10001/tradings  --header "Authorization: Basic kienboec-mtcgToken"
 echo.
