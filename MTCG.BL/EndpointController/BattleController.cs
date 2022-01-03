@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 namespace MTCG.BL.EndpointController
 {
     [HttpEndpoint("/battles")]
-    public class BattleController : Controller, IHttpPost
+    public class BattleController : Controller
     {
         public ConcurrentQueue<Tuple<Deck, HttpRequest>> MatchQueue { get; }
 

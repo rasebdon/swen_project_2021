@@ -1,6 +1,6 @@
 ﻿namespace MTCG.Models
 {
-    public class User : DataObject // TODO : Bio and Image
+    public class User : DataObject
     {
         /// <summary>
         /// The unique username of the user

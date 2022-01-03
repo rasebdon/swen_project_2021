@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MTCG.DAL.Database" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="12" Y="2" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ABAAACAAACAEAEAAAAACAEAAAQAAAAAAgQAAQAAABAA=</HashCode>
+      <FileName>Database.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MTCG.DAL.DatabaseConfiguration" Collapsed="true">
+    <Position X="12" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAEAAAAAAAQAAAAAAKAAAAAACACAAAAAAAAA=</HashCode>
+      <FileName>DatabaseConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.DAL.DatabaseException" Collapsed="true">
+    <Position X="13.25" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DatabaseExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.DAL.DatabaseConnectionException" Collapsed="true">
+    <Position X="10.25" Y="3.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DatabaseExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.DAL.DuplicateEntryException" Collapsed="true">
+    <Position X="10.25" Y="4.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DatabaseExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.DAL.DatabaseInsertException" Collapsed="true">
+    <Position X="10.25" Y="6.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DatabaseExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.DAL.NoEntryFoundException" Collapsed="true">
+    <Position X="10.25" Y="5.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DatabaseExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.DAL.TransactionObject" Collapsed="true">
+    <Position X="14.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TransactionObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.DAL.Repositories.CardInstanceRepository" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQggEAAAAAIAEAAAAAAAAAAAAEAAAAAAgAAAIAAAIA=</HashCode>
+      <FileName>Repositories\CardInstanceRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MTCG.DAL.Repositories.CardRepository" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQggEAAAAAAAEAAAAAAAAAAAAEAAAAAAgAAAAAAAIA=</HashCode>
+      <FileName>Repositories\CardRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MTCG.DAL.Repositories.DeckRepository" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEQggEAAAAAAAEAAAAAAAAAAAAEAAAAAAgAAAAAAAIA=</HashCode>
+      <FileName>Repositories\DeckRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MTCG.DAL.Repositories.OfferRepository" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQggEAAAAAAAEAAAAAAAAAAAAEAAAAAAgAAAAAAAIA=</HashCode>
+      <FileName>Repositories\OfferRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MTCG.DAL.Repositories.PackageRepository" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQggEAAAAAAAEAAAAAAAAAAAAEAAAAAAgAAAAAAAIA=</HashCode>
+      <FileName>Repositories\PackageRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MTCG.DAL.Repositories.StackRepository" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAgEAAAAAAAEAAAAAAAAAAAAEAAAAAAgAAAAAAAIA=</HashCode>
+      <FileName>Repositories\StackRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MTCG.DAL.Repositories.TradeRepository" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQggEAAAAAAAEAAAAAAAAAAAAEAAAAAAgAAAAAAAIA=</HashCode>
+      <FileName>Repositories\TradeRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MTCG.DAL.Repositories.UserRepository" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQggEAAAAAAAEAAAAAAAAACAAEAAAAAAgAAAAAAAIA=</HashCode>
+      <FileName>Repositories\UserRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="MTCG.DAL.IDatabase">
+    <Position X="10.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAACAEAAAQAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>IDatabase.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MTCG.DAL.Repositories.IRepository&lt;T&gt;">
+    <Position X="16.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAEAAAAAAAAAAAAAAAAAAAAEAAAAAAgAAAAAAAIA=</HashCode>
+      <FileName>Repositories\IRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

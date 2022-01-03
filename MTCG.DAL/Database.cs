@@ -8,7 +8,7 @@ namespace MTCG.DAL
     /// <summary>
     /// Class for managing the general database communication
     /// </summary>
-    public class Database : IDatabase
+    public class Database : IDatabase, IDisposable
     {
         public DatabaseConfiguration Configuration { get; }
 
@@ -153,11 +153,6 @@ namespace MTCG.DAL
             return rowsAffected;
         }
 
-        public void Dispose()
-        {
-            _disposed = true;
-            lock (_connectionLock) _connection.Dispose();
-        }
 
         public bool ExecuteNonQueryTransaction(IEnumerable<TransactionObject> objects)
         {
@@ -191,6 +186,12 @@ namespace MTCG.DAL
             }
 
             return success;
+        }
+
+        public void Dispose()
+        {
+            _disposed = true;
+            lock (_connectionLock) _connection.Dispose();
         }
     }
 }

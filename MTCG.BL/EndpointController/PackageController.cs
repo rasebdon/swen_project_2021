@@ -11,7 +11,7 @@ namespace MTCG.BL.EndpointController
     /// This controller manages the package related functions
     /// </summary>
     [HttpEndpoint("/packages")]
-    public class PackageController : Controller, IHttpPost
+    public class PackageController : Controller
     {
         private readonly ILog _log;
         private readonly UserRepository _userRepository;

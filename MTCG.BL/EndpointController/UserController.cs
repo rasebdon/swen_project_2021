@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 namespace MTCG.BL.EndpointController
 {
     [HttpEndpoint("/users")]
-    public class UserController : Controller, IHttpPost, IHttpGet
+    public class UserController : Controller
     {
         private UserRepository _userRepository;
         private AuthenticationService _authenticationService;

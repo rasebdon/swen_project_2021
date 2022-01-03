@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MTCG.BL.Http.HttpAuthorization">
+    <Position X="15" Y="5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAABAAA=</HashCode>
+      <FileName>Http\HttpAuthorization.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpEndpointArgumentAttribute" Collapsed="true">
+    <Position X="8.25" Y="2.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Http\HttpEndpointArgumentAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpEndpointAttribute">
+    <Position X="8.25" Y="0.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Http\HttpEndpointAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpMethodAttribute">
+    <Position X="8.25" Y="4.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Http\HttpMethodAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpGetAttribute" Collapsed="true">
+    <Position X="12.75" Y="7" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Http\HttpMethodAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpPostAttribute" Collapsed="true">
+    <Position X="8.75" Y="7" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Http\HttpMethodAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpPutAttribute" Collapsed="true">
+    <Position X="6.75" Y="7" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Http\HttpMethodAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpDeleteAttribute" Collapsed="true">
+    <Position X="4.75" Y="7" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Http\HttpMethodAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpPatchAttribute" Collapsed="true">
+    <Position X="10.75" Y="7" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Http\HttpMethodAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpRequest">
+    <Position X="15" Y="0.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAYAAAAAAAIIBAAAABAgAAAAgAKAAQAAQAAAA=</HashCode>
+      <FileName>Http\HttpRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpResponse">
+    <Position X="17" Y="0.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Http\HttpResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpServer">
+    <Position X="4.75" Y="0.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAgAAABAAAAAAAAAAAAAAAAAAAAAQACAAAA=</HashCode>
+      <FileName>Http\HttpServer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.HttpSocket">
+    <Position X="4.75" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AARAAAAgAAAAAAAAAAAAAACAAAAAAACAAAAAAAAAAIA=</HashCode>
+      <FileName>Http\HttpSocket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BL.Http.RouteEngine">
+    <Position X="11.25" Y="0.75" Width="1.75" />
+    <NestedTypes>
+      <Struct Name="MTCG.BL.Http.RouteEngine.HttpComposedEndpointInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Http\RouteEngine.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="MTCG.BL.Http.RouteEngine.HttpComposedEndpointMethod" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Http\RouteEngine.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAACA=</HashCode>
+      <FileName>Http\RouteEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="MTCG.BL.Http.HttpMethod" Collapsed="true">
+    <Position X="13.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAEAQAAAAAAAAAAAAAgAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>Http\HttpRequest.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="MTCG.BL.Http.HttpStatusCode">
+    <Position X="17" Y="3" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CAEAAAAIAAAAAAAgAAAAAAAAAAEAAAQAAAABAAAAAAA=</HashCode>
+      <FileName>Http\HttpResponse.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -8,7 +8,7 @@ using System.Net.Mime;
 namespace MTCG.BL.EndpointController
 {
     [HttpEndpoint("/cards")]
-    public class CardController : Controller, IHttpGet
+    public class CardController : Controller
     {
         private readonly AuthenticationService _authenticationService;
         private readonly CardRepository _cardRepository;

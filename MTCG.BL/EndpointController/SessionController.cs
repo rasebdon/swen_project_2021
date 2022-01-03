@@ -10,7 +10,7 @@ using System.Net.Mime;
 namespace MTCG.BL.EndpointController
 {
     [HttpEndpoint("/session")]
-    public class SessionController : Controller, IHttpPost
+    public class SessionController : Controller
     {
         private readonly UserRepository _userRepository;
         private readonly AuthenticationService _authentication;

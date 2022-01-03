@@ -8,7 +8,7 @@ using System.Net.Mime;
 namespace MTCG.BL.EndpointController
 {
     [HttpEndpoint("/decks")]
-    public class DeckController : Controller, IHttpGet, IHttpPost, IHttpPut
+    public class DeckController : Controller
     {
         private readonly ILog _log;
         private readonly DeckRepository _deckRepository;

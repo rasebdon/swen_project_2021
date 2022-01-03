@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using HttpServer = MTCG.BL.Http.HttpServer;
 
-namespace MTCGUnitTests.HttpTest
+namespace MTCH.Test.UnitTests.HttpTest
 {
     public class HttpServerTest
     {
@@ -85,6 +85,12 @@ namespace MTCGUnitTests.HttpTest
             string response = System.Text.Encoding.UTF8.GetString(b);
 
             Assert.AreEqual(data.Serialize(), response);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _server.Close();
         }
     }
 
