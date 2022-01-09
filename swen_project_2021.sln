@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG.PL", "MTCG.PL\MTCG.PL.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG.Test", "MTCG.Test\MTCG.Test.csproj", "{D480ADD9-EEEC-42E4-A64F-D1C0DA8EDA58}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTCG.IntegrationTest", "MTCG.IntegrationTest\MTCG.IntegrationTest.csproj", "{085D089D-AEC8-4469-946E-15654C19FC49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D480ADD9-EEEC-42E4-A64F-D1C0DA8EDA58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D480ADD9-EEEC-42E4-A64F-D1C0DA8EDA58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D480ADD9-EEEC-42E4-A64F-D1C0DA8EDA58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{085D089D-AEC8-4469-946E-15654C19FC49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{085D089D-AEC8-4469-946E-15654C19FC49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{085D089D-AEC8-4469-946E-15654C19FC49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{085D089D-AEC8-4469-946E-15654C19FC49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
